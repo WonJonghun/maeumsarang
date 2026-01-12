@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.mshintra.schedule.mapper.ScheduleMapper">
+
+    <select id="selectScheduleList" resultType="com.example.mshintra.schedule.dto.ScheduleDto" statementType="CALLABLE">
+        { call dbo.Intranet_Duty_List(#{baseDt}, #{flagCd}<if test="saCd != null and saCd != ''">, #{saCd}</if>) }
+    </select>
+
+    <select id="selectTodayScheduleList" parameterType="com.example.mshintra.schedule.dto.CalendarDto" resultType="com.example.mshintra.schedule.dto.CalendarDto">
+        SELECT cc_Time,
+               cc_RMK
+        FROM (
+                 SELECT  cc_Time = CASE WHEN ISNULL(Ms_Time1,'') = '' THEN '' ELSE SUBSTRING(Ms_Time1,1,2)+':' + SUBSTRING(Ms_Time1,3,2) END,
+                         cc_RMK  = Ms_Remark
+                 FROM I_MySchedule
+                 WHERE Ms_date =  #{searchDate}  AND Ms_Flag <![CDATA[<]]> 50 AND (Ms_UserID = #{userId} OR Ms_Flag = 1 OR Ms_BuserID IN (SELECT Buser FROM dbo.[GetSineBuser](#{userId})) OR Ms_BuserID = #{ccBuser})
+        UNION ALL
+        SELECT cc_Time = SUBSTRING(Tn_time,1,2) + ':' + SUBSTRING(Tn_time,3,2),
+               cc_RMK  = tn_title
+        FROM I_TotalNote
+        WHERE Tn_delflag = '1' AND Tn_PlanDate =  #{searchDate}
+        UNION ALL
+        SELECT cc_Time = SUBSTRING(Ul_InTime,1,2) + ':' + SUBSTRING(Ul_InTime,3,2),
+               cc_RMK  = RTRIM(Ul_Remark) + ' ' + CASE WHEN isnull(Ul_Count,0) = 0 THEN '' ELSE isnull(Ul_Count,0) + '명' END
+        FROM I_UseList
+        WHERE Ul_Date =  #{searchDate}  AND Isnull(Ul_Gongji,'N') = 'Y'
+        UNION ALL
+        SELECT cc_Time = '24:00',
+               cc_RMK = 'BirthDay : ' + Ph_Name
+        FROM I_Phonelist
+                 LEFT JOIN I_Lunar ON ((Ph_Birthflag = '1' AND RIGHT(CONVERT(VARCHAR(8),Ph_BirthDate,112),4) = RIGHT(CONVERT(VARCHAR(8),Lu_SolarDt,112),4))
+            OR (Ph_Birthflag = '2' AND Lu_Yun = 0 AND RIGHT(CONVERT(VARCHAR(8),Ph_BirthDate,112),4) = REPLACE(RIGHT(Lu_LunarDt,5),'-','')))
+            AND Lu_SolarDt =  #{searchDate}
+        WHERE Ph_Code = #{userId} AND Lu_SolarDt =  #{searchDate}
+            )TMP
+        ORDER BY cc_Time
+    </select>
+
+    <select id="selectDayDutyList" parameterType="com.example.mshintra.schedule.dto.DayDutyDto" resultType="com.example.mshintra.schedule.dto.DayDutyDto">
+        SELECT hc_Name, Du_Name = dbo.GetSaNm (Du_Code1)
+        FROM (
+                 SELECT Du_Flag,Du_Code1
+                 FROM I_Duty
+                 WHERE Du_Date = CASE WHEN LEFT(CONVERT(time, GETDATE()),2) <![CDATA[<]]> '08' THEN DATEADD(DAY,-1, #{searchDate} ) ELSE  #{searchDate}  END AND Du_Flag NOT IN (9,10)
+                 UNION ALL
+                 SELECT Du_Flag = CASE WHEN Ic_Buser = '140' THEN '21' ELSE '22' END,
+                     Du_Code1 = Gu_Code1
+                 FROM I_Gunmu
+                     LEFT JOIN P_InsaCode ON Ic_Code = Gu_Code1
+                 WHERE Gu_Date = CASE WHEN LEFT(CONVERT(time, GETDATE()),2) <![CDATA[<]]> '08' THEN DATEADD(DAY,-1, #{searchDate} ) ELSE  #{searchDate}  END AND Ic_Jikchek = 35 AND LEFT(Gu_Flag,1) = 'N'
+             )TMP
+                 LEFT JOIN I_HelpCD ON Hc_Code = 'Int000060' AND Hc_Seq = Du_Flag
+        ORDER BY Hc_Filter
+    </select>
+
+    <select id="selectOutDayDutyList" parameterType="com.example.mshintra.schedule.dto.DayDutyDto" resultType="com.example.mshintra.schedule.dto.DayDutyDto">
+        SELECT
+            '오전' AS Hc_Name,
+            ISNULL(
+                    (SELECT STRING_AGG(dbo.GetSaNm(Do_SaCD), ', ')
+                     FROM I_DocOutDuty
+                     WHERE Do_Date = #{searchDate} AND Do_AM = '1')
+                , '') AS Du_Name
+        UNION ALL
+        SELECT
+            '오후' AS Hc_Name,
+            ISNULL(
+                    (SELECT STRING_AGG(dbo.GetSaNm(Do_SaCD), ', ')
+                     FROM I_DocOutDuty
+                     WHERE Do_Date = #{searchDate} AND Do_PM = '1')
+                , '') AS Du_Name;
+    </select>
+
+    <select id="selectHolidayList" resultType="com.example.mshintra.schedule.dto.HolidayDto">
+        SELECT *
+        FROM dbo.GetOffDayList(#{year}, 1)
+        WHERE CONVERT(CHAR(6), cc_Dt, 112) = #{year} + #{month}
+    </select>
+
+</mapper>

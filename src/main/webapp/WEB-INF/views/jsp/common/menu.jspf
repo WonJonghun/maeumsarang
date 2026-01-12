@@ -1,0 +1,36 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<meta charset="UTF-8">
+
+<div id="menuOverlay" class="menu-overlay" hidden></div>
+<nav id="menu" class="menu" aria-hidden="true">
+    <div class="menu-top">
+        <div class="menu-top-row">
+            <a href="<c:url value='/main.do'/>" class="menu-home-link" aria-label="홈">
+                <i class="bi bi-house-door-fill"></i>
+            </a>
+
+            <div class="menu-search">
+                <i class="bi bi-search menu-search-ico"></i>
+                <input type="text" id="menuSearch" class="menu-search-input" placeholder="메뉴 검색" autocomplete="off"/>
+                <button type="button" class="menu-search-clear" id="btnMenuSearchClear" aria-label="검색어 지우기">
+                    <i class="bi bi-x-circle-fill"></i>
+                </button>
+            </div>
+
+            <button type="button" class="menu-top-close" id="btnMenuTopClose" aria-label="닫기">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+    </div>
+
+    <div class="menu-wrap">
+        <aside class="menu-left">
+            <ul class="menu-depth1"></ul>
+        </aside>
+
+        <section class="menu-right"></section>
+    </div>
+</nav>
+
+<script src="<c:url value='/js/common/menu.js'/>"></script>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.mshintra.notice.mapper.NoticeMapper">
+
+    <select id="selectNoticeList" resultType="com.example.mshintra.notice.dto.NoticeDto">
+        SELECT
+            note.Tn_Date,
+            REPLACE(CONVERT(char(10), note.Tn_Date, 120), '-', '.') AS tnDateStr,
+            note.Tn_Flag,
+            cd.Hc_Name,
+            note.Tn_Aflag,
+            note.Tn_Seq,
+            note.Tn_Time,
+            note.Tn_Title,
+            note.Tn_Remark,
+            note.Tn_Passward,
+            note.Tn_UK,
+            note.Tn_DelFlag,
+            note.Tn_PopupFlag,
+            note.Tn_Count,
+            note.Tn_PlanFlag,
+            note.Tn_PlanDate,
+            note.Tn_Seflag,
+            note.Tn_TOP,
+            note.Tn_ImgNum,
+            note.Tn_RegDate,
+            note.Tn_UserID,
+            insa.Ic_Name,
+            note.Tn_ModDt,
+            note.Tn_ModUid,
+            dbo.GetBuserNm(insa.Ic_Buser) as buserNm,
+            (SELECT COUNT(*)
+             FROM I_TotalNoteView
+             WHERE Tv_UK = CONCAT(
+                          Tn_Flag,
+                          CONVERT(CHAR(8), Tn_Date, 112),
+                          Tn_AFlag,
+                          Tn_Seq
+                      )) AS viewCount,
+            Tv_UK = CONCAT(
+                Tn_Flag,
+                CONVERT(CHAR(8), Tn_Date, 112),
+                Tn_AFlag,
+                Tn_Seq
+            ),
+            cc_View = CASE WHEN Tn_Date <![CDATA[<]]> CASE WHEN Ic_Indate <![CDATA[<]]> '2013-03-01' THEN '2013-03-01'
+                ELSE Ic_Indate
+            END
+                OR ISNULL(Tv_SaCd,'') <![CDATA[<>]]> '' THEN 'Y'
+                ELSE 'N'
+            END
+        FROM
+            I_TotalNote note    LEFT JOIN P_InsaCode insa   ON note.Tn_UserID  = insa.Ic_Code
+                                LEFT JOIN I_HelpCD cd 		ON note.Tn_Flag = cd.Hc_Seq
+                                                                AND cd.Hc_Code = #{hcCode}
+                                LEFT JOIN I_TotalNoteView   ON Tv_SaCd = #{searchId}
+                                                                 AND Tv_UK = CONVERT(VARCHAR(1),Tn_Flag) +
+                                                                             CONVERT(VARCHAR(8),Tn_Date,112) +
+                                                                             CONVERT(VARCHAR(1),Tn_AFlag) +
+                                                                             CONVERT(VARCHAR(10),Tn_Seq)
+        <where>
+            AND note.Tn_Flag = #{tnFlag}
+            <if test="tnSeflag != null and tnSeflag != ''">
+                AND note.Tn_Seflag = #{tnSeflag}
+            </if>
+            <if test="searchKeyword != null and searchKeyword != ''">
+                AND UPPER(note.Tn_Title) LIKE '%' + UPPER(#{searchKeyword}) + '%'
+            </if>
+            AND note.Tn_DelFlag NOT IN (0)
+        </where>
+        ORDER BY note.Tn_Date desc
+        OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <select id="selectNoticeMenuList" parameterType="string" resultType="com.example.mshintra.notice.dto.NoticeMenuDto">
+        SELECT
+            Hc_Code,
+            Hc_Seq,
+            Hc_Name,
+            Hc_RMK,
+            Hc_ColumNm,
+            Hc_Filter,
+            Hc_SqlFg,
+            Hc_Sql,
+            Hc_Ratio,
+            Hc_Code1,
+            Hc_UpFlag,
+            Hc_RegDt
+        FROM I_HelpCD
+        <where>
+            AND Hc_Code = #{hcCode}
+        </where>
+        ORDER BY Hc_Seq
+    </select>
+
+    <update id="totalNoteView" statementType="CALLABLE">
+        { call dbo.Intranet_ToTalNote_View(#{tvUk}, #{saCd}) }
+    </update>
+</mapper>

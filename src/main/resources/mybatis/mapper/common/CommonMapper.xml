@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.mshintra.common.mapper.CommonCodeMapper">
+
+    <select id="selectGunmuCodeList" resultType="com.example.mshintra.common.dto.CommonCodeDto">
+        SELECT GC_CODE AS code , GC_NAME AS codeNm
+        FROM I_GunmuCode
+    </select>
+
+    <select id="selectBuserCodeList" resultType="com.example.mshintra.common.dto.CommonCodeDto">
+        SELECT Bs_Code AS code, Bs_Name AS codeNm
+        FROM P_Buser
+    </select>
+
+    <select id="selectJikgubCodeList" resultType="com.example.mshintra.common.dto.CommonCodeDto">
+        SELECT Jg_Code AS code, Jg_Name AS codeNm
+        FROM P_Jikgub
+    </select>
+
+</mapper>

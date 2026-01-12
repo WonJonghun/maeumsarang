@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.mshintra.imprvprop.mapper.ImprvPropMapper">
+
+    <select id="selectPropList" resultType="com.example.mshintra.imprvprop.dto.ImprvPropDto">
+        SELECT
+            Pl_Date,
+            Pl_number,
+            Pl_title,
+            Pl_Flag,
+            Pl_FileFlag = CASE
+            WHEN ISNULL(Pl_ImgNum, '') = '' THEN 'N'
+            ELSE 'Y'
+            END,
+            Pl_FileName = CASE
+            WHEN ISNULL(Pl_ImgNum, '') <![CDATA[<>]]> '' THEN (
+            SELECT MAX(Af_filename)
+            FROM File_DB.dbo.I_AddFile
+            WHERE Af_Num = Pl_ImgNum
+            )
+            ELSE ''
+            END,
+            Pl_ImgNum,
+            Pl_Gub,
+            Pl_buser,
+            Pl_silbuser,
+            Pl_partflag,
+            Pl_BFlag,
+            Pl_RegDate,
+            Pl_UserID
+        FROM I_Proposallist
+        <where>
+            <if test="searchKeyword != null and searchKeyword != ''">
+                AND UPPER(Pl_Title) LIKE '%' + UPPER(#{searchKeyword}) + '%'
+            </if>
+
+            <if test="searchKeyword == null or searchKeyword == ''">
+                AND Pl_Date <![CDATA[>=]]> CONVERT(date, #{searchFromDate})
+                AND Pl_Date <![CDATA[<]]>  DATEADD(DAY, 1, CONVERT(date, #{searchToDate}))
+            </if>
+        </where>
+        ORDER BY Pl_Date DESC
+        <if test="offset != null and limit != null">
+            OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+        </if>
+    </select>
+
+    <select id="selectPropDetail" parameterType="com.example.mshintra.imprvprop.dto.ImprvPropDto" resultType="com.example.mshintra.imprvprop.dto.PropDetailDto">
+        EXEC [Intranet_Cross_DisPlay]
+        #{icCode},
+        #{searchDate},
+        #{plNumber},
+        '',
+        '',
+        ''
+    </select>
+</mapper>

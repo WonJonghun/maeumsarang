@@ -1,0 +1,27 @@
+<configuration>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d %-5level [%thread] %logger - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="SQL_PRETTY" class="com.example.logging.SqlPrettyAppender"/>
+
+    <appender name="RS_PRETTY" class="com.example.logging.ResultSetPrettyAppender">
+        <maxValueLength>50</maxValueLength>
+    </appender>
+
+    <logger name="jdbc.sqltiming"      level="INFO" additivity="false">
+        <appender-ref ref="SQL_PRETTY"/>
+    </logger>
+    <logger name="jdbc.sqlonly"        level="OFF" additivity="false"/>
+    <logger name="jdbc.resultsettable" level="DEBUG" additivity="false">
+        <appender-ref ref="RS_PRETTY"/>
+    </logger>
+    <logger name="jdbc.resultset"      level="OFF" additivity="false"/>
+    <logger name="jdbc.audit"          level="OFF" additivity="false"/>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

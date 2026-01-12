@@ -1,0 +1,28 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%--게시글 상세--%>
+<div id="postDetailBackdrop" class="post-detail-backdrop"></div>
+
+<aside id="postDetailDrawer" class="post-detail-drawer" aria-hidden="true">
+    <div class="post-detail-head">
+        <button type="button" class="post-detail-close" aria-label="닫기">&times;</button>
+
+        <h3 class="post-detail-title" id="postDetailTitle"></h3>
+
+        <div class="post-detail-meta">
+            <span id="postDetailDate"></span>
+            <span id="postDetailWriter"></span>
+            <span>조회 <span id="postDetailViews"></span></span>
+        </div>
+    </div>
+
+    <div class="post-detail-body">
+        <div class="post-detail-remark" id="postDetailRemark"></div>
+
+        <div class="post-image-preview" id="postImagePreview" style="display:none;"></div>
+
+        <div class="post-attach-area" style="display:none;">
+            <div class="post-attach-title">첨부파일</div>
+            <ul id="postAttachList" class="post-attach-list"></ul>
+        </div>
+    </div>
+</aside>

@@ -1,0 +1,21 @@
+/* ================== 게시판 페이지 ↓================== */
+.page-root {
+    min-height: 100vh;
+    background: var(--gray-f9fafb);
+}
+
+.notice-list-wrap {
+    padding: 0 16px 24px;
+}
+
+.notice-row {
+    border-color: var(--gray-cccccc) !important;
+}
+
+.notice-empty {
+    padding: 16px 4px;
+    text-align: center;
+    color: var(--gray-6b7280);
+    font-weight: 600;
+}
+/* ================== 게시판 페이지 ↑================== */

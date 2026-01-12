@@ -1,0 +1,11 @@
+<div id="detailDrawerBackdrop" class="detail-drawer-backdrop"></div>
+
+<aside id="detailDrawer" class="detail-drawer" aria-hidden="true">
+    <div class="detail-drawer-head">
+        <button type="button" class="detail-drawer-close" aria-label="닫기">&times;</button>
+    </div>
+
+    <div id="detailDrawerBody" class="detail-drawer-body"></div>
+</aside>
+
+<script src="<c:url value='/js/common/detailDrawer.js'/>"></script>

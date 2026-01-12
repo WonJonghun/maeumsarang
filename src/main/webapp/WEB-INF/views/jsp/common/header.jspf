@@ -1,0 +1,77 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<meta charset="UTF-8">
+
+<%--
+  페이지별 헤더 설정
+    headerMainYn   : Y/N (N이면 타이틀 표시)
+    headerSearchYn : Y/N (Y이면 검색 상단바 활성)
+    headerTitle    : hcName
+--%>
+<c:set var="headerMainYn" value="${empty headerMainYn ? 'Y' : headerMainYn}"/>
+<c:set var="headerSearchYn" value="${empty headerSearchYn ? 'N' : headerSearchYn}"/>
+<c:set var="headerTitle" value="${empty headerTitle ? '' : headerTitle}"/>
+
+<header class="topbar"
+        data-main-yn="<c:out value='${headerMainYn}'/>"
+        data-search-yn="<c:out value='${headerSearchYn}'/>"
+        data-title="<c:out value='${headerTitle}'/>">
+    <div class="topbar-left">
+        <button type="button" class="icon-button" id="btnMenuToggle" aria-label="메뉴">
+            <i class="bi bi-list"></i>
+        </button>
+
+        <p id="topbarTitle" class="topbar-title" hidden></p>
+
+        <!-- 기본은 숨김 -->
+        <div id="topbarSearch" class="topbar-search" hidden>
+            <form id="topbarSearchForm" autocomplete="off">
+                <input type="text"
+                       id="topbarSearchInput"
+                       class="topbar-search-input"
+                       placeholder="검색어를 입력해주세요."
+                       enterkeyhint="search"
+                       inputmode="search"
+                       autocomplete="off"/>
+            </form>
+        </div>
+    </div>
+
+    <div class="topbar-right">
+        <!-- searchYn이 Y면 검색 보임 -->
+        <button type="button"
+                class="icon-button topbar-search-btn"
+                id="btnTopbarSearch"
+                aria-label="검색"
+                style="display: ${headerSearchYn eq 'Y' ? 'inline-flex' : 'none'};">
+            <i id="topbarSearchIcon" class="bi bi-search"></i>
+        </button>
+
+        <!-- mainYn이 N이면 이름 숨김 -->
+        <div class="topbar-user-text" style="${headerMainYn eq 'N' ? 'display:none;' : ''}">
+            <p class="user-name text-blue"><c:out value="${user.icName}"/></p>
+            <p class="user-team"><c:out value="${user.ccBuser}"/></p>
+
+            <input type="hidden" id="loginFlag" value="<c:out value='${user.flag}'/>"/>
+            <input type="hidden" id="loginIcCode" value="<c:out value='${user.icCode}'/>"/>
+            <input type="hidden" id="loginBuser" value="<c:out value='${user.icBuser}'/>"/>
+            <input type="hidden" id="appCtx" value="<c:out value='${pageContext.request.contextPath}'/>"/>
+        </div>
+
+        <!-- mainYn이 N이면 프로필 숨김 -->
+        <div class="profile" style="${headerMainYn eq 'N' ? 'display:none;' : ''}">
+            <c:choose>
+                <c:when test="${not empty user.afContent}">
+                    <img src="<c:url value='/profileImage.do'/>" alt="프로필 이미지" class="profile-img"/>
+                </c:when>
+                <c:otherwise>
+                    <i class="bi bi-person-circle profile-icon"></i>
+                </c:otherwise>
+            </c:choose>
+        </div>
+    </div>
+</header>
+
+<%--메뉴--%>
+<%@ include file="menu.jspf" %>
+<script src="<c:url value='/js/common/header.js'/>"></script>

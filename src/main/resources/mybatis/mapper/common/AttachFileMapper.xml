@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.mshintra.common.mapper.AttachFileMapper">
+    <select id="selectAttachList" resultType="com.example.mshintra.common.dto.AttachFileDto">
+        SELECT Af_Num                                  AS afNum,
+               Af_Seq                                  AS afSeq,
+               Af_Flag                                 AS afFlag,
+               Af_FileName                             AS afFileName,
+               Af_FileSize                             AS afFileSize,
+               CONVERT(varchar (19), Af_RegDate, 120)  AS afRegDate,
+               Af_UserID                               AS afUserId,
+               CONVERT(varchar (4), YEAR (Af_RegDate)) AS saveYear,
+               RIGHT ('0'+ CONVERT (varchar (2), MONTH (Af_RegDate)), 2) AS saveMonth
+        FROM File_DB.dbo.i_addFile
+        WHERE Af_Num=#{afNum}
+        ORDER BY Af_Seq
+    </select>
+
+    <select id="selectAttachOne" resultType="com.example.mshintra.common.dto.AttachFileDto">
+        SELECT Af_Num                                  AS afNum,
+               Af_Seq                                  AS afSeq,
+               Af_Flag                                 AS afFlag,
+               Af_FileName                             AS afFileName,
+               Af_FileSize                             AS afFileSize,
+               CONVERT(varchar (19), Af_RegDate, 120)  AS afRegDate,
+               Af_UserID                               AS afUserId,
+               CONVERT(varchar (4), YEAR (Af_RegDate)) AS saveYear,
+               RIGHT ('0'+ CONVERT (varchar (2), MONTH (Af_RegDate)), 2) AS saveMonth
+        FROM File_DB.dbo.i_addFile
+        WHERE Af_Num=#{afNum}
+          AND Af_Seq=#{afSeq}
+    </select>
+</mapper>
+

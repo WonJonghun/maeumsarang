@@ -1,0 +1,24 @@
+{
+  "name": "마음사랑병원 인사시스템",
+  "short_name": "마음사랑병원",
+  "start_url": "/login/login.do",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "icons": [
+    { "src": "/images/symbol512.png", "type": "image/png", "sizes": "48x48" },
+    { "src": "/images/symbol512.png", "type": "image/png", "sizes": "72x72" },
+    { "src": "/images/symbol512.png", "type": "image/png", "sizes": "96x96" },
+    { "src": "/images/symbol512.png", "type": "image/png", "sizes": "128x128" },
+    { "src": "/images/symbol512.png", "type": "image/png", "sizes": "144x144" },
+    { "src": "/images/symbol512.png", "type": "image/png", "sizes": "152x152" },
+    { "src": "/images/symbol512.png", "type": "image/png", "sizes": "180x180" },
+    { "src": "/images/symbol512.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "/images/symbol512.png", "type": "image/png", "sizes": "256x256" },
+    { "src": "/images/symbol512.png", "type": "image/png", "sizes": "384x384" },
+    { "src": "/images/symbol512.png", "type": "image/png", "sizes": "512x512" },
+    { "src": "/images/symbol512.png", "type": "image/png", "sizes": "1024x1024" }
+  ]
+
+}

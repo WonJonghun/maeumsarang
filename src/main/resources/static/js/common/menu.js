@@ -1,0 +1,404 @@
+$(function () {
+    const menu = $('#menu');
+    const overlay = $('#menuOverlay');
+    const searchInput = $('#menuSearch');
+    const btnSearchClear = $('#btnMenuSearchClear');
+
+    let menuLoaded = false;
+    let menuTreeOrigin = [];
+    let lastKeyword = '';
+    let searchTimer = null;
+    let menuHistoryPushed = false;
+    let menuClosingByPop = false;
+
+    function loadMenuAllIfNeeded() {
+        if (menuLoaded) return $.Deferred().resolve().promise();
+
+        menu.find('.menu-depth1').html('<li><button type="button" class="menu-depth1-btn is-active" disabled>로딩중</button></li>');
+        menu.find('.menu-right').html('<div class="menu-panel is-active"><div class="menu-panel-title">로딩중</div><div class="menu-panel-line"></div></div>');
+
+        return cmAjax('/menu/tree.do', 'GET', {keyword: 'Mobile'}, false).done(function (tree) {
+            menuTreeOrigin = tree || [];
+            menuLoaded = true;
+            lastKeyword = '';
+            renderMenuTree(menuTreeOrigin);
+        });
+    }
+
+    function openMenu() {
+        menu.addClass('open').attr('aria-hidden', 'false');
+        overlay.prop('hidden', false);
+        $('body').css('overflow', 'hidden');
+
+        if (!menuHistoryPushed) {
+            history.pushState({menuOpen: true}, document.title, location.href);
+            menuHistoryPushed = true;
+        }
+
+        loadMenuAllIfNeeded().done(function () {
+            const keyword = $.trim(searchInput.val() || '');
+            toggleSearchClear(keyword);
+            applyLocalSearch(keyword);
+        });
+    }
+
+    function closeMenu(useHistory) {
+        if (useHistory === undefined) useHistory = true;
+
+        if (useHistory && menuHistoryPushed && !menuClosingByPop) {
+            history.back();
+            return;
+        }
+
+        menu.removeClass('open').attr('aria-hidden', 'true');
+        overlay.prop('hidden', true);
+        $('body').css('overflow', '');
+        menuHistoryPushed = false;
+    }
+
+    $(window).on('popstate', function () {
+        if (menu.hasClass('open')) {
+            menuClosingByPop = true;
+            closeMenu(false);
+            menuClosingByPop = false;
+        }
+        menuHistoryPushed = false;
+    });
+
+    function renderMenuTree(tree) {
+        const depth1 = menu.find('.menu-depth1');
+        const right = menu.find('.menu-right');
+
+        depth1.empty();
+        right.empty();
+
+        if (!tree || tree.length === 0) {
+            depth1.html('<li><button type="button" class="menu-depth1-btn is-active" disabled>메뉴 없음</button></li>');
+            right.html('<div class="menu-panel is-active"><div class="menu-panel-title">메뉴 없음</div><div class="menu-panel-line"></div></div>');
+            return;
+        }
+
+        $.each(tree, function (i, root) {
+            const panelId = 'menuPanel_' + (root.ccCode || i);
+
+            depth1.append(
+                '<li><button type="button" class="menu-depth1-btn' + (i === 0 ? ' is-active' : '') + '" data-target="#' + panelId + '">' +
+                cmEscapeHtml(root.ccMenuName) +
+                '</button></li>'
+            );
+
+            let panel = '<div id="' + panelId + '" class="menu-panel' + (i === 0 ? ' is-active' : '') + '">';
+            panel += '<div class="menu-panel-title">' + cmEscapeHtml(root.ccMenuName) + '</div><div class="menu-panel-line"></div><ul class="menu-depth2">';
+
+            $.each(root.children || [], function (_, d2) {
+                const d2Name = cmEscapeHtml(d2.ccMenuName);
+                const d2Code = cmEscapeHtml(d2.ccCode);
+                const d2WinCode = cmEscapeHtml(d2.ccWinCode);
+                const d2WinName = cmEscapeHtml(d2.ccWinName);
+                const d3 = d2.children || [];
+
+                if (d3.length > 0) {
+                    panel += '<li class="menu-depth2-item">';
+                    panel += '<button type="button" class="menu-depth2-btn" aria-expanded="false" data-code="' + d2Code + '" data-win-code="' + d2WinCode + '" data-win-name="' + d2WinName + '">';
+                    panel += '<span class="menu-txt">' + d2Name + '</span><span class="menu-depth2-right"><i class="bi bi-chevron-down menu-depth2-chevron"></i></span></button>';
+                    panel += '<ul class="menu-depth3" style="display:none">';
+
+                    $.each(d3, function (_, d3m) {
+                        const d3Name = cmEscapeHtml(d3m.ccMenuName);
+                        const d3Code = cmEscapeHtml(d3m.ccCode);
+                        const d3WinCode = cmEscapeHtml(d3m.ccWinCode);
+                        const d3WinName = cmEscapeHtml(d3m.ccWinName);
+
+                        const d4 = d3m.children || [];
+                        if (d4.length > 0) {
+                            panel += '<li class="menu-depth3-item">';
+                            panel += '  <div class="menu-depth3-row">';
+                            panel += '    <a href="#" class="menu-depth3-link" data-code="' + d3Code + '" data-win-code="' + d3WinCode + '" data-win-name="' + d3WinName + '">' + d3Name + '</a>';
+                            panel += '    <button type="button" class="menu-depth3-toggle" aria-expanded="false"><i class="bi bi-chevron-down menu-depth3-chevron"></i></button>';
+                            panel += '  </div>';
+                            panel += '  <ul class="menu-depth4" style="display:none">';
+
+                            $.each(d4, function (_, d4m) {
+                                const d4Name = cmEscapeHtml(d4m.ccMenuName);
+                                const d4Code = cmEscapeHtml(d4m.ccCode);
+                                const d4WinCode = cmEscapeHtml(d4m.ccWinCode);
+                                const d4WinName = cmEscapeHtml(d4m.ccWinName);
+                                panel += '<li><a href="#" data-code="' + d4Code + '" data-win-code="' + d4WinCode + '" data-win-name="' + d4WinName + '">' + d4Name + '</a></li>';
+                            });
+
+                            panel += '  </ul>';
+                            panel += '</li>';
+                        } else {
+                            panel += '<li><a href="#" data-code="' + d3Code + '" data-win-code="' + d3WinCode + '" data-win-name="' + d3WinName + '">' + d3Name + '</a></li>';
+                        }
+                    });
+
+                    panel += '</ul></li>';
+                } else {
+                    panel += '<li class="menu-depth2-item"><a class="menu-depth2-link" href="#" data-code="' + d2Code + '" data-win-code="' + d2WinCode + '" data-win-name="' + d2WinName + '"><span class="menu-txt">' + d2Name + '</span></a></li>';
+                }
+            });
+
+            panel += '</ul></div>';
+            right.append(panel);
+        });
+
+        const firstBtn = menu.find('.menu-depth1-btn').first();
+        const firstTarget = firstBtn.data('target');
+
+        menu.find('.menu-panel').hide().removeClass('is-active');
+        $(firstTarget).show().addClass('is-active');
+    }
+
+    function applyLocalSearch(keyword) {
+        if (!menuLoaded) return;
+
+        const kw = $.trim(keyword || '');
+        if (kw === lastKeyword) return;
+
+        lastKeyword = kw;
+
+        if (!kw) {
+            renderMenuTree(menuTreeOrigin);
+            return;
+        }
+
+        const kwLower = String(kw).toLowerCase();
+
+        function filterNodes(nodes) {
+            const res = [];
+
+            $.each(nodes || [], function (_, n) {
+                const nameLower = String(n.ccMenuName == null ? '' : n.ccMenuName).toLowerCase();
+                const hit = nameLower.indexOf(kwLower) > -1;
+
+                if (hit) {
+                    res.push({
+                        ccCode: n.ccCode,
+                        ccMenuName: n.ccMenuName,
+                        ccLevel: n.ccLevel,
+                        ccWinName: n.ccWinName,
+                        ccWinCode: n.ccWinCode,
+                        children: (n.children || []) // 매칭이면 하위 전체 유지
+                    });
+                    return;
+                }
+
+                const children = filterNodes(n.children || []);
+                if (children.length > 0) {
+                    res.push({
+                        ccCode: n.ccCode,
+                        ccMenuName: n.ccMenuName,
+                        ccLevel: n.ccLevel,
+                        ccWinName: n.ccWinName,
+                        ccWinCode: n.ccWinCode,
+                        children: children
+                    });
+                }
+            });
+
+            return res;
+        }
+
+        renderMenuTree(filterNodes(menuTreeOrigin));
+    }
+
+    function resetDepth4(panel, speed) {
+        panel.find('.menu-depth3-row').removeClass('is-active');
+        panel.find('.menu-depth3-item').removeClass('is-open');
+        panel.find('.menu-depth3-toggle').attr('aria-expanded', 'false');
+        panel.find('.menu-depth3-link,.menu-depth4 a').removeClass('is-active');
+        panel.find('.menu-depth4').stop(true, true).slideUp(speed);
+    }
+
+    function resetSelection(panel, speed) {
+        panel.find('.menu-depth2-link,.menu-depth2-btn,.menu-depth3 > li > a,.menu-depth3-link,.menu-depth4 a').removeClass('is-active');
+        resetDepth4(panel, speed);
+    }
+
+    function resetDepth2(panel, speed) {
+        panel.find('.menu-depth2-btn')
+            .removeClass('is-open')
+            .attr('aria-expanded', 'false')
+            .next('.menu-depth3')
+            .stop(true, true)
+            .slideUp(speed);
+    }
+
+    $('#btnMenuToggle').on('click', function () {
+        menu.hasClass('open') ? closeMenu(true) : openMenu();
+    });
+
+    $('#btnMenuTopClose').on('click', function () {
+        closeMenu(true);
+    });
+
+    overlay.on('click', function () {
+        closeMenu(true);
+    });
+
+    $(document).on('keydown', function (e) {
+        if (e.key === 'Escape') closeMenu(true);
+    });
+
+    searchInput.on('input', function () {
+        const keyword = $.trim(searchInput.val() || '');
+        toggleSearchClear(keyword);
+
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(function () {
+            loadMenuAllIfNeeded().done(function () {
+                applyLocalSearch($.trim(searchInput.val() || ''));
+            });
+        }, 120);
+    });
+
+    searchInput.on('keydown', function (e) {
+        if (e.key !== 'Enter') return;
+
+        e.preventDefault();
+        clearTimeout(searchTimer);
+
+        loadMenuAllIfNeeded().done(function () {
+            applyLocalSearch($.trim(searchInput.val() || ''));
+        });
+    });
+
+    menu.on('click', '.menu-depth1-btn', function () {
+        const btn = $(this);
+        const target = btn.data('target');
+
+        btn.addClass('is-active');
+        btn.closest('.menu-depth1').find('.menu-depth1-btn').not(btn).removeClass('is-active');
+
+        menu.find('.menu-panel').removeClass('is-active').hide();
+        $(target).addClass('is-active').show();
+
+        const panel = $(target);
+        resetSelection(panel, 0);
+        resetDepth2(panel, 0);
+    });
+
+    menu.on('click', '.menu-depth2-link,.menu-depth2-btn', function (e) {
+        e.preventDefault();
+
+        const a = $(this);
+        const panel = a.closest('.menu-panel');
+        const depth3 = a.next('.menu-depth3');
+        const hasChild = depth3.length > 0 && depth3.find('a').length > 0;
+
+        if (hasChild) {
+            const isOpen = a.hasClass('is-open') || a.attr('aria-expanded') === 'true';
+
+            resetSelection(panel, 0);
+            resetDepth2(panel, 180);
+
+            a.addClass('is-active');
+
+            if (!isOpen) {
+                a.addClass('is-open').attr('aria-expanded', 'true');
+                depth3.stop(true, true).slideDown(180);
+            }
+            return;
+        }
+
+        resetSelection(panel, 0);
+        a.addClass('is-active');
+
+        const winName = $.trim(a.data('win-name') || '');
+        if (winName) {
+            closeMenu();
+            cmMoveWindow(winName);
+            return;
+        }
+
+        if (typeof customAlert === 'function') customAlert('경고', '이동할 메뉴 정보가 없습니다.', 'WARN');
+    });
+
+    menu.on('click', '.menu-depth3 > li > a', function (e) {
+        e.preventDefault();
+
+        const a = $(this);
+        const panel = a.closest('.menu-panel');
+
+        resetSelection(panel, 0);
+        a.addClass('is-active');
+
+        const winName = $.trim(a.data('win-name') || '');
+        if (winName) {
+            closeMenu();
+            cmMoveWindow(winName);
+            return;
+        }
+
+        if (typeof customAlert === 'function') customAlert('경고', '이동할 메뉴 정보가 없습니다.', 'WARN');
+    });
+
+    menu.on('click', '.menu-depth3-toggle', function (e) {
+        e.preventDefault();
+
+        const btn = $(this);
+        const panel = btn.closest('.menu-panel');
+        const item = btn.closest('.menu-depth3-item');
+        const row = item.find('> .menu-depth3-row');
+        const link = row.find('.menu-depth3-link');
+        const depth4 = item.find('> .menu-depth4');
+
+        const isOpen = btn.attr('aria-expanded') === 'true';
+
+        resetDepth4(panel, 180);
+        if (isOpen) return;
+
+        item.addClass('is-open');
+        row.addClass('is-active');
+        link.addClass('is-active');
+        btn.attr('aria-expanded', 'true');
+        depth4.stop(true, true).slideDown(180);
+    });
+
+    menu.on('click', '.menu-depth3-link', function (e) {
+        e.preventDefault();
+        $(this).closest('.menu-depth3-row').find('.menu-depth3-toggle').trigger('click');
+    });
+
+    menu.on('click', '.menu-depth4 a', function (e) {
+        e.preventDefault();
+
+        const a = $(this);
+        const panel = a.closest('.menu-panel');
+        const item = a.closest('.menu-depth3-item');
+        const row = item.find('> .menu-depth3-row');
+        const link = row.find('.menu-depth3-link');
+        const toggle = row.find('.menu-depth3-toggle');
+        const depth4 = item.find('> .menu-depth4');
+
+        resetSelection(panel, 0);
+        a.addClass('is-active');
+
+        item.addClass('is-open');
+        row.addClass('is-active');
+        link.addClass('is-active');
+        toggle.attr('aria-expanded', 'true');
+        depth4.stop(true, true).slideDown(0);
+
+        const winName = $.trim(a.data('win-name') || '');
+        if (winName) {
+            closeMenu();
+            cmMoveWindow(winName);
+            return;
+        }
+
+        if (typeof customAlert === 'function') customAlert('경고', '이동할 메뉴 정보가 없습니다.', 'WARN');
+    });
+
+    function toggleSearchClear(keyword) {
+        ($.trim(keyword || '') !== '') ? btnSearchClear.show() : btnSearchClear.hide();
+    }
+
+    btnSearchClear.on('click', function () {
+        searchInput.val('');
+        toggleSearchClear('');
+        applyLocalSearch('');
+        searchInput.focus();
+    });
+});
