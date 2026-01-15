@@ -21,8 +21,8 @@ $(function () {
 function loadPropList() {
     const data = {
         searchFromDate: $('#searchFromDate').val(),
-        searchToDate: $('#searchToDate').val().substring(0, 10),
-        searchKeyword: $('#searchKeyword').val().substring(0, 10)
+        searchToDate: $('#searchToDate').val(),
+        searchKeyword: $('#searchKeyword').val(),
     };
 
     cmAjax('/imprvProp/list.do', 'GET', data, true).done(function (list) {

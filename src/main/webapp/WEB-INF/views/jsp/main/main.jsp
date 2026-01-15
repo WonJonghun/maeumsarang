@@ -58,7 +58,7 @@
                 <div class="card-header-left">
                     <h3 class="card-title">공지사항</h3>
                 </div>
-                <a class="btn-text-muted" href="<c:url value='/notice/employee.do?baseKey=1&amp;hcName=직원공지사항'/>">전체보기 &gt;</a>
+                <a class="btn-text-muted js-move-window" href="#" data-win-code="w_gongji_list" data-win-name="main;w_gongji_list;1">전체보기 &gt;</a>
             </div>
 
             <c:forEach var="notice" items="${noticeList}" varStatus="st">
@@ -93,7 +93,7 @@
                 <div class="card-header-left">
                     <h3 class="card-title">자유게시판</h3>
                 </div>
-                <a class="btn-text-muted" href="<c:url value='/notice/board.do?baseKey=2&amp;hcName=자유게시판'/>">전체보기 &gt;</a>
+                <a class="btn-text-muted js-move-window" href="#" data-win-code="w_gongji_list" data-win-name="main;w_gongji_list;2">전체보기 &gt;</a>
             </div>
 
             <c:forEach var="board" items="${boardList}" varStatus="st">

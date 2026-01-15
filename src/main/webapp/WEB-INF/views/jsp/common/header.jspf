@@ -6,25 +6,23 @@
     headerMainYn   : Y/N (N이면 타이틀 표시)
     headerSearchYn : Y/N (Y이면 검색 상단바 활성)
     headerDateYn   : Y/N (Y이면 달력 활성)
-    headerTitle    : hcName
 --%>
 <c:set var="headerMainYn" value="${empty headerMainYn ? 'Y' : headerMainYn}"/>
 <c:set var="headerSearchYn" value="${empty headerSearchYn ? 'N' : headerSearchYn}"/>
 <c:set var="headerDateYn" value="${empty headerDateYn ? 'N' : headerDateYn}"/>
-<c:set var="headerTitle" value="${empty headerTitle ? '' : headerTitle}"/>
 
 <header class="topbar"
         data-main-yn="<c:out value='${headerMainYn}'/>"
         data-search-yn="<c:out value='${headerSearchYn}'/>"
         data-date-yn="<c:out value='${headerDateYn}'/>"
-        data-title="<c:out value='${headerTitle}'/>">
+        data-title="<c:out value='${empty cmAuth ? "" : cmAuth.menuName}'/>">
 
     <div class="topbar-left">
         <button type="button" class="icon-button" id="btnMenuToggle" aria-label="메뉴">
             <i class="bi bi-list"></i>
         </button>
 
-        <p id="topbarTitle" class="topbar-title" hidden><c:out value="${headerTitle}"/></p>
+        <p id="topbarTitle" class="topbar-title" hidden><c:out value="${empty cmAuth ? '' : cmAuth.menuName}"/></p>
 
         <div id="topbarSearch" class="topbar-search" hidden>
             <form id="topbarSearchForm" autocomplete="off">
@@ -90,6 +88,8 @@
             <input type="hidden" id="loginFlag" value="<c:out value='${user.flag}'/>"/>
             <input type="hidden" id="loginIcCode" value="<c:out value='${user.icCode}'/>"/>
             <input type="hidden" id="loginBuser" value="<c:out value='${user.icBuser}'/>"/>
+            <input type="hidden" id="adminKey" value="<c:out value='${cmAuth.adminKey}'/>"/>
+            <input type="hidden" id="menuName" value="<c:out value='${cmAuth.menuName}'/>"/>
             <input type="hidden" id="appCtx" value="<c:out value='${pageContext.request.contextPath}'/>"/>
         </div>
 

@@ -243,7 +243,6 @@ button, .icon-button, .menu-depth1-btn, .menu-depth2-btn, .menu-depth2-link, .me
     color: var(--gray-6b7280);
 }
 
-.topbar-filter-btn { border: 1px solid transparent; border-radius: 10px; }
 .topbar-filter-btn.is-active i { color: var(--blue-007bff); }
 
 .topbar-close-btn i { font-size: 22px; }

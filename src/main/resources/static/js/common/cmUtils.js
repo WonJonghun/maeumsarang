@@ -38,16 +38,28 @@ $(document).on('click', '.alert-class', function () {
     alert('준비중입니다.');
 });
 
+// adminKey 마지막 2자리(6,7번째)가 Y 하나라도 있으면 Y 반환(=부서조건 없이 검색)
+function cmGetSearchBuserCd(adminKey) {
+    const k = $.trim(adminKey || '');
+    const ignore = (k.length >= 7 && (k.charAt(5) === 'Y' || k.charAt(6) === 'Y'));
+    return ignore ? 'Y' : $.trim($('#loginBuser').val() || '');
+}
+
 // 페이지 이동
-function cmMoveWindow(winName) {
-    if (!winName) {
-        if (typeof customAlert === 'function') customAlert('경고', '요청 파라미터가 없습니다.', 'WARN');
+function cmMoveWindow(winCode, winName) {
+    const code = $.trim(winCode || '');
+    const name = $.trim(winName || '');
+
+    if (!code || code === 'undefined' || code === 'null') {
+        if (typeof customAlert === 'function') customAlert('경고', '이동할 메뉴 코드가 없습니다.', 'WARN');
         return $.Deferred().reject('PARAM_MISSING').promise();
     }
-    return cmAjax('/window/window.do', 'POST', {winName: winName}, true).done(function (res) {
+
+    return cmAjax('/window/window.do', 'POST', { winCode: code, winName: name }, true).done(function (res) {
         let ok = false;
         let url = '';
         let msg = '';
+
         if (typeof res === 'string') {
             ok = true;
             url = res;
@@ -56,6 +68,7 @@ function cmMoveWindow(winName) {
             url = res.url || (typeof res.data === 'string' ? res.data : (res.data && (res.data.url || res.data.redirectUrl)));
             msg = res.message || res.msg || res.errorMessage || '';
         }
+
         if (ok) {
             if (url) location.href = url; else location.reload();
         } else {
@@ -65,8 +78,7 @@ function cmMoveWindow(winName) {
         let msg = '처리 중 오류 발생';
         try {
             if (xhr && xhr.responseJSON) msg = xhr.responseJSON.message || xhr.responseJSON.msg || xhr.responseJSON.detail || msg;
-        } catch (e) {
-        }
+        } catch (e) {}
         if (typeof customAlert === 'function') customAlert('경고', msg, 'WARN');
     });
 }

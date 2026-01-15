@@ -1,6 +1,18 @@
 $(function () {
     highlightTodaySchedule();
 
+    //전체보기
+    $(document).on('click', 'a.js-move-window', function (e) {
+        e.preventDefault();
+
+        const a = $(this);
+        const winCode = $.trim(a.data('win-code') || '');
+        const winName = $.trim(a.data('win-name') || '');
+
+        if (!winCode) return;
+        cmMoveWindow(winCode, winName);
+    });
+
     //달력 만들기
     let mainCalendar = createCalendar();
 

@@ -25,7 +25,7 @@ function loadRepairList() {
         searchFromDate: $('#searchFromDate').val(),
         searchToDate: $('#searchToDate').val(),
         searchKeyword: $('#searchKeyword').val(),
-        searchBuserCd: $('#loginBuser').val()
+        searchBuserCd: cmGetSearchBuserCd($('#adminKey').val())
     };
 
     cmAjax('/repair/list.do', 'GET', data, true).done(function (list) {

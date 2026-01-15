@@ -305,10 +305,12 @@ $(function () {
         resetSelection(panel, 0);
         a.addClass('is-active');
 
+        const winCode = $.trim(a.data('win-code') || '');
         const winName = $.trim(a.data('win-name') || '');
-        if (winName) {
+
+        if (winCode) {
             closeMenu();
-            cmMoveWindow(winName);
+            cmMoveWindow(winCode, winName);
             return;
         }
 
@@ -324,10 +326,12 @@ $(function () {
         resetSelection(panel, 0);
         a.addClass('is-active');
 
+        const winCode = $.trim(a.data('win-code') || '');
         const winName = $.trim(a.data('win-name') || '');
-        if (winName) {
+
+        if (winCode) {
             closeMenu();
-            cmMoveWindow(winName);
+            cmMoveWindow(winCode, winName);
             return;
         }
 
@@ -381,10 +385,12 @@ $(function () {
         toggle.attr('aria-expanded', 'true');
         depth4.stop(true, true).slideDown(0);
 
+        const winCode = $.trim(a.data('win-code') || '');
         const winName = $.trim(a.data('win-name') || '');
-        if (winName) {
+
+        if (winCode) {
             closeMenu();
-            cmMoveWindow(winName);
+            cmMoveWindow(winCode, winName);
             return;
         }
 

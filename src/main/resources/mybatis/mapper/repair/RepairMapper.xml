@@ -38,7 +38,9 @@
         WHERE
             rp_Date <![CDATA[>=]]> #{searchFromDate}
             AND rp_Date <![CDATA[<=]]> #{searchToDate}
-            AND rp_buser = #{searchBuserCd}
+            <if test='searchBuserCd != null and searchBuserCd != "" and searchBuserCd != "Y"'>
+                AND rp_buser = #{searchBuserCd}
+            </if>
             AND UPPER(Rp_OrRemark) LIKE '%' + UPPER(#{searchKeyword}) + '%'
         ORDER BY Rp_Date DESC
     </select>

@@ -43,32 +43,11 @@ public class NoticeController {
         return result;
     }
 
-    @GetMapping("/employee.do")
-    public String employee(@RequestParam(value = "baseKey", required = false) String baseKey,
-                           @RequestParam(value = "hcName", required = false) String hcName,
-                           Model model) {
-
-        model.addAttribute("baseKey", baseKey);
-        model.addAttribute("hcName", hcName);
-        return "jsp/notice/noticeList";
-    }
-
     @GetMapping("/board.do")
     public String board(@RequestParam(value = "baseKey", required = false) String baseKey,
-                        @RequestParam(value = "hcName", required = false) String hcName,
                         Model model) {
 
         model.addAttribute("baseKey", baseKey);
-        model.addAttribute("hcName", hcName);
-        return "jsp/notice/noticeList";
-    }
-
-    @GetMapping("/dataBoard.do")
-    public String dataBoard(@RequestParam(value = "hcName", required = false) String hcName,
-                            Model model) {
-
-        model.addAttribute("baseKey", "5");
-        model.addAttribute("hcName", hcName);
         return "jsp/notice/noticeList";
     }
 }

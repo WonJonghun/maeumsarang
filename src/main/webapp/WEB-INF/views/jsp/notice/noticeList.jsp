@@ -5,7 +5,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title><c:out value='${hcName}'/></title>
+    <title><c:out value='${cmAuth.menuName}'/></title>
     <%@ include file="../common/common-inc.jspf" %>
 
     <link rel="stylesheet" href="<c:url value='/css/page/main.css'/>">
@@ -17,7 +17,6 @@
     <c:set var="headerMainYn" value="N"/>
     <c:set var="headerSearchYn" value="Y"/>
     <c:set var="headerDateYn" value="Y"/>
-    <c:set var="headerTitle" value="${hcName}"/>
     <%@ include file="../common/header.jspf" %>
 
     <main class="notice-list-wrap">
@@ -26,7 +25,6 @@
 </div>
 
 <input type="hidden" id="noticeBaseKey" value="<c:out value='${baseKey}'/>"/>
-<input type="hidden" id="noticeHcName" value="<c:out value='${hcName}'/>"/>
 
 <%@ include file="../common/detailDrawer.jspf" %>
 <script src="<c:url value='/js/common/postDrawer.js'/>"></script>

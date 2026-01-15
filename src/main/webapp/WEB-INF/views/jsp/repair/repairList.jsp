@@ -5,7 +5,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title><c:out value='${hcName}'/></title>
+    <title><c:out value='${cmAuth.menuName}'/></title>
     <%@ include file="../common/common-inc.jspf" %>
 
     <link rel="stylesheet" href="<c:url value='/css/page/repairList.css'/>">
@@ -16,7 +16,6 @@
     <c:set var="headerMainYn" value="N"/>
     <c:set var="headerSearchYn" value="Y"/>
     <c:set var="headerDateYn" value="Y"/>
-    <c:set var="headerTitle" value="${hcName}"/>
     <%@ include file="../common/header.jspf" %>
 
     <main class="repair-list-wrap">
