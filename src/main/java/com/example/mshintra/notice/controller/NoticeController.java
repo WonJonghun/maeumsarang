@@ -64,9 +64,8 @@ public class NoticeController {
     }
 
     @GetMapping("/dataBoard.do")
-    public String dataBoard(@RequestParam(value = "baseKey", required = false) String baseKey,
-                        @RequestParam(value = "hcName", required = false) String hcName,
-                        Model model) {
+    public String dataBoard(@RequestParam(value = "hcName", required = false) String hcName,
+                            Model model) {
 
         model.addAttribute("baseKey", "5");
         model.addAttribute("hcName", hcName);

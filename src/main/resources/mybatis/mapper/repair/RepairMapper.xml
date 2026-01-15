@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.mshintra.repair.mapper.RepairMapper">
+
+    <select id="selectRepairList" resultType="com.example.mshintra.repair.dto.RepairDto">
+        SELECT
+            Rp_Date,
+            Rp_Number,
+            Rp_Flag,
+            Rp_SeFlag,
+            (SELECT Hc_Name FROM I_HelpCD WHERE Hc_Code = 'Int000095' AND Hc_Seq = Rp_SeFlag) AS seFlagNm,
+            Rp_Buser,
+            dbo.GetBuserNm(Rp_Buser) as buserNm,
+            Rp_OrRemark,
+            Rp_SaFlag,
+            Rp_UserID,
+            dbo.GetSaNm(Rp_UserID) AS userNm,
+            Rp_Sign1,
+            Rp_ReUserID,
+            dbo.GetSaNm(Rp_ReUserID) AS reUserNm,
+            Rp_ReDate,
+            Rp_JobUserID,
+            dbo.GetSaNm(Rp_JobUserID) AS jobUserNm,
+            Rp_ReRemark,
+            Rp_ReFlag = ISNULL(Rp_ReFlag, 1) ,
+            cc_ReFlag = CASE
+                WHEN ISNULL(Rp_ReFlag, 1) = 1 THEN 0
+                ELSE 1
+            END,
+            Rp_EXDate,
+            Rp_EXUserID,
+            Rp_Sign2,
+            Rp_RegDate,
+            Rp_ImgNum = ISNULL(Rp_ImgNum, '')
+        FROM
+            I_Repair
+        WHERE
+            rp_Date <![CDATA[>=]]> #{searchFromDate}
+            AND rp_Date <![CDATA[<=]]> #{searchToDate}
+            AND rp_buser = #{searchBuserCd}
+            AND UPPER(Rp_OrRemark) LIKE '%' + UPPER(#{searchKeyword}) + '%'
+        ORDER BY Rp_Date DESC
+    </select>
+
+</mapper>

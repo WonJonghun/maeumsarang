@@ -1,10 +1,17 @@
 //공용 상세 화면
 //<%@ include file="../common/detailDrawer.jspf" %> 를 jsp 추가하여 사용
-//스와이프 뒤로가기 등
+//모바일 앱 환경인척하기위한 화면임
+//스와이프 뒤로가기
+//미리보기, 첨부파일
+//사용법 1.그려줄html 2.페이지위에그려주기YN 3.이미지번호
+//detailDrawerShow(html, false);
+//detailDrawerShow(html, false, afNum);
 (function ($) {
     'use strict';
     let detailDrawerHistoryPushed = false;
     let detailDrawerClosingByPop = false;
+
+    let detailDrawerAttachAfNum = null;
 
     let swipe = {
         active: false,
@@ -31,6 +38,146 @@
     function ensureDetailDrawerDom() {
         return ($('#detailDrawer').length > 0 && $('#detailDrawerBackdrop').length > 0 && $('#detailDrawerBody').length > 0);
     }
+
+    function ensureDetailDrawerLayout() {
+        if (!ensureDetailDrawerDom()) return false;
+
+        if ($('#detailDrawerContent').length > 0 && $('#detailDrawerAttachRoot').length > 0) return true;
+
+        $('#detailDrawerBody')
+            .empty()
+            .append($('<div/>', {id: 'detailDrawerContent'}))
+            .append($('<div/>', {id: 'detailDrawerAttachRoot'}));
+
+        return true;
+    }
+
+    /* ================== 첨부파일(이미지 미리보기 포함) ↓================== */
+    function ensureAttachDom() {
+        if (!ensureDetailDrawerLayout()) return false;
+
+        if ($('#detailAttachArea').length > 0 && $('#detailAttachList').length > 0 && $('#detailImagePreview').length > 0) {
+            return true;
+        }
+
+        let attachRoot = $('#detailDrawerAttachRoot').empty();
+
+        $('<div/>', {id: 'detailImagePreview', class: 'detail-image-preview', style: 'display:none;'}).appendTo(attachRoot);
+
+        $('<div/>', {id: 'detailAttachArea', class: 'detail-attach-area', style: 'display:none;'}).append(
+            $('<div/>', {class: 'detail-attach-title'}).text('첨부파일'),
+            $('<ul/>', {id: 'detailAttachList', class: 'detail-attach-list'})
+        ).appendTo(attachRoot);
+
+        return true;
+    }
+
+    function clearAttachArea() {
+        detailDrawerAttachAfNum = null;
+        $('#detailAttachArea').hide();
+        $('#detailAttachList').empty();
+        $('#detailImagePreview').hide().empty();
+    }
+
+    window.detailDrawerClearAttach = function () {
+        clearAttachArea();
+    };
+
+    window.detailDrawerLoadAttach = function (afNum) {
+        if (!ensureAttachDom()) return;
+
+        if (!afNum) {
+            clearAttachArea();
+            return;
+        }
+
+        if (typeof cmAjax !== 'function') {
+            clearAttachArea();
+            return;
+        }
+
+        let reqAfNum = String(afNum);
+        detailDrawerAttachAfNum = reqAfNum;
+
+        $('#detailAttachArea').hide();
+        $('#detailAttachList').empty();
+        $('#detailImagePreview').hide().empty();
+
+        cmAjax('/attach/list.do', 'GET', {afNum: afNum}, false)
+            .done(function (list) {
+                if (String(detailDrawerAttachAfNum || '') !== reqAfNum) return;
+                if (window.detailDrawerIsOpen && !window.detailDrawerIsOpen()) return;
+
+                if (!list || list.length === 0) {
+                    clearAttachArea();
+                    return;
+                }
+
+                let attachList = $('#detailAttachList');
+                let imagePreview = $('#detailImagePreview');
+
+                attachList.empty();
+                imagePreview.hide().empty();
+
+                let hasImage = false;
+
+                for (let i = 0; i < list.length; i++) {
+                    let item = list[i];
+
+                    let fileName = (item.afFileName && item.afFileName.length > 0)
+                        ? item.afFileName
+                        : (item.afNum + '.' + ('0' + item.afSeq).slice(-2));
+
+                    let downUrl = '/attach/download.do?afNum=' + encodeURIComponent(item.afNum)
+                        + '&afSeq=' + encodeURIComponent(item.afSeq);
+
+                    $('<li/>', {class: 'detail-attach-item'})
+                        .append(
+                            $('<a/>', {
+                                class: 'detail-attach-link',
+                                href: downUrl,
+                                download: fileName
+                            }).text(fileName)
+                        )
+                        .append(
+                            $('<span/>', {class: 'detail-attach-size'}).text(cmFormatKb(item.afFileSize))
+                        )
+                        .appendTo(attachList);
+
+                    if (cmIsImageFileName(fileName)) {
+                        hasImage = true;
+
+                        let viewUrl = '/attach/view.do?afNum=' + encodeURIComponent(item.afNum)
+                            + '&afSeq=' + encodeURIComponent(item.afSeq);
+
+                        $('<div/>', {class: 'detail-image-item'})
+                            .append(
+                                $('<img/>', {
+                                    class: 'detail-image',
+                                    src: viewUrl,
+                                    alt: fileName,
+                                    loading: 'lazy'
+                                }).on('error', function () {
+                                    $(this).closest('.detail-image-item').hide();
+                                })
+                            )
+                            .appendTo(imagePreview);
+                    }
+                }
+
+                $('#detailAttachArea').show();
+                if (hasImage) imagePreview.show();
+            })
+            .fail(function () {
+                if (String(detailDrawerAttachAfNum || '') !== reqAfNum) return;
+                clearAttachArea();
+            });
+    };
+
+    window.detailDrawerShowWithAttach = function (html, useHistory, afNum) {
+        window.detailDrawerShow(html, useHistory, afNum);
+    };
+    /* ================== 첨부파일(이미지 미리보기 포함) ↑================== */
 
     function getPointFromNativeEvent(e) {
         if (e && e.touches && e.touches.length > 0) return {x: e.touches[0].clientX, y: e.touches[0].clientY};
@@ -222,21 +369,31 @@
         $('body').removeClass('drawer-open');
 
         if (clearBody !== false) $('#detailDrawerBody').empty();
+        clearAttachArea();
     }
 
     window.detailDrawerSetHtml = function (html) {
-        if (!ensureDetailDrawerDom()) return;
-        $('#detailDrawerBody').html(html || '');
+        if (!ensureDetailDrawerLayout()) return;
+        $('#detailDrawerContent').html(html || '');
     };
 
     window.detailDrawerSetElement = function (element) {
-        if (!ensureDetailDrawerDom()) return;
-        $('#detailDrawerBody').empty().append(element);
+        if (!ensureDetailDrawerLayout()) return;
+        $('#detailDrawerContent').empty().append(element);
     };
 
-    window.detailDrawerShow = function (html, useHistory) {
-        if (!ensureDetailDrawerDom()) return;
+    //호출부
+    window.detailDrawerShow = function (html, useHistory, afNum) {
+        if (!ensureDetailDrawerLayout()) return;
+
         window.detailDrawerSetHtml(html || '');
+
+        if (afNum) {
+            window.detailDrawerLoadAttach(afNum);
+        } else {
+            clearAttachArea();
+        }
+
         window.detailDrawerOpen(useHistory !== false);
     };
 

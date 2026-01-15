@@ -24,14 +24,16 @@ button, button * {
     --blue-2563eb: #2563eb; /* 어두운 텍스트 파랑 */
     --blue-003399: #003399; /* 타이틀 */
     --gray-f9fafb: #f9fafb; /* 배경회면 */
-    --gray-efefef: #eeeeee; /* 회색 배경화면 */
+    --gray-efefef: #efefef; /* 회색 배경화면 */
+    --gray-e3e3e3: #e3e3e3; /* 로우 보더 */
     --gray-cccccc: #cccccc; /* 인풋 테두리 */
     --gray-9b9b9b: #9b9b9b; /* 연회색 */
     --gray-6b7280: #6b7280; /* 텍스트 회색 */
     --gray-4b5563: #4b5563; /* 진한 텍스트 회색 */
     --red-e11d48: #e11d48; /* 텍스트 빨강 */
     --red-e85c7d: #e85c7d; /* 연빨강 */
-    --green-16a34a: #16a34a; /* 연빨강 */
+    --green-16a34a: #16a34a; /* 초록 */
+    --yellow-f59e0b: #f59e0b; /* 노랑 */
 }
 
 /* ================== 색상 ↑================== */
@@ -45,6 +47,8 @@ button, button * {
 .text-light-red {color: var(--red-e85c7d);}
 .text-gray {color: var(--gray-6b7280);}
 .text-light-gray {color: var(--gray-9b9b9b);}
+.text-green {color: var(--green-16a34a);}
+.text-yellow {color: var(--yellow-f59e0b);}
 /* ================== 텍스트 색상 공통 ↑================== */
 
 /* ================== 폰트사이즈 ↓================== */
@@ -59,7 +63,6 @@ button, button * {
 .fw900 {font-weight: 900;}
 /* ================== 폰트사이즈 ↑================== */
 
-/* ================== 클릭 하이라이트/포커스 테두리 제거 ↓================== */
 a, button {
     -webkit-tap-highlight-color: transparent;
 }
@@ -77,8 +80,6 @@ button, .icon-button, .menu-depth1-btn, .menu-depth2-btn, .menu-depth2-link, .me
     user-select: none;
 }
 
-/* ================== 클릭 하이라이트/포커스 테두리 제거 ↑================== */
-
 /* ================== 상단바 공통 ↓================== */
 .topbar {
     position: sticky;
@@ -91,13 +92,17 @@ button, .icon-button, .menu-depth1-btn, .menu-depth2-btn, .menu-depth2-link, .me
     justify-content: space-between;
     border-bottom: 1px solid transparent;
     transition: border-color 0.2s;
+    overflow-x: hidden;
 }
+
+.topbar.scrolled { border-bottom-color: var(--gray-cccccc); }
 
 .topbar-left {
     display: flex;
     align-items: center;
     gap: 6px;
     min-width: 0;
+    flex: 1;
 }
 
 .topbar-title {
@@ -112,9 +117,14 @@ button, .icon-button, .menu-depth1-btn, .menu-depth2-btn, .menu-depth2-link, .me
     text-overflow: ellipsis;
 }
 
-.topbar.scrolled {
-    border-bottom-color: var(--gray-cccccc);
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 0 0 auto;
 }
+
+.topbar.search-mode .topbar-right { display: none; }
 
 .icon-button {
     border: none;
@@ -122,7 +132,7 @@ button, .icon-button, .menu-depth1-btn, .menu-depth2-btn, .menu-depth2-link, .me
     padding: 8px;
     margin: 0;
     cursor: pointer;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
 }
@@ -140,21 +150,8 @@ button, .icon-button, .menu-depth1-btn, .menu-depth2-btn, .menu-depth2-link, .me
     display: block;
 }
 
-.icon-img {
-    width: 24px;
-    height: 24px;
-}
-
-.icon-img-small {
-    width: 20px;
-    height: 20px;
-}
-
-.topbar-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
+.icon-img { width: 24px; height: 24px; }
+.icon-img-small { width: 20px; height: 20px; }
 
 .topbar-user-text {
     display: flex;
@@ -162,11 +159,7 @@ button, .icon-button, .menu-depth1-btn, .menu-depth2-btn, .menu-depth2-link, .me
     text-align: right;
 }
 
-.user-name {
-    margin: 0;
-    font-weight: 700;
-    font-size: 16px;
-}
+.user-name { margin: 0; font-weight: 700; font-size: 16px; }
 
 .user-team {
     margin: 0;
@@ -187,36 +180,156 @@ button, .icon-button, .menu-depth1-btn, .menu-depth2-btn, .menu-depth2-link, .me
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
 }
 
-.profile-img {
-    width: 130%;
-    height: 130%;
-    object-fit: cover;
-    display: block;
-}
-
-.profile-icon {
-    font-size: 280%;
-    color: #4b5563;
-}
+.profile-img { width: 130%; height: 130%; object-fit: cover; display: block; }
+.profile-icon { font-size: 280%; color: #4b5563; }
 
 .topbar-search-btn { display: none; }
 
-.topbar-search { display: none; }
+.topbar-search { display: none; width: 100%; min-width: 0; }
 #topbarSearch[hidden] { display: none !important; }
 
 .topbar.search-mode #btnMenuToggle { display: none; }
 .topbar.search-mode #topbarTitle { display: none; }
 .topbar.search-mode #topbarSearch { display: flex; }
 
+.topbar-search {
+    flex: 1;
+    min-width: 0;
+    align-items: flex-start;
+}
+
+#topbarSearchForm { width: 100%; min-width: 0; }
+
+.topbar-search-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+}
+
+.topbar-search-field {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
 
 .topbar-search-input {
     width: 100%;
+    min-width: 0;
     padding: 10px 12px;
+    font: inherit;
     font-size: 14px;
+    line-height: 18px;
     border: 1px solid var(--gray-cccccc);
-    border-radius: 12px;
+    border-radius: 10px;
     background: var(--white);
     box-sizing: border-box;
+}
+
+.topbar-search-submit {
+    border: none;
+    background: transparent;
+    padding: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.topbar-search-submit i {
+    font-size: 20px;
+    color: var(--gray-6b7280);
+}
+
+.topbar-filter-btn { border: 1px solid transparent; border-radius: 10px; }
+.topbar-filter-btn.is-active i { color: var(--blue-007bff); }
+
+.topbar-close-btn i { font-size: 22px; }
+
+.topbar-filter-panel {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+    padding: 0 10px;
+    border-width: 0;
+    border-style: solid;
+    border-color: var(--gray-cccccc);
+    border-radius: 12px;
+    background: var(--white);
+    overflow: hidden;
+    pointer-events: none;
+    transition: max-height 200ms ease, opacity 200ms ease, padding 200ms ease, margin-top 200ms ease, border-width 200ms ease;
+}
+
+.topbar-filter-panel.is-open {
+    max-height: 220px;
+    opacity: 1;
+    margin-top: 8px;
+    padding: 10px;
+    border-width: 1px;
+    pointer-events: auto;
+}
+
+.topbar-filter-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+}
+
+.topbar-filter-date {
+    flex: 1;
+    min-width: 0;
+    height: 40px;
+    padding: 8px 10px;
+    font: inherit;
+    font-size: 14px;
+    line-height: 22px;
+    border: 1px solid var(--gray-cccccc);
+    border-radius: 10px;
+    background: var(--white);
+    box-sizing: border-box;
+}
+
+.topbar-filter-tilde {
+    flex: 0 0 auto;
+    color: var(--gray-6b7280);
+    font-weight: 700;
+}
+
+.topbar-filter-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+.topbar-filter-reset,
+.topbar-filter-search {
+    flex: 1;
+    height: 40px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 900;
+}
+
+.topbar-filter-reset {
+    border: 1px solid var(--gray-cccccc);
+    background: var(--white);
+    color: var(--gray-4b5563);
+}
+
+.topbar-filter-search {
+    border: none;
+    background: var(--blue-007bff);
+    color: var(--white);
 }
 /* ================== 상단바 공통 ↑================== */
 
@@ -740,7 +853,6 @@ select:focus {
     color: var(--blue-389CFD) !important;
     background: transparent !important;
 }
-
 /* ================== MENU 영역 ↑================== */
 
 /* ================== 로딩 레이어 공통 ↓================== */
@@ -865,7 +977,7 @@ body.drawer-open {
     display: flex;
     flex-wrap: wrap;
     gap: 8px 12px;
-    font-size: 15px;
+    font-size: 14px;
     color: #666;
 }
 
@@ -884,7 +996,7 @@ body.drawer-open {
     font-size: 14px;
     line-height: 1.6;
     word-break: break-word;
-    padding: 0 16px;
+    padding: 0 8px;
 }
 
 .js-post-row {
@@ -893,7 +1005,7 @@ body.drawer-open {
 /* ================== 게시글 상세 드로어 영역 ↑================== */
 
 /* ================== 이미지 미리보기 영역 ↓================== */
-.post-image-preview {
+.detail-image-preview {
     margin-top: 12px;
     display: flex;
     flex-direction: column;
@@ -902,12 +1014,12 @@ body.drawer-open {
     padding: 16px;
 }
 
-.post-image-item {
+.detail-image-item {
     width: auto;
     max-width: 100%;
 }
 
-.post-image {
+.detail-image {
     display: block;
     max-width: 100%;
     width: auto;
@@ -921,7 +1033,7 @@ body.drawer-open {
 /* ================== 이미지 미리보기 영역 ↑================== */
 
 /* ================== 첨부파일 영역 ↓================== */
-.post-attach-area {
+.detail-attach-area {
     margin: 14px 16px 30px 16px;
     padding: 12px;
     border: 1px solid rgba(0, 0, 0, .06);
@@ -929,7 +1041,7 @@ body.drawer-open {
     background: var(--white);
 }
 
-.post-attach-title {
+.detail-attach-title {
     margin: 0 0 10px 0;
     font-weight: 500;
     font-size: 14px;
@@ -937,7 +1049,7 @@ body.drawer-open {
     letter-spacing: -.1px;
 }
 
-.post-attach-list {
+.detail-attach-list {
     list-style: none;
     padding: 0;
     margin: 0;
@@ -946,7 +1058,7 @@ body.drawer-open {
     gap: 8px;
 }
 
-.post-attach-item {
+.detail-attach-item {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -957,12 +1069,12 @@ body.drawer-open {
     transition: background .12s ease, border-color .12s ease;
 }
 
-.post-attach-item:hover {
+.detail-attach-item:hover {
     background: rgba(0, 0, 0, .03);
     border-color: rgba(0, 0, 0, .10);
 }
 
-.post-attach-link {
+.detail-attach-link {
     flex: 1;
     min-width: 0;
     display: block;
@@ -976,7 +1088,7 @@ body.drawer-open {
     background: transparent;
 }
 
-.post-attach-size {
+.detail-attach-size {
     white-space: nowrap;
     font-size: 11px;
     font-weight: 400;
@@ -986,18 +1098,18 @@ body.drawer-open {
     background: var(--gray-efefef);
 }
 
-.post-attach-item:hover .post-attach-link {
+.detail-attach-item:hover .detail-attach-link {
     text-decoration: underline;
 }
 
-.post-attach-link:hover, .post-attach-link:active, .post-attach-link:visited {
+.detail-attach-link:hover, .detail-attach-link:active, .detail-attach-link:visited {
     color: var(--blue-2563eb);
     background: transparent;
     text-decoration: none;
 }
 
 @media (max-width: 520px) {
-    .post-attach-link {
+    .detail-attach-link {
         white-space: normal;
         display: -webkit-box;
         -webkit-line-clamp: 2;

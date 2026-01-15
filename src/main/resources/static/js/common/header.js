@@ -2,10 +2,13 @@
 
     const storageKeys = {
         searchOpen: 'SearchOpen',
-        searchKeyword: 'SearchKeyword'
+        searchKeyword: 'SearchKeyword',
+        searchFromDate: 'SearchFromDate',
+        searchToDate: 'SearchToDate'
     };
 
     let searchEnabled = false;
+    let dateEnabled = false;
     let searchOpen = false;
 
     function ssGet(key) {
@@ -18,27 +21,46 @@
         catch (e) { /* ignore */ }
     }
 
-    function setSearchBtnState(searchIcon, searchBtn, open) {
-        if (open) {
-            searchIcon.removeClass('bi-search').addClass('bi-x-lg');
-            searchBtn.attr('aria-label', '검색 취소');
-            return;
-        }
-        searchIcon.removeClass('bi-x-lg').addClass('bi-search');
-        searchBtn.attr('aria-label', '검색');
+    function getDefaultDates() {
+        const today = new Date();
+        const start = new Date(today);
+        start.setFullYear(start.getFullYear() - 1);
+
+        return {
+            from: cmFormatYmd(start),
+            to: cmFormatYmd(today)
+        };
     }
 
-    function openSearch(topbar, searchWrap, searchInput, searchBtn, searchIcon, pushHistory) {
-        if (!searchEnabled) return;
-        if (searchOpen) return;
+    function applyDefaultDates(fromEl, toEl) {
+        const d = getDefaultDates();
+        fromEl.val(d.from);
+        toEl.val(d.to);
+        ssSet(storageKeys.searchFromDate, d.from);
+        ssSet(storageKeys.searchToDate, d.to);
+    }
+
+    function fireSearch(searchInput, fromEl, toEl, source) {
+        $(document).trigger('topbar:search', [{
+            searchKeyword: $.trim(searchInput.val() || ''),
+            searchFromDate: (dateEnabled && fromEl && fromEl.length) ? $.trim(fromEl.val() || '') : '',
+            searchToDate: (dateEnabled && toEl && toEl.length) ? $.trim(toEl.val() || '') : '',
+            source: source || 'submit'
+        }]);
+    }
+
+    function openSearch(topbar, searchWrap, searchInput, filterPanel, filterBtn, pushHistory) {
+        if (!searchEnabled || searchOpen) return;
 
         searchOpen = true;
         topbar.addClass('search-mode');
         searchWrap.prop('hidden', false);
-        setSearchBtnState(searchIcon, searchBtn, true);
+
+        if (filterPanel && filterPanel.length) filterPanel.removeClass('is-open');
+        if (filterBtn && filterBtn.length) filterBtn.removeClass('is-active');
 
         if (pushHistory === true && location.hash !== '#search') {
-            history.pushState({topbarSearch: true}, document.title, location.pathname + location.search + '#search');
+            history.pushState({ topbarSearch: true }, document.title, location.pathname + location.search + '#search');
         }
 
         ssSet(storageKeys.searchOpen, 'Y');
@@ -47,24 +69,40 @@
         searchInput.focus();
     }
 
-    function closeSearch(topbar, searchWrap, searchInput, searchBtn, searchIcon, resetKeyword, triggerSearch) {
+    function closeSearch(topbar, searchWrap, filterPanel, filterBtn) {
         if (!searchEnabled) return;
 
         searchOpen = false;
         topbar.removeClass('search-mode');
         searchWrap.prop('hidden', true);
-        setSearchBtnState(searchIcon, searchBtn, false);
 
-        if (resetKeyword === true) {
-            searchInput.val('');
-            ssSet(storageKeys.searchKeyword, '');
-        }
+        if (filterPanel && filterPanel.length) filterPanel.removeClass('is-open');
+        if (filterBtn && filterBtn.length) filterBtn.removeClass('is-active');
 
         ssSet(storageKeys.searchOpen, 'N');
+    }
 
-        if (triggerSearch === true) {
-            $(document).trigger('topbar:search', [{keyword: '', source: 'reset'}]);
+    // 상세조건 history
+    function openFilter(filterPanel, filterBtn) {
+        if (!dateEnabled || !filterPanel || !filterPanel.length) return;
+
+        if (!filterPanel.hasClass('is-open')) {
+            filterPanel.addClass('is-open');
+            if (filterBtn && filterBtn.length) filterBtn.addClass('is-active');
         }
+
+        const state = history.state || {};
+        if (state.topbarFilter === true) return;
+
+        const baseUrl = location.pathname + location.search + (location.hash || '');
+        history.pushState({ topbarSearch: true, topbarFilter: true }, document.title, baseUrl);
+    }
+
+    function closeFilter(filterPanel, filterBtn) {
+        if (!dateEnabled || !filterPanel || !filterPanel.length) return;
+
+        filterPanel.removeClass('is-open');
+        if (filterBtn && filterBtn.length) filterBtn.removeClass('is-active');
     }
 
     function init() {
@@ -74,99 +112,207 @@
         const titleEl = $('#topbarTitle');
         const searchWrap = $('#topbarSearch');
         const searchForm = $('#topbarSearchForm');
-        const searchInput = $('#topbarSearchInput');
-        const searchBtn = $('#btnTopbarSearch');
-        const searchIcon = $('#topbarSearchIcon');
+        const searchInput = $('#searchKeyword');
 
-        //스크롤시 아래 보더에 선나오게
+        const filterBtn = $('#topbarFilterBtn');
+        const filterPanel = $('#topbarFilterPanel');
+        const dateFrom = $('#searchFromDate');
+        const dateTo = $('#searchToDate');
+
+        const openBtn = $('#btnTopbarSearch');
+        const closeBtn = $('#topbarSearchClose');
+        const resetBtn = $('#topbarFilterReset');
+
+        const mainYn = $.trim(topbar.attr('data-main-yn') || '').toUpperCase();
+        const isMain = (mainYn === 'Y');
+
         $(window).off('scroll.topbar').on('scroll.topbar', function () {
-            if ($(window).scrollTop() > 0) $('.topbar').addClass('scrolled');
-            else $('.topbar').removeClass('scrolled');
+            if (!isMain) {
+                topbar.addClass('scrolled');
+                return;
+            }
+            topbar.toggleClass('scrolled', $(window).scrollTop() > 0);
         });
         $(window).trigger('scroll.topbar');
 
-        const mainYn = $.trim(topbar.attr('data-main-yn') || '').toUpperCase();
         const searchYn = $.trim(topbar.attr('data-search-yn') || '').toUpperCase();
+        const dateYn = $.trim(topbar.attr('data-date-yn') || '').toUpperCase();
         const title = $.trim(topbar.attr('data-title') || '');
 
-        if (mainYn === 'N') {
-            if (title) titleEl.text(title).prop('hidden', false);
-            else titleEl.text('').prop('hidden', true);
-        } else {
-            if (title) titleEl.text(title).prop('hidden', false);
-            else titleEl.text('').prop('hidden', true);
-        }
+        if (title) titleEl.text(title).prop('hidden', false);
+        else titleEl.text('').prop('hidden', true);
 
         searchEnabled = (searchYn === 'Y');
+        dateEnabled = (dateYn === 'Y');
+
         if (!searchEnabled) {
-            searchBtn.prop('hidden', true);
+            openBtn.prop('hidden', true);
             topbar.removeClass('search-mode');
             searchWrap.prop('hidden', true);
-            setSearchBtnState(searchIcon, searchBtn, false);
             return;
         }
 
-        searchBtn.prop('hidden', false);
+        openBtn.prop('hidden', false);
 
         const savedOpen = ssGet(storageKeys.searchOpen);
         const savedKeyword = ssGet(storageKeys.searchKeyword);
+        const savedFrom = ssGet(storageKeys.searchFromDate);
+        const savedTo = ssGet(storageKeys.searchToDate);
 
         if (savedKeyword !== null) searchInput.val(savedKeyword);
 
-        if (location.hash === '#search' || savedOpen === 'Y') {
-            openSearch(topbar, searchWrap, searchInput, searchBtn, searchIcon, false);
-        } else {
-            closeSearch(topbar, searchWrap, searchInput, searchBtn, searchIcon, false, false);
+        if (dateEnabled && dateFrom.length && dateTo.length) {
+            if (savedFrom) dateFrom.val(savedFrom);
+            if (savedTo) dateTo.val(savedTo);
+
+            if (!$.trim(dateFrom.val() || '') || !$.trim(dateTo.val() || '')) {
+                applyDefaultDates(dateFrom, dateTo);
+            }
+
+            if (filterPanel.length) filterPanel.removeClass('is-open');
+            if (filterBtn.length) filterBtn.removeClass('is-active');
         }
 
-        searchBtn.off('click.topbarSearch').on('click.topbarSearch', function () {
-            if (!searchEnabled) return;
+        if (location.hash === '#search' || savedOpen === 'Y') {
+            openSearch(topbar, searchWrap, searchInput, filterPanel, filterBtn, false);
+        } else {
+            closeSearch(topbar, searchWrap, filterPanel, filterBtn);
+        }
 
-            if (!searchOpen) {
-                openSearch(topbar, searchWrap, searchInput, searchBtn, searchIcon, true);
-                return;
+        // 검색 열기
+        openBtn.off('click.topbarOpen').on('click.topbarOpen', function (e) {
+            e.preventDefault();
+            openSearch(topbar, searchWrap, searchInput, filterPanel, filterBtn, true);
+            return false;
+        });
+
+        // 검색 닫기
+        closeBtn.off('click.topbarClose').on('click.topbarClose', function (e) {
+            e.preventDefault();
+            searchInput.val('');
+            ssSet(storageKeys.searchKeyword, '');
+
+            if (dateEnabled && dateFrom.length && dateTo.length) {
+                applyDefaultDates(dateFrom, dateTo);
             }
+
+            fireSearch(searchInput, dateFrom, dateTo, 'close');
 
             if (location.hash === '#search') {
-                history.back();
-                return;
+                const state = history.state || {};
+                if (state.topbarFilter === true) history.go(-2);
+                else history.back();
+            } else {
+                closeSearch(topbar, searchWrap, filterPanel, filterBtn);
             }
 
-            closeSearch(topbar, searchWrap, searchInput, searchBtn, searchIcon, true, true);
+            return false;
         });
 
-        searchForm.off('submit.topbarSearch').on('submit.topbarSearch', function (e) {
+
+        // 상세조건(톱니)
+        if (dateEnabled && filterBtn.length && filterPanel.length) {
+            filterBtn.off('click.topbarFilter').on('click.topbarFilter', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const willOpen = !filterPanel.hasClass('is-open');
+                if (willOpen) {
+                    openFilter(filterPanel, filterBtn);
+                } else {
+                    const state = history.state || {};
+                    if (state.topbarFilter === true) history.back();
+                    else closeFilter(filterPanel, filterBtn);
+                }
+
+                return false;
+            });
+        }
+
+        if (dateEnabled && dateFrom.length) {
+            dateFrom.off('change.topbarDate').on('change.topbarDate', function () {
+                ssSet(storageKeys.searchFromDate, $.trim(dateFrom.val() || ''));
+            });
+        }
+        if (dateEnabled && dateTo.length) {
+            dateTo.off('change.topbarDate').on('change.topbarDate', function () {
+                ssSet(storageKeys.searchToDate, $.trim(dateTo.val() || ''));
+            });
+        }
+
+        // 초기화
+        if (resetBtn.length) {
+            resetBtn.off('click.topbarReset').on('click.topbarReset', function (e) {
+                e.preventDefault();
+
+                searchInput.val('');
+                ssSet(storageKeys.searchKeyword, '');
+
+                if (dateEnabled && dateFrom.length && dateTo.length) {
+                    applyDefaultDates(dateFrom, dateTo);
+                }
+
+                return false;
+            });
+        }
+
+        // 검색 실행
+        searchForm.off('submit.topbarSubmit').on('submit.topbarSubmit', function (e) {
             e.preventDefault();
 
-            const keyword = $.trim(searchInput.val() || '');
-            ssSet(storageKeys.searchKeyword, keyword);
+            if (dateEnabled && dateFrom.length && dateTo.length) {
+                const vFrom = $.trim(dateFrom.val() || '');
+                const vTo = $.trim(dateTo.val() || '');
+
+                if ((vFrom && !vTo) || (!vFrom && vTo)) {
+                    const focusEl = vFrom ? dateTo : dateFrom;
+
+                    if (typeof global.customAlert === 'function') {
+                        customAlert('알림', '기간설정을 완료해 주세요.', 'WARN').then(function () {
+                            focusEl.focus();
+                        });
+                    } else {
+                        alert('기간설정을 완료해 주세요.');
+                        focusEl.focus();
+                    }
+                    return false;
+                }
+            }
+
+            ssSet(storageKeys.searchKeyword, $.trim(searchInput.val() || ''));
             ssSet(storageKeys.searchOpen, 'Y');
 
-            $(document).trigger('topbar:search', [{keyword: keyword, source: 'submit'}]);
+            if (dateEnabled && dateFrom.length && dateTo.length) {
+                ssSet(storageKeys.searchFromDate, $.trim(dateFrom.val() || ''));
+                ssSet(storageKeys.searchToDate, $.trim(dateTo.val() || ''));
+            }
+
+            fireSearch(searchInput, dateFrom, dateTo, 'submit');
+            return false;
         });
 
-        searchInput.off('search.topbarSearch').on('search.topbarSearch', function () {
-            const keyword = $.trim(searchInput.val() || '');
-            ssSet(storageKeys.searchKeyword, keyword);
-            ssSet(storageKeys.searchOpen, 'Y');
-
-            $(document).trigger('topbar:search', [{keyword: keyword, source: 'search'}]);
-        });
-
-        searchInput.off('input.topbarSearch').on('input.topbarSearch', function () {
+        searchInput.off('input.topbarInput').on('input.topbarInput', function () {
             ssSet(storageKeys.searchKeyword, $.trim(searchInput.val() || ''));
         });
 
-        $(window).off('popstate.topbarSearch').on('popstate.topbarSearch', function () {
+        // 뒤로가기
+        $(window).off('popstate.topbarPop').on('popstate.topbarPop', function () {
             if (!searchEnabled) return;
 
+            if (dateEnabled && filterPanel && filterPanel.length && filterPanel.hasClass('is-open')) {
+                const state = history.state || {};
+                if (state.topbarFilter !== true) {
+                    closeFilter(filterPanel, filterBtn);
+                }
+            }
+
             if (location.hash === '#search') {
-                if (!searchOpen) openSearch(topbar, searchWrap, searchInput, searchBtn, searchIcon, false);
+                if (!searchOpen) openSearch(topbar, searchWrap, searchInput, filterPanel, filterBtn, false);
                 return;
             }
 
             if (searchOpen) {
-                closeSearch(topbar, searchWrap, searchInput, searchBtn, searchIcon, true, true);
+                closeSearch(topbar, searchWrap, filterPanel, filterBtn);
             }
         });
 
@@ -174,6 +320,10 @@
             saveSearchState: function () {
                 ssSet(storageKeys.searchOpen, searchOpen ? 'Y' : 'N');
                 ssSet(storageKeys.searchKeyword, $.trim(searchInput.val() || ''));
+                if (dateEnabled && dateFrom.length && dateTo.length) {
+                    ssSet(storageKeys.searchFromDate, $.trim(dateFrom.val() || ''));
+                    ssSet(storageKeys.searchToDate, $.trim(dateTo.val() || ''));
+                }
             }
         };
     }

@@ -8,7 +8,7 @@
     <title><c:out value='${hcName}'/></title>
     <%@ include file="../common/common-inc.jspf" %>
 
-    <link rel="stylesheet" href="<c:url value='/css/page/propList.css'/>">
+    <link rel="stylesheet" href="<c:url value='/css/page/repairList.css'/>">
 </head>
 
 <body class="notice-page">
@@ -19,12 +19,12 @@
     <c:set var="headerTitle" value="${hcName}"/>
     <%@ include file="../common/header.jspf" %>
 
-    <main class="prop-list-wrap">
-        <div id="propList"></div>
+    <main class="repair-list-wrap">
+        <div id="repairList"></div>
     </main>
 </div>
 
 <%@ include file="../common/detailDrawer.jspf" %>
-<script src="<c:url value='/js/imprvprop/propList.js'/>"></script>
+<script src="<c:url value='/js/repair/repairList.js'/>"></script>
 </body>
 </html>

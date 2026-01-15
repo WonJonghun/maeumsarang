@@ -22,6 +22,7 @@
 <script src="<c:url value='/js/common/sw-register.js'/>"></script>
 <script src="<c:url value='/js/common/cmUtils.js'/>"></script>
 <script src="<c:url value='/js/common/cmAjax.js'/>"></script>
+<script src="<c:url value='/js/common/detailDrawer.js'/>"></script>
 <script src="<c:url value='/js/common/customAlert.js'/>"></script>
 
 <div id="cmLoadingLayer" class="cm-loading-layer">

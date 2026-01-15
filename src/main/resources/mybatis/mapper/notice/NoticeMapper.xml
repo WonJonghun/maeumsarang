@@ -68,6 +68,15 @@
                 AND UPPER(note.Tn_Title) LIKE '%' + UPPER(#{searchKeyword}) + '%'
             </if>
             AND note.Tn_DelFlag NOT IN (0)
+            <choose>
+                <when test="searchFromDate != null and searchFromDate != '' and searchToDate != null and searchToDate != ''">
+                    AND note.Tn_Date BETWEEN #{searchFromDate} AND #{searchToDate}
+                </when>
+                <otherwise>
+                    AND note.Tn_Date <![CDATA[>=]]> DATEADD(YEAR, -1, CONVERT(date, GETDATE()))
+                    AND note.Tn_Date <![CDATA[<]]>  DATEADD(DAY, 1, CONVERT(date, GETDATE()))
+                </otherwise>
+            </choose>
         </where>
         ORDER BY note.Tn_Date desc
         OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY

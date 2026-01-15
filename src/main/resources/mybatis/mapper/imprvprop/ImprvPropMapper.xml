@@ -34,11 +34,7 @@
             <if test="searchKeyword != null and searchKeyword != ''">
                 AND UPPER(Pl_Title) LIKE '%' + UPPER(#{searchKeyword}) + '%'
             </if>
-
-            <if test="searchKeyword == null or searchKeyword == ''">
-                AND Pl_Date <![CDATA[>=]]> CONVERT(date, #{searchFromDate})
-                AND Pl_Date <![CDATA[<]]>  DATEADD(DAY, 1, CONVERT(date, #{searchToDate}))
-            </if>
+            AND CONVERT(date, Pl_Date) BETWEEN CONVERT(date, #{searchFromDate}) AND CONVERT(date, #{searchToDate})
         </where>
         ORDER BY Pl_Date DESC
         <if test="offset != null and limit != null">

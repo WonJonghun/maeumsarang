@@ -5,7 +5,14 @@
         <button type="button" class="detail-drawer-close" aria-label="닫기">&times;</button>
     </div>
 
-    <div id="detailDrawerBody" class="detail-drawer-body"></div>
-</aside>
+    <div id="detailDrawerBody" class="detail-drawer-body">
+        <div id="detailDrawerContent"></div>
 
-<script src="<c:url value='/js/common/detailDrawer.js'/>"></script>
+        <div id="detailImagePreview" class="detail-image-preview" style="display:none;"></div>
+
+        <div id="detailAttachArea" class="detail-attach-area" style="display:none;">
+            <div class="detail-attach-title">첨부파일</div>
+            <ul id="detailAttachList" class="detail-attach-list"></ul>
+        </div>
+    </div>
+</aside>

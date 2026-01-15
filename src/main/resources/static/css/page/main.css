@@ -662,3 +662,16 @@
 }
 /* ================== 당직/외래진료 영역 ↑================== */
 
+.dashboard-card .dashboard-block + .dashboard-block {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: none;
+    background-image: repeating-linear-gradient(to right, var(--gray-cccccc) 0 4px, transparent 4px 8px);
+    background-repeat: no-repeat;
+    background-size: 100% 1px;
+    background-position: 0 0;
+}
+
+.dashboard-card .card-header {
+    margin-bottom: 12px;
+}

@@ -66,7 +66,7 @@ $(function () {
         }
 
         // 게시글 상세 조회
-        if (window.postDetail) window.postDetail(this, true);
+        window.postDetail(this, true);
     });
 
     // 환자현황 툴팁(이벤트는 위임이라 1회 바인딩이면 끝)

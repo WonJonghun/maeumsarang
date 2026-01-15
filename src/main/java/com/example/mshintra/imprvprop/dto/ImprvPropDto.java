@@ -19,7 +19,7 @@ public class ImprvPropDto extends SearchDto {
     private String plGub;
     private String plBuser;
     private String plSilbuser;
-    private String plPartflag;
+    private String plPartflag;  //1제안 2개선
     private String plBflag;
     private String plRegDate;
     private String plUserId;

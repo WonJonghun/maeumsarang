@@ -11,13 +11,13 @@ $(function () {
     tnFlag = parseInt($.trim($('#noticeBaseKey').val() || '1'), 10);
     if (isNaN(tnFlag) || tnFlag <= 0) tnFlag = 1;
 
-    loadList(true, $.trim($('#topbarSearchInput').val() || ''));
+    loadList(true);
 
     function buildRow(item) {
-        let ccView = item.ccView || '';
-        let isNew = (ccView === 'N');
+        const ccView = item.ccView || '';
+        const isNew = (ccView === 'N');
 
-        let row = $('<div/>', {class: 'notice-row', role: 'button', tabindex: 0})
+        const row = $('<div/>', { class: 'notice-row', role: 'button', tabindex: 0 })
             .data('tn-title', item.tnTitle || '')
             .data('tn-date-str', item.tnDateStr || '')
             .data('tn-uk', item.tnUk || '')
@@ -27,10 +27,10 @@ $(function () {
             .data('tn-img-num', item.tnImgNum || '')
             .data('cc-view', ccView);
 
-        let dot = $('<div/>', {class: (isNew ? 'dot-blue' : 'dot-gray')});
+        const dot = $('<div/>', { class: (isNew ? 'dot-blue' : 'dot-gray') });
 
-        let text = $('<div/>', {class: 'notice-text'});
-        text.append($('<p/>', {class: 'notice-title' + (isNew ? ' text-deep-blue' : ''), text: item.tnTitle || ''}));
+        const text = $('<div/>', { class: 'notice-text' });
+        text.append($('<p/>', { class: 'notice-title' + (isNew ? ' text-deep-blue' : ''), text: item.tnTitle || '' }));
         text.append($('<p/>', {
             class: 'notice-date',
             text: (item.tnDateStr || '') + ' · ' + (item.tnUk || '') + ' · 조회 ' + (item.viewCount || '0')
@@ -41,16 +41,16 @@ $(function () {
     }
 
     function renderEmptyIfNeeded() {
-        let list = $('#noticeList');
+        const list = $('#noticeList');
         if (list.find('.notice-row').length > 0) return;
         list.html('<div class="notice-empty">게시글이 없습니다.</div>');
     }
 
-    function loadList(reset, keyword) {
+    function loadList(reset) {
         if (loading) return;
         if (!hasMore && !reset) return;
 
-        let loginIcCode = $.trim($('#loginIcCode').val() || '');
+        const loginIcCode = $.trim($('#loginIcCode').val() || '');
         if (!loginIcCode) return;
 
         loading = true;
@@ -67,7 +67,9 @@ $(function () {
             offset: offset,
             limit: limit,
             searchId: loginIcCode,
-            searchKeyword: $.trim(keyword || '')
+            searchFromDate: $('#searchFromDate').val(),
+            searchToDate: $('#searchToDate').val(),
+            searchKeyword: $('#searchKeyword').val()
         }, false).done(function (list) {
 
             if (!list || list.length === 0) {
@@ -88,8 +90,8 @@ $(function () {
         });
     }
 
-    $(document).on('topbar:search', function (e, payload) {
-        loadList(true, (payload && payload.keyword) ? payload.keyword : '');
+    $(document).on('topbar:search', function () {
+        loadList(true);
     });
 
     $(document).on('click', '#noticeList .notice-row', function (e) {
@@ -100,20 +102,19 @@ $(function () {
             window.cmHeader.saveSearchState();
         }
 
-        let selRow = $(this);
-        let tvUk = selRow.data('tv-uk');
-        let saCd = $.trim($('#loginIcCode').val() || '');
+        const selRow = $(this);
+        const tvUk = selRow.data('tv-uk');
+        const saCd = $.trim($('#loginIcCode').val() || '');
 
         if (tvUk && saCd && selRow.data('viewSent') !== true) {
             selRow.data('viewSent', true);
             selRow.find('.dot-blue').removeClass('dot-blue').addClass('dot-gray');
             selRow.find('.notice-title').removeClass('text-deep-blue');
 
-            cmAjax('/notice/totalNoteView.do', 'POST', {tvUk: tvUk, saCd: saCd}, false);
+            cmAjax('/notice/totalNoteView.do', 'POST', { tvUk: tvUk, saCd: saCd }, false);
         }
 
-        // 게시글 상세 조회
-        if (window.postDetail) window.postDetail(this, true);
+        window.postDetail(this, true);
     });
 
 });

@@ -1,0 +1,249 @@
+/* ================== 개선제안 목록 영역 ↓================== */
+.repair-list-wrap {
+    padding: 0 16px 24px;
+}
+
+.repair-row {
+    display: flex;
+    gap: 12px;
+    padding: 6px 0 6px 0;
+    border-bottom: 1px solid var(--gray-e3e3e3);
+    cursor: pointer;
+}
+
+.repair-row-last {
+    border-bottom: none;
+}
+
+.repair-text {
+    flex: 1;
+    width: 90%;
+    min-width: 0;
+    padding: 0 10px 0 10px;
+}
+
+.repair-title {
+    margin: 0 25px 4px 0;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+}
+
+.repair-sub-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.repair-sub-title {
+    margin: 0;
+    color: var(--gray-6b7280);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.repair-sub-left {
+    min-width: 0;
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.repair-status {
+    flex: 0 0 auto;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+
+.repair-empty {
+    padding: 16px 4px;
+    text-align: center;
+    color: var(--gray-6b7280);
+    font-weight: 600;
+}
+
+.repair-row.is-urgent {
+    background: rgba(225, 29, 72, 0.08);
+    color: var(--red-e11d48);
+}
+
+.repair-row.is-urgent:hover {
+    background: rgba(225, 29, 72, 0.12);
+}
+
+.rd-radio-red { accent-color: var(--red-e11d48); }
+/* ================== 개선제안 목록 영역 ↑================== */
+
+/* ================== 수리신청 상세 영역 ↓================== */
+.repair-detail-wrap {
+    padding: 16px;
+}
+
+.rd-head {
+    padding: 16px 16px 0 16px;
+}
+
+.rd-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--black);
+}
+
+.rd-sub-line {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.rd-sub-left {
+    min-width: 0;
+    font-size: 15px;
+    color: var(--gray-6b7280);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rd-status-chip {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+    border: 1px solid var(--gray-cccccc);
+    background: var(--gray-f9fafb);
+}
+
+.rd-status-chip.text-yellow {
+    background: rgba(245, 158, 11, 0.10);
+    border-color: rgba(245, 158, 11, 0.25);
+}
+
+.rd-status-chip.text-green {
+    background: rgba(22, 163, 74, 0.10);
+    border-color: rgba(22, 163, 74, 0.25);
+}
+
+.rd-status-chip.text-red {
+    background: rgba(225, 29, 72, 0.10);
+    border-color: rgba(225, 29, 72, 0.25);
+}
+
+.rd-grid {
+    display: grid;
+    grid-template-columns: 60px minmax(0, 1fr) 60px minmax(0, 1fr);
+    gap: 8px 10px;
+    align-items: center;
+}
+
+.rd-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gray-4b5563);
+    white-space: nowrap;
+}
+
+.rd-field {
+    background: #dfeee0;
+    border: 1px solid var(--gray-cccccc);
+    border-radius: 4px;
+    min-height: 26px;
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    color: var(--black);
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rd-divider {
+    margin: 12px 0;
+    border-top: 1px dashed var(--gray-cccccc);
+}
+
+.rd-span-3 {
+    grid-column: 2 / 5;
+}
+
+.rd-radio-3col {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px 12px;
+    align-items: center;
+    pointer-events: none;
+}
+
+.rd-radio-3col input[type="radio"] {
+    margin: 0;
+    accent-color: var(--blue-007bff);
+}
+
+.rd-radio-3col label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--black);
+    user-select: none;
+    white-space: nowrap;
+}
+
+.rd-radio-1line {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-wrap: nowrap;
+    pointer-events: none;
+}
+
+.rd-radio-1line input[type="radio"] {
+    margin: 0;
+    accent-color: var(--blue-007bff);
+}
+
+.rd-radio-1line label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--black);
+    user-select: none;
+    white-space: nowrap;
+}
+
+.rd-text-label {
+    grid-column: 1 / 2;
+    align-self: start;
+    padding-top: 6px;
+}
+
+.rd-text-area {
+    grid-column: 2 / 5;
+    background: var(--blue-eef4ff);
+    border: 1px solid var(--gray-cccccc);
+    border-radius: 4px;
+    padding: 10px;
+    font-size: 12px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow: visible;
+    min-height: 140px;
+}
+/* ================== 수리신청 상세 영역 ↑================== */

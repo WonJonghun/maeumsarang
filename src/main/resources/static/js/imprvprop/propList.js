@@ -1,17 +1,10 @@
 $(function () {
-    //목록 조회
-    loadPropList('');
+    // 초기 목록 조회
+    loadPropList();
 
     // 검색 이벤트
-    $(document).on('topbar:search', function (e, payload) {
-        loadPropList($.trim((payload && payload.keyword) ? payload.keyword : ''));
-    });
-
-    // Enter 검색
-    $(document).on('keydown', '#topbarSearchInput', function (e) {
-        if (e.key !== 'Enter') return;
-        e.preventDefault();
-        loadPropList($.trim($(this).val() || ''));
+    $(document).on('topbar:search', function () {
+        loadPropList();
     });
 
     // 상세 보기
@@ -25,19 +18,14 @@ $(function () {
 });
 
 // 목록 리스트
-function loadPropList(keyword) {
-    const endDt = new Date();
-    const startDt = new Date();
-    startDt.setFullYear(endDt.getFullYear() - 3);
-
-    let data = {
-        searchFromDate: cmFormatYmd(startDt),
-        searchToDate: cmFormatYmd(endDt),
-        searchKeyword: $.trim(keyword || '')
+function loadPropList() {
+    const data = {
+        searchFromDate: $('#searchFromDate').val(),
+        searchToDate: $('#searchToDate').val().substring(0, 10),
+        searchKeyword: $('#searchKeyword').val().substring(0, 10)
     };
 
-    cmAjax('/imprvProp/list.do', 'GET', data, false).done(function (list) {
-
+    cmAjax('/imprvProp/list.do', 'GET', data, true).done(function (list) {
         const propListEl = $('#propList');
         propListEl.empty();
 
@@ -49,18 +37,36 @@ function loadPropList(keyword) {
         for (let i = 0; i < list.length; i++) {
             const item = list[i];
 
-            let row = $('<div/>', { class: 'prop-row', role: 'button', tabindex: 0 })
-                .data('pl-date', cmDateOnly(item.plDate || item.Pl_Date || ''))
-                .data('pl-number', $.trim(item.plNumber || item.Pl_Number || ''));
+            let partText = '';
+            let partClass = '';
+            switch (Number(item.plPartflag)) {
+                case 1: partText = '제안'; partClass = 'text-green'; break;
+                case 2: partText = '개선'; partClass = 'text-deep-blue'; break;
+                default: partText = ''; partClass = ''; break;
+            }
+
+            const row = $('<div/>', { class: 'prop-row', role: 'button', tabindex: 0 })
+                .data('pl-date', cmDateOnly(item.plDate))
+                .data('pl-number', $.trim(item.plNumber))
+                .data('pl-partflag', item.plPartflag)
+                .data('pl-img-num', item.plImgNum);
+
+            const subLine = $('<p/>', { class: 'prop-sub-title' })
+                .append($('<span/>', { class: 'prop-sub-left', text: cmFormatYmd(item.plDate, '.') }));
+
+            if (partText) {
+                subLine.append($('<span/>', { class: 'prop-status ' + partClass, text: partText }));
+            }
 
             row.append(
                 $('<div/>', { class: 'prop-text' })
-                    .append($('<p/>', { class: 'prop-title', text: $.trim(item.plTitle || item.Pl_title || '') }))
-                    .append($('<p/>', { class: 'prop-date', text: cmDateOnly(item.plDate || item.Pl_Date || '') }))
+                    .append($('<p/>', { class: 'prop-title', text: $.trim(item.plTitle) }))
+                    .append(subLine)
             );
 
             propListEl.append(row);
         }
+
     });
 }
 
@@ -70,14 +76,22 @@ function propDetail(rowEl) {
 
     window.detailDrawerShow('<div style="padding:16px;">상세 조회중...</div>', true);
 
-    let data = {
+    const partFlag = Number(selRow.data('pl-partflag'));
+    let partText = '';
+    let partChipClass = '';
+    switch (partFlag) {
+        case 1: partText = '제안'; partChipClass = 'is-prop'; break;
+        case 2: partText = '개선'; partChipClass = 'is-imprv'; break;
+        default: partText = ''; partChipClass = ''; break;
+    }
+
+    const data = {
         icCode: 'Int000001',
-        searchDate: $.trim(selRow.data('pl-date') || ''),
-        plNumber: $.trim(selRow.data('pl-number') || '')
+        searchDate: $.trim(selRow.data('pl-date')),
+        plNumber: $.trim(selRow.data('pl-number'))
     };
 
-    cmAjax('/imprvProp/propDetail.do', 'GET', data, false).done(function (res) {
-
+    cmAjax('/imprvProp/propDetail.do', 'GET', data, true).done(function (res) {
         if (!res || res.length === 0) {
             window.detailDrawerShow('<div style="padding:16px;">상세 데이터가 없습니다.</div>', true);
             return;
@@ -89,17 +103,20 @@ function propDetail(rowEl) {
 
         let html = '';
         html += '<div class="post-detail-head">';
-        html += '  <h3 class="post-detail-title">' + cmEscapeHtml($.trim((res[1] && res[1].ccRmk) || '')) + '</h3>';
-        html += '  <div class="post-detail-meta"><span>'
-            + cmEscapeHtml(formatPropMetaText($.trim((res[0] && res[0].ccTitle) || '')))
-            + '</span></div>';
+        html += '  <h3 class="post-detail-title">' + cmEscapeHtml($.trim(res[1] && res[1].ccRmk)) + '</h3>';
+        html += '  <div class="prop-detail-sub-line">';
+        html += '    <span class="prop-detail-sub-left">' + cmEscapeHtml(formatPropMetaText($.trim(res[0] && res[0].ccTitle))) + '</span>';
+        if (partText) {
+            html += '    <span class="prop-type-chip ' + cmEscapeHtml(partChipClass) + '">' + cmEscapeHtml(partText) + '</span>';
+        }
+        html += '  </div>';
         html += '</div>';
-        html += '<div class="prop-detail-wrap">';
 
-        for (let i = 2; i < (res || []).length; i++) { // 3번째 row부터 출력
-            let item = res[i] || {};
-            let ccTitle = $.trim(item.ccTitle || '');
-            let ccRmk = item.ccRmk == null ? '' : String(item.ccRmk);
+        html += '<div class="prop-detail-wrap">';
+        for (let i = 2; i < res.length; i++) {
+            const item = res[i];
+            const ccTitle = $.trim(item.ccTitle);
+            const ccRmk = item.ccRmk == null ? '' : String(item.ccRmk);
 
             if (!ccTitle && !$.trim(ccRmk)) continue;
 
@@ -108,10 +125,9 @@ function propDetail(rowEl) {
             if ($.trim(ccRmk)) html += '  <div class="prop-detail-body">' + cmNl2br(ccRmk) + '</div>';
             html += '</div>';
         }
-
         html += '</div>';
 
-        window.detailDrawerShow(html, true);
+        window.detailDrawerShow(html, true, $.trim(selRow.data('pl-img-num')));
 
     }).fail(function (xhr) {
         console.log('propDetail fail:', xhr);
@@ -121,7 +137,7 @@ function propDetail(rowEl) {
 
 // 이름, 부서, 제출일시 자르기
 function formatPropMetaText(s) {
-    const meta = $.trim(s || '');
+    const meta = $.trim(s);
     if (!meta) return '';
 
     const parts = meta.split(':');
@@ -133,4 +149,3 @@ function formatPropMetaText(s) {
 
     return (dt + ' · ' + name + ' · ' + dept).replace(/\s+/g, ' ').trim();
 }
-

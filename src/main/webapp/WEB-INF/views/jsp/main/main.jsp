@@ -120,48 +120,51 @@
             </c:forEach>
         </section>
 
-        <%--달력--%>
-        <section class="card">
-            <div class="card-body">
-                <div id="calendarContainer"></div>
-            </div>
-        </section>
-
-        <%--일정--%>
-        <section class="card">
-            <div class="card-header">
-                <h3 class="card-title">일정<span class="card-subtitle"> / <c:out value="${todayYmdDot}" /></span></h3>
+        <section class="card dashboard-card">
+            <%--달력--%>
+            <div class="dashboard-block">
+                <div class="card-body">
+                    <div id="calendarContainer"></div>
+                </div>
             </div>
 
-            <div class="schedule-list" id="todayScheduleList">
-                <c:if test="${empty calendarList}">
-                    <div class="schedule-row">
-                        <div class="schedule-card schedule-card-muted">
-                            <p class="schedule-title">등록된 일정이 없습니다.</p>
+            <%--일정--%>
+            <div class="dashboard-block">
+                <div class="card-header">
+                    <h3 class="card-title">일정
+<%--                        <span class="card-subtitle"> / <c:out value="${todayYmdDot}" /></span>--%>
+                    </h3>
+                </div>
+
+                <div class="schedule-list" id="todayScheduleList">
+                    <c:if test="${empty calendarList}">
+                        <div class="schedule-row">
+                            <div class="schedule-card schedule-card-muted">
+                                <p class="schedule-title">등록된 일정이 없습니다.</p>
+                            </div>
                         </div>
-                    </div>
-                </c:if>
+                    </c:if>
 
-                <c:forEach var="item" items="${calendarList}">
-                    <div class="schedule-row" data-time="<c:out value='${item.ccTime}'/>">
-                        <div class="schedule-time">
-                            <span class="schedule-time-main schedule-time-main-muted"><c:out value="${item.ccTime}"/></span>
+                    <c:forEach var="item" items="${calendarList}">
+                        <div class="schedule-row" data-time="<c:out value='${item.ccTime}'/>">
+                            <div class="schedule-time">
+                                <span class="schedule-time-main schedule-time-main-muted"><c:out value="${item.ccTime}"/></span>
+                            </div>
+                            <div class="schedule-card schedule-card-muted">
+                                <p class="schedule-title"><c:out value="${item.ccRmk}"/></p>
+                            </div>
                         </div>
-                        <div class="schedule-card schedule-card-muted">
-                            <p class="schedule-title"><c:out value="${item.ccRmk}"/></p>
-                        </div>
-                    </div>
-                </c:forEach>
-            </div>
-        </section>
-
-        <%--환자 현황--%>
-        <section class="card">
-            <div class="card-header">
-                <h3 class="card-title">환자 현황</h3>
+                    </c:forEach>
+                </div>
             </div>
 
-            <div class="patient-status-wrap">
+            <%--환자 현황--%>
+            <div class="dashboard-block">
+                <div class="card-header">
+                    <h3 class="card-title">환자 현황</h3>
+                </div>
+
+                <div class="patient-status-wrap">
                 <c:set var="inHosPercent" value="0"/>
                 <c:if test="${not empty customerDailyStats.cnt1}">
                     <fmt:formatNumber value="${customerDailyStats.cnt1 * 100 / 560}" type="number" maxFractionDigits="0" var="inHosPercent"/>
@@ -216,31 +219,32 @@
                         <p>(진료완료 / 외래접수)</p>
                     </div></div>
                 </div>
+                </div>
             </div>
-        </section>
 
-        <%--당직자--%>
-        <section class="card">
-            <div class="card-header">
-                <div class="card-header-left"><h3 class="card-title">당직자 / 외래진료</h3></div>
-            </div>
-            <div class="card-body">
-                <div class="duty-layout">
-                    <div class="duty-column">
-                        <div class="duty-section-title">당직자</div>
-                        <ul class="duty-list">
-                            <c:forEach var="item" items="${dayDutyList}">
-                                <li class="duty-row"><span class="duty-role"><c:out value="${item.hcName}"/></span><span class="duty-name"><c:out value="${item.duName}"/></span></li>
-                            </c:forEach>
-                        </ul>
-                    </div>
-                    <div class="outduty-column">
-                        <div class="duty-section-title">외래진료</div>
-                        <ul class="duty-list">
-                            <c:forEach var="item" items="${outDayDutyList}">
-                                <li class="duty-row"><span class="outduty-role"><c:out value="${item.hcName}"/></span><span class="duty-name"><c:out value="${item.duName}"/></span></li>
-                            </c:forEach>
-                        </ul>
+            <%--당직자--%>
+            <div class="dashboard-block">
+                <div class="card-header">
+                    <div class="card-header-left"><h3 class="card-title">당직자 / 외래진료</h3></div>
+                </div>
+                <div class="card-body">
+                    <div class="duty-layout">
+                        <div class="duty-column">
+                            <div class="duty-section-title">당직자</div>
+                            <ul class="duty-list">
+                                <c:forEach var="item" items="${dayDutyList}">
+                                    <li class="duty-row"><span class="duty-role"><c:out value="${item.hcName}"/></span><span class="duty-name"><c:out value="${item.duName}"/></span></li>
+                                </c:forEach>
+                            </ul>
+                        </div>
+                        <div class="outduty-column">
+                            <div class="duty-section-title">외래진료</div>
+                            <ul class="duty-list">
+                                <c:forEach var="item" items="${outDayDutyList}">
+                                    <li class="duty-row"><span class="outduty-role"><c:out value="${item.hcName}"/></span><span class="duty-name"><c:out value="${item.duName}"/></span></li>
+                                </c:forEach>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
