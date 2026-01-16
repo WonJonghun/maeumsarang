@@ -3,455 +3,342 @@
 //모바일 앱 환경인척하기위한 화면임
 //스와이프 뒤로가기
 //미리보기, 첨부파일
-//사용법 1.그려줄html 2.페이지위에그려주기YN 3.이미지번호
+//파라미터 1.그려줄html 2.페이지위에그려주기YN 3.이미지번호
 //detailDrawerShow(html, false);
 //detailDrawerShow(html, false, afNum);
-(function ($) {
-    'use strict';
-    let detailDrawerHistoryPushed = false;
-    let detailDrawerClosingByPop = false;
+$(function () {
+    if (!hasDrawerDom()) return;
+    bindDetailDrawerEvents();
+});
 
-    let detailDrawerAttachAfNum = null;
+let drawerHistoryPushed = false;
+let closingByPop = false;
+let currentAfNum = null;
 
-    let swipe = {
-        active: false,
-        decided: false,
-        dragging: false,
-        startX: 0,
-        startY: 0,
-        lastDx: 0,
-        startTime: 0,
-        drawerW: 0,
-        rafId: 0,
-        rafPending: false
-    };
+//DOM 체크
+function hasDrawerDom() {
+    return ($('#detailDrawer').length > 0 && $('#detailDrawerBackdrop').length > 0 && $('#detailDrawerBody').length > 0);
+}
 
-    let swipeBound = false;
-    let swipeHandlers = {
-        touchMove: null,
-        touchEnd: null,
-        touchCancel: null,
-        mouseMove: null,
-        mouseUp: null
-    };
+//레이아웃 생성
+function ensureDrawerLayout() {
+    if (!hasDrawerDom()) return false;
 
-    function ensureDetailDrawerDom() {
-        return ($('#detailDrawer').length > 0 && $('#detailDrawerBackdrop').length > 0 && $('#detailDrawerBody').length > 0);
+    if ($('#detailDrawerContent').length === 0) {
+        $('#detailDrawerBody').empty().append($('<div/>', { id: 'detailDrawerContent' }));
     }
+    if ($('#detailDrawerAttachRoot').length === 0) {
+        $('#detailDrawerBody').append($('<div/>', { id: 'detailDrawerAttachRoot' }));
+    }
+    return true;
+}
 
-    function ensureDetailDrawerLayout() {
-        if (!ensureDetailDrawerDom()) return false;
+//첨부 DOM 생성
+function ensureAttachDom() {
+    if (!ensureDrawerLayout()) return false;
 
-        if ($('#detailDrawerContent').length > 0 && $('#detailDrawerAttachRoot').length > 0) return true;
-
-        $('#detailDrawerBody')
-            .empty()
-            .append($('<div/>', {id: 'detailDrawerContent'}))
-            .append($('<div/>', {id: 'detailDrawerAttachRoot'}));
-
+    if ($('#detailAttachArea').length > 0 && $('#detailAttachList').length > 0 && $('#detailImagePreview').length > 0) {
         return true;
     }
 
-    /* ================== 첨부파일(이미지 미리보기 포함) ↓================== */
-    function ensureAttachDom() {
-        if (!ensureDetailDrawerLayout()) return false;
+    const root = $('#detailDrawerAttachRoot').empty();
 
-        if ($('#detailAttachArea').length > 0 && $('#detailAttachList').length > 0 && $('#detailImagePreview').length > 0) {
-            return true;
-        }
+    $('<div/>', { id: 'detailImagePreview', class: 'detail-image-preview', style: 'display:none;' }).appendTo(root);
 
-        let attachRoot = $('#detailDrawerAttachRoot').empty();
+    $('<div/>', { id: 'detailAttachArea', class: 'detail-attach-area', style: 'display:none;' }).append(
+        $('<div/>', { class: 'detail-attach-title' }).text('첨부파일'),
+        $('<ul/>', { id: 'detailAttachList', class: 'detail-attach-list' })
+    ).appendTo(root);
 
-        $('<div/>', {id: 'detailImagePreview', class: 'detail-image-preview', style: 'display:none;'}).appendTo(attachRoot);
+    return true;
+}
 
-        $('<div/>', {id: 'detailAttachArea', class: 'detail-attach-area', style: 'display:none;'}).append(
-            $('<div/>', {class: 'detail-attach-title'}).text('첨부파일'),
-            $('<ul/>', {id: 'detailAttachList', class: 'detail-attach-list'})
-        ).appendTo(attachRoot);
+//첨부 초기화
+function detailDrawerClearAttach() {
+    currentAfNum = null;
+    $('#detailAttachArea').hide();
+    $('#detailAttachList').empty();
+    $('#detailImagePreview').hide().empty();
+}
 
-        return true;
+//첨부 로드
+function detailDrawerLoadAttach(afNum) {
+    if (!ensureAttachDom()) return;
+
+    if (!afNum || typeof cmAjax !== 'function') {
+        detailDrawerClearAttach();
+        return;
     }
 
-    function clearAttachArea() {
-        detailDrawerAttachAfNum = null;
-        $('#detailAttachArea').hide();
-        $('#detailAttachList').empty();
-        $('#detailImagePreview').hide().empty();
-    }
+    const reqAfNum = String(afNum);
+    currentAfNum = reqAfNum;
 
-    window.detailDrawerClearAttach = function () {
-        clearAttachArea();
-    };
+    $('#detailAttachArea').hide();
+    $('#detailAttachList').empty();
+    $('#detailImagePreview').hide().empty();
 
-    window.detailDrawerLoadAttach = function (afNum) {
-        if (!ensureAttachDom()) return;
+    cmAjax('/attach/list.do', 'GET', { afNum: afNum }, false)
+        .done(function (list) {
+            if (String(currentAfNum || '') !== reqAfNum) return;
+            if (!detailDrawerIsOpen()) return;
 
-        if (!afNum) {
-            clearAttachArea();
-            return;
-        }
-
-        if (typeof cmAjax !== 'function') {
-            clearAttachArea();
-            return;
-        }
-
-        let reqAfNum = String(afNum);
-        detailDrawerAttachAfNum = reqAfNum;
-
-        $('#detailAttachArea').hide();
-        $('#detailAttachList').empty();
-        $('#detailImagePreview').hide().empty();
-
-        cmAjax('/attach/list.do', 'GET', {afNum: afNum}, false)
-            .done(function (list) {
-                if (String(detailDrawerAttachAfNum || '') !== reqAfNum) return;
-                if (window.detailDrawerIsOpen && !window.detailDrawerIsOpen()) return;
-
-                if (!list || list.length === 0) {
-                    clearAttachArea();
-                    return;
-                }
-
-                let attachList = $('#detailAttachList');
-                let imagePreview = $('#detailImagePreview');
-
-                attachList.empty();
-                imagePreview.hide().empty();
-
-                let hasImage = false;
-
-                for (let i = 0; i < list.length; i++) {
-                    let item = list[i];
-
-                    let fileName = (item.afFileName && item.afFileName.length > 0)
-                        ? item.afFileName
-                        : (item.afNum + '.' + ('0' + item.afSeq).slice(-2));
-
-                    let downUrl = '/attach/download.do?afNum=' + encodeURIComponent(item.afNum)
-                        + '&afSeq=' + encodeURIComponent(item.afSeq);
-
-                    $('<li/>', {class: 'detail-attach-item'})
-                        .append(
-                            $('<a/>', {
-                                class: 'detail-attach-link',
-                                href: downUrl,
-                                download: fileName
-                            }).text(fileName)
-                        )
-                        .append(
-                            $('<span/>', {class: 'detail-attach-size'}).text(cmFormatKb(item.afFileSize))
-                        )
-                        .appendTo(attachList);
-
-                    if (cmIsImageFileName(fileName)) {
-                        hasImage = true;
-
-                        let viewUrl = '/attach/view.do?afNum=' + encodeURIComponent(item.afNum)
-                            + '&afSeq=' + encodeURIComponent(item.afSeq);
-
-                        $('<div/>', {class: 'detail-image-item'})
-                            .append(
-                                $('<img/>', {
-                                    class: 'detail-image',
-                                    src: viewUrl,
-                                    alt: fileName,
-                                    loading: 'lazy'
-                                }).on('error', function () {
-                                    $(this).closest('.detail-image-item').hide();
-                                })
-                            )
-                            .appendTo(imagePreview);
-                    }
-                }
-
-                $('#detailAttachArea').show();
-                if (hasImage) imagePreview.show();
-            })
-            .fail(function () {
-                if (String(detailDrawerAttachAfNum || '') !== reqAfNum) return;
-                clearAttachArea();
-            });
-    };
-
-    window.detailDrawerShowWithAttach = function (html, useHistory, afNum) {
-        window.detailDrawerShow(html, useHistory, afNum);
-    };
-    /* ================== 첨부파일(이미지 미리보기 포함) ↑================== */
-
-    function getPointFromNativeEvent(e) {
-        if (e && e.touches && e.touches.length > 0) return {x: e.touches[0].clientX, y: e.touches[0].clientY};
-        if (e && e.changedTouches && e.changedTouches.length > 0) return {x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY};
-        return {x: e.clientX, y: e.clientY};
-    }
-
-    function clearSwipeState() {
-        swipe.active = false;
-        swipe.decided = false;
-        swipe.dragging = false;
-        swipe.lastDx = 0;
-        swipe.rafPending = false;
-        if (swipe.rafId) {
-            cancelAnimationFrame(swipe.rafId);
-            swipe.rafId = 0;
-        }
-        $('#detailDrawer').removeClass('is-dragging');
-    }
-
-    function applyTransformRaf() {
-        swipe.rafPending = false;
-        let drawerEl = document.getElementById('detailDrawer');
-        if (!drawerEl || !drawerEl.classList.contains('is-open')) return;
-
-        let dx = swipe.lastDx;
-        if (dx < 0) dx = 0;
-        if (dx > swipe.drawerW) dx = swipe.drawerW;
-
-        drawerEl.style.transform = 'translate3d(' + dx + 'px,0,0)';
-    }
-
-    function unbindSwipeMoveEnd() {
-        if (!swipeBound) return;
-
-        document.removeEventListener('touchmove', swipeHandlers.touchMove, {passive: false});
-        document.removeEventListener('touchend', swipeHandlers.touchEnd, {passive: true});
-        document.removeEventListener('touchcancel', swipeHandlers.touchCancel, {passive: true});
-        document.removeEventListener('mousemove', swipeHandlers.mouseMove);
-        document.removeEventListener('mouseup', swipeHandlers.mouseUp);
-
-        swipeBound = false;
-        swipeHandlers.touchMove = null;
-        swipeHandlers.touchEnd = null;
-        swipeHandlers.touchCancel = null;
-        swipeHandlers.mouseMove = null;
-        swipeHandlers.mouseUp = null;
-    }
-
-    function bindSwipeMoveEnd() {
-        if (swipeBound) return;
-
-        swipeHandlers.touchMove = function (e) { onSwipeMove(e); };
-        swipeHandlers.touchEnd = function () { onSwipeEnd(); };
-        swipeHandlers.touchCancel = function () { onSwipeEnd(); };
-        swipeHandlers.mouseMove = function (e) { onSwipeMove(e); };
-        swipeHandlers.mouseUp = function () { onSwipeEnd(); };
-
-        document.addEventListener('touchmove', swipeHandlers.touchMove, {passive: false});
-        document.addEventListener('touchend', swipeHandlers.touchEnd, {passive: true});
-        document.addEventListener('touchcancel', swipeHandlers.touchCancel, {passive: true});
-        document.addEventListener('mousemove', swipeHandlers.mouseMove);
-        document.addEventListener('mouseup', swipeHandlers.mouseUp);
-
-        swipeBound = true;
-    }
-
-    function onSwipeStartNative(e) {
-        let drawerEl = document.getElementById('detailDrawer');
-        if (!drawerEl || !drawerEl.classList.contains('is-open')) return;
-
-        if (e && e.touches && e.touches.length > 1) return;
-        if (e && e.type === 'mousedown' && e.button !== 0) return;
-
-        let pt = getPointFromNativeEvent(e);
-
-        swipe.active = true;
-        swipe.decided = false;
-        swipe.dragging = false;
-        swipe.startX = pt.x;
-        swipe.startY = pt.y;
-        swipe.lastDx = 0;
-        swipe.startTime = Date.now();
-        swipe.drawerW = drawerEl.getBoundingClientRect().width || window.innerWidth || 360;
-
-        bindSwipeMoveEnd();
-    }
-
-    function onSwipeMove(e) {
-        if (!swipe.active) return;
-
-        let drawerEl = document.getElementById('detailDrawer');
-        if (!drawerEl || !drawerEl.classList.contains('is-open')) {
-            clearSwipeState();
-            unbindSwipeMoveEnd();
-            return;
-        }
-
-        let pt = getPointFromNativeEvent(e);
-        let dx = pt.x - swipe.startX;
-        let dy = pt.y - swipe.startY;
-
-        if (!swipe.decided) {
-            if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
-
-            swipe.decided = true;
-
-            if (Math.abs(dy) > Math.abs(dx)) {
-                clearSwipeState();
-                unbindSwipeMoveEnd();
+            if (!list || list.length === 0) {
+                detailDrawerClearAttach();
                 return;
             }
 
-            swipe.dragging = true;
+            const attachList = $('#detailAttachList');
+            const imagePreview = $('#detailImagePreview');
+
+            let hasImage = false;
+
+            for (let i = 0; i < list.length; i++) {
+                const item = list[i];
+
+                const fileName = (item.afFileName && item.afFileName.length > 0)
+                    ? item.afFileName
+                    : (item.afNum + '.' + ('0' + item.afSeq).slice(-2));
+
+                const downUrl = '/attach/download.do?afNum=' + encodeURIComponent(item.afNum)
+                    + '&afSeq=' + encodeURIComponent(item.afSeq);
+
+                $('<li/>', { class: 'detail-attach-item' })
+                    .append(
+                        $('<a/>', { class: 'detail-attach-link', href: downUrl, download: fileName }).text(fileName)
+                    )
+                    .append(
+                        $('<span/>', { class: 'detail-attach-size' }).text(cmFormatKb(item.afFileSize))
+                    )
+                    .appendTo(attachList);
+
+                if (cmIsImageFileName(fileName)) {
+                    hasImage = true;
+
+                    const viewUrl = '/attach/view.do?afNum=' + encodeURIComponent(item.afNum)
+                        + '&afSeq=' + encodeURIComponent(item.afSeq);
+
+                    $('<div/>', { class: 'detail-image-item' })
+                        .append(
+                            $('<img/>', { class: 'detail-image', src: viewUrl, alt: fileName, loading: 'lazy' })
+                                .on('error', function () { $(this).closest('.detail-image-item').hide(); })
+                        )
+                        .appendTo(imagePreview);
+                }
+            }
+
+            $('#detailAttachArea').show();
+            if (hasImage) imagePreview.show();
+        })
+        .fail(function () {
+            if (String(currentAfNum || '') !== reqAfNum) return;
+            detailDrawerClearAttach();
+        });
+}
+
+//드로워 표시
+function detailDrawerShow(html, useHistory, afNum) {
+    if (!ensureDrawerLayout()) return;
+
+    $('#detailDrawerContent').html(html || '');
+
+    if (afNum) detailDrawerLoadAttach(afNum);
+    else detailDrawerClearAttach();
+
+    detailDrawerOpen(useHistory !== false);
+}
+
+//드로워 열기
+function detailDrawerOpen(useHistory) {
+    if (!hasDrawerDom()) return;
+
+    if (useHistory && !drawerHistoryPushed) {
+        history.pushState({ detailDrawerOpen: true }, document.title, location.href);
+        drawerHistoryPushed = true;
+    }
+
+    $('#detailDrawerBackdrop').addClass('is-open');
+    $('#detailDrawer').addClass('is-open').attr('aria-hidden', 'false').css('transform', '');
+    $('body').addClass('drawer-open');
+}
+
+//드로워 닫기
+function detailDrawerClose(useHistory, clearBody) {
+    if (useHistory === undefined) useHistory = true;
+
+    if (useHistory && drawerHistoryPushed && !closingByPop) {
+        history.back();
+        return;
+    }
+
+    $('#detailDrawerBackdrop').removeClass('is-open');
+    $('#detailDrawer').removeClass('is-open').attr('aria-hidden', 'true').css('transform', '');
+    $('body').removeClass('drawer-open');
+
+    if (clearBody !== false) $('#detailDrawerBody').empty();
+    detailDrawerClearAttach();
+
+    drawerHistoryPushed = false;
+}
+
+//열림 여부
+function detailDrawerIsOpen() {
+    return $('#detailDrawer').hasClass('is-open');
+}
+
+//이벤트 바인딩
+function bindDetailDrawerEvents() {
+    //닫기 버튼/백드랍
+    $(document).on('click', '#detailDrawerBackdrop,#detailDrawer .detail-drawer-close', function () {
+        detailDrawerClose(true);
+    });
+
+    //ESC 닫기
+    $(document).on('keydown', function (e) {
+        if (e.key === 'Escape' && detailDrawerIsOpen()) detailDrawerClose(true);
+    });
+
+    //뒤로가기(popstate) 연동
+    window.addEventListener('popstate', function () {
+        if (detailDrawerIsOpen()) {
+            closingByPop = true;
+            detailDrawerClose(false);
+            closingByPop = false;
+        }
+        drawerHistoryPushed = false;
+    });
+
+    //스와이프 닫기
+    const drawerEl = document.getElementById('detailDrawer');
+    if (!drawerEl) return;
+
+    let active = false;
+    let decided = false;
+    let dragging = false;
+    let startX = 0;
+    let startY = 0;
+    let lastDx = 0;
+    let startTime = 0;
+    let drawerW = 0;
+
+    function getPt(e) {
+        if (e && e.touches && e.touches.length > 0) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        if (e && e.changedTouches && e.changedTouches.length > 0) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+        return { x: e.clientX, y: e.clientY };
+    }
+
+    function resetSwipe() {
+        active = false;
+        decided = false;
+        dragging = false;
+        lastDx = 0;
+        $('#detailDrawer').removeClass('is-dragging');
+    }
+
+    function onMove(e) {
+        if (!active) return;
+        if (!detailDrawerIsOpen()) {
+            resetSwipe();
+            offMoveEnd();
+            return;
+        }
+
+        const pt = getPt(e);
+        let dx = pt.x - startX;
+        const dy = pt.y - startY;
+
+        if (!decided) {
+            if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+
+            decided = true;
+            if (Math.abs(dy) > Math.abs(dx)) {
+                resetSwipe();
+                offMoveEnd();
+                return;
+            }
+            dragging = true;
             $('#detailDrawer').addClass('is-dragging');
         }
 
-        if (!swipe.dragging) return;
+        if (!dragging) return;
 
         if (dx < 0) dx = 0;
-        swipe.lastDx = dx;
+        lastDx = dx;
 
-        if (!swipe.rafPending) {
-            swipe.rafPending = true;
-            swipe.rafId = requestAnimationFrame(applyTransformRaf);
-        }
+        drawerEl.style.transform = 'translate3d(' + dx + 'px,0,0)';
 
         if (e && e.cancelable) e.preventDefault();
     }
 
-    function onSwipeEnd() {
-        if (!swipe.active) return;
+    function onEnd() {
+        if (!active) return;
 
-        let drawerEl = document.getElementById('detailDrawer');
-        if (!drawerEl || !drawerEl.classList.contains('is-open')) {
-            clearSwipeState();
-            unbindSwipeMoveEnd();
-            return;
-        }
+        const dt = Math.max(1, Date.now() - startTime);
+        const velocity = lastDx / dt;
 
-        if (swipe.rafId) cancelAnimationFrame(swipe.rafId);
-        swipe.rafId = 0;
-        swipe.rafPending = false;
-
-        let dt = Math.max(1, Date.now() - swipe.startTime);
-        let velocity = swipe.lastDx / dt;
-
-        let closeThreshold = swipe.drawerW * 0.25;
-        let shouldClose = swipe.dragging && (swipe.lastDx >= closeThreshold || velocity >= 0.8);
+        const shouldClose = dragging && (lastDx >= (drawerW * 0.25) || velocity >= 0.8);
 
         $('#detailDrawer').removeClass('is-dragging');
 
         if (shouldClose) {
-            drawerEl.style.transform = 'translate3d(' + swipe.drawerW + 'px,0,0)';
+            drawerEl.style.transform = 'translate3d(' + drawerW + 'px,0,0)';
             setTimeout(function () {
                 drawerEl.style.transform = '';
-                window.detailDrawerClose(true);
+                detailDrawerClose(true);
             }, 260);
 
-            clearSwipeState();
-            unbindSwipeMoveEnd();
+            resetSwipe();
+            offMoveEnd();
             return;
         }
 
-        drawerEl.style.transform = 'translate3d(0,0,0)';
-        setTimeout(function () { drawerEl.style.transform = ''; }, 260);
-
-        clearSwipeState();
-        unbindSwipeMoveEnd();
+        drawerEl.style.transform = '';
+        resetSwipe();
+        offMoveEnd();
     }
 
-    function openDrawerDom() {
-        clearSwipeState();
-        let drawerEl = document.getElementById('detailDrawer');
-        if (drawerEl) drawerEl.style.transform = '';
+    let bound = false;
+    function onMoveBind(e) { onMove(e); }
+    function onEndBind() { onEnd(); }
 
-        $('#detailDrawerBackdrop').addClass('is-open');
-        $('#detailDrawer').addClass('is-open').attr('aria-hidden', 'false');
-        $('body').addClass('drawer-open');
+    function onMoveEnd() {
+        if (bound) return;
+        document.addEventListener('touchmove', onMoveBind, { passive: false });
+        document.addEventListener('touchend', onEndBind, { passive: true });
+        document.addEventListener('touchcancel', onEndBind, { passive: true });
+        document.addEventListener('mousemove', onMoveBind);
+        document.addEventListener('mouseup', onEndBind);
+        bound = true;
     }
 
-    function closeDrawerDom(clearBody) {
-        clearSwipeState();
-        let drawerEl = document.getElementById('detailDrawer');
-        if (drawerEl) drawerEl.style.transform = '';
-
-        $('#detailDrawerBackdrop').removeClass('is-open');
-        $('#detailDrawer').removeClass('is-open').attr('aria-hidden', 'true');
-        $('body').removeClass('drawer-open');
-
-        if (clearBody !== false) $('#detailDrawerBody').empty();
-        clearAttachArea();
+    function offMoveEnd() {
+        if (!bound) return;
+        document.removeEventListener('touchmove', onMoveBind, { passive: false });
+        document.removeEventListener('touchend', onEndBind, { passive: true });
+        document.removeEventListener('touchcancel', onEndBind, { passive: true });
+        document.removeEventListener('mousemove', onMoveBind);
+        document.removeEventListener('mouseup', onEndBind);
+        bound = false;
     }
 
-    window.detailDrawerSetHtml = function (html) {
-        if (!ensureDetailDrawerLayout()) return;
-        $('#detailDrawerContent').html(html || '');
-    };
+    function onStart(e) {
+        if (!detailDrawerIsOpen()) return;
+        if (e && e.touches && e.touches.length > 1) return;
+        if (e && e.type === 'mousedown' && e.button !== 0) return;
 
-    window.detailDrawerSetElement = function (element) {
-        if (!ensureDetailDrawerLayout()) return;
-        $('#detailDrawerContent').empty().append(element);
-    };
+        const pt = getPt(e);
 
-    //호출부
-    window.detailDrawerShow = function (html, useHistory, afNum) {
-        if (!ensureDetailDrawerLayout()) return;
+        active = true;
+        decided = false;
+        dragging = false;
+        startX = pt.x;
+        startY = pt.y;
+        lastDx = 0;
+        startTime = Date.now();
+        drawerW = drawerEl.getBoundingClientRect().width || window.innerWidth || 360;
 
-        window.detailDrawerSetHtml(html || '');
+        onMoveEnd();
+    }
 
-        if (afNum) {
-            window.detailDrawerLoadAttach(afNum);
-        } else {
-            clearAttachArea();
-        }
-
-        window.detailDrawerOpen(useHistory !== false);
-    };
-
-    window.detailDrawerOpen = function (useHistory) {
-        if (!ensureDetailDrawerDom()) return;
-
-        if (useHistory === undefined) useHistory = true;
-
-        if (useHistory && !detailDrawerHistoryPushed) {
-            history.pushState({detailDrawerOpen: true}, document.title, location.href);
-            detailDrawerHistoryPushed = true;
-        }
-
-        openDrawerDom();
-    };
-
-    window.detailDrawerClose = function (useHistory, clearBody) {
-        if (useHistory === undefined) useHistory = true;
-
-        if (useHistory && detailDrawerHistoryPushed && !detailDrawerClosingByPop) {
-            history.back();
-            return;
-        }
-
-        closeDrawerDom(clearBody);
-        detailDrawerHistoryPushed = false;
-    };
-
-    window.detailDrawerIsOpen = function () {
-        return $('#detailDrawer').hasClass('is-open');
-    };
-
-    $(function () {
-        if (!ensureDetailDrawerDom()) return;
-
-        $(document).on('click', '#detailDrawerBackdrop,#detailDrawer .detail-drawer-close', function () {
-            window.detailDrawerClose(true);
-        });
-
-        let drawerEl = document.getElementById('detailDrawer');
-        if (drawerEl) {
-            drawerEl.addEventListener('touchstart', onSwipeStartNative, {passive: true});
-            drawerEl.addEventListener('mousedown', onSwipeStartNative);
-        }
-
-        $(document).on('keydown', function (e) {
-            if (e.key === 'Escape' && window.detailDrawerIsOpen && window.detailDrawerIsOpen()) {
-                window.detailDrawerClose(true);
-            }
-        });
-
-        window.addEventListener('popstate', function () {
-            if ($('#detailDrawer').hasClass('is-open')) {
-                detailDrawerClosingByPop = true;
-                window.detailDrawerClose(false);
-                detailDrawerClosingByPop = false;
-            }
-            detailDrawerHistoryPushed = false;
-        });
-    });
-})(jQuery);
+    drawerEl.addEventListener('touchstart', onStart, { passive: true });
+    drawerEl.addEventListener('mousedown', onStart);
+}

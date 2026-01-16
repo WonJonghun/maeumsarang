@@ -4,6 +4,8 @@ $(function () {
     const searchInput = $('#menuSearch');
     const btnSearchClear = $('#btnMenuSearchClear');
 
+    const currentWinName = $.trim($('#currentWinName').val() || '');
+
     let menuLoaded = false;
     let menuTreeOrigin = [];
     let lastKeyword = '';
@@ -39,6 +41,7 @@ $(function () {
             const keyword = $.trim(searchInput.val() || '');
             toggleSearchClear(keyword);
             applyLocalSearch(keyword);
+            applyCurrentActive();
         });
     }
 
@@ -249,6 +252,7 @@ $(function () {
         searchTimer = setTimeout(function () {
             loadMenuAllIfNeeded().done(function () {
                 applyLocalSearch($.trim(searchInput.val() || ''));
+                applyCurrentActive();
             });
         }, 120);
     });
@@ -261,6 +265,7 @@ $(function () {
 
         loadMenuAllIfNeeded().done(function () {
             applyLocalSearch($.trim(searchInput.val() || ''));
+            applyCurrentActive();
         });
     });
 
@@ -397,6 +402,90 @@ $(function () {
         if (typeof customAlert === 'function') customAlert('경고', '이동할 메뉴 정보가 없습니다.', 'WARN');
     });
 
+
+    function applyCurrentActive() {
+        if (!menuLoaded) return;
+        if (!currentWinName) return;
+
+        const ctx = $.trim($('#appCtx').val() || '');
+        const path = String(location.pathname || '');
+        const relPath = (ctx && path.indexOf(ctx) === 0) ? path.substring(ctx.length) : path;
+        if (relPath === '' || relPath === '/' || relPath === '/main.do' || relPath === '/main') return; // 메인페이지는 기존 유지
+
+        function getWinName(el) {
+            return $.trim($(el).data('win-name') || $(el).attr('data-win-name') || '');
+        }
+
+        function findFirstMatched(selector) {
+            let found = null;
+            menu.find(selector).each(function () {
+                if (getWinName(this) === currentWinName) {
+                    found = $(this);
+                    return false;
+                }
+            });
+            return found;
+        }
+
+        // winName만 기준. 중복이면 DOM상 먼저 찾힌 것 1개만 활성화.
+        const target =
+            findFirstMatched('.menu-depth4 a[data-win-name]') ||
+            findFirstMatched('.menu-depth3 > li > a[data-win-name]') ||
+            findFirstMatched('.menu-depth3-link[data-win-name]') ||
+            findFirstMatched('.menu-depth2-link[data-win-name]') ||
+            findFirstMatched('.menu-depth2-btn[data-win-name]');
+
+        if (!target || target.length === 0) return;
+
+        const panel = target.closest('.menu-panel');
+        if (panel.length === 0) return;
+
+        // depth1 탭 + 우측 panel 전환
+        const panelId = panel.attr('id');
+        if (panelId) {
+            menu.find('.menu-panel').hide().removeClass('is-active');
+            panel.show().addClass('is-active');
+
+            const depth1Btn = menu.find('.menu-depth1-btn[data-target="#' + panelId + '"]');
+            if (depth1Btn.length > 0) {
+                menu.find('.menu-depth1-btn').removeClass('is-active');
+                depth1Btn.addClass('is-active');
+            }
+        }
+
+        // 초기화 후 경로 펼치기
+        resetSelection(panel, 0);
+        resetDepth2(panel, 0);
+
+        const depth2Item = target.closest('.menu-depth2-item');
+        if (depth2Item.length > 0) {
+            const depth2Btn = depth2Item.find('> .menu-depth2-btn');
+            const depth3List = depth2Btn.next('.menu-depth3');
+
+            if (depth2Btn.length > 0 && depth3List.length > 0) {
+                depth2Btn.addClass('is-active is-open').attr('aria-expanded', 'true');
+                depth3List.stop(true, true).slideDown(0);
+            }
+        }
+
+        // depth3(depth4 포함) 펼침
+        const depth3Item = target.closest('.menu-depth3-item');
+        if (depth3Item.length > 0) {
+            const row = depth3Item.find('> .menu-depth3-row');
+            const link = row.find('.menu-depth3-link');
+            const toggle = row.find('.menu-depth3-toggle');
+            const depth4 = depth3Item.find('> .menu-depth4');
+
+            depth3Item.addClass('is-open');
+            row.addClass('is-active');
+            link.addClass('is-active');
+            toggle.attr('aria-expanded', 'true');
+            depth4.stop(true, true).slideDown(0);
+        }
+
+        target.addClass('is-active');
+    }
+
     function toggleSearchClear(keyword) {
         ($.trim(keyword || '') !== '') ? btnSearchClear.show() : btnSearchClear.hide();
     }
@@ -405,6 +494,7 @@ $(function () {
         searchInput.val('');
         toggleSearchClear('');
         applyLocalSearch('');
+        applyCurrentActive();
         searchInput.focus();
     });
 });

@@ -114,7 +114,7 @@ $(function () {
             cmAjax('/notice/totalNoteView.do', 'POST', { tvUk: tvUk, saCd: saCd }, false);
         }
 
-        window.postDetail(this, true);
+        postDetail(this, true);
     });
 
 });

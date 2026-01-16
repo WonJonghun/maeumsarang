@@ -90,6 +90,7 @@
             <input type="hidden" id="loginBuser" value="<c:out value='${user.icBuser}'/>"/>
             <input type="hidden" id="adminKey" value="<c:out value='${cmAuth.adminKey}'/>"/>
             <input type="hidden" id="menuName" value="<c:out value='${cmAuth.menuName}'/>"/>
+            <input type="hidden" id="currentWinName" value="<c:out value='${empty cmAuth ? "" : cmAuth.winName}'/>"/>
             <input type="hidden" id="appCtx" value="<c:out value='${pageContext.request.contextPath}'/>"/>
         </div>
 
