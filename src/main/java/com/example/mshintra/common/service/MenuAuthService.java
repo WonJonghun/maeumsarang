@@ -15,7 +15,7 @@ public class MenuAuthService {
     private final MenuAuthMapper menuAuthMapper;
 
     @Transactional(readOnly = true)
-    public boolean checkAndSetSession(MenuAuthDto dto, String menuName, HttpSession session) {
+    public boolean checkAndSetSession(MenuAuthDto dto, HttpSession session) {
 
         String raw = CmUtil.trim(menuAuthMapper.selectAdminKey(dto));
 
@@ -29,7 +29,7 @@ public class MenuAuthService {
         }
 
         dto.setAdminKey(perm);
-        dto.setMenuName(!CmUtil.isBlank(menuName) ? CmUtil.trim(menuName) : spMenuName);
+        dto.setMenuName(spMenuName);
 
         //여따가 다 넣고 헤드로 쏨
         if (session != null) session.setAttribute("menuAuth", dto);

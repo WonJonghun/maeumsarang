@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <div id="detailDrawerBackdrop" class="detail-drawer-backdrop"></div>
 
 <aside id="detailDrawer" class="detail-drawer" aria-hidden="true">

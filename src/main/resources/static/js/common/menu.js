@@ -245,7 +245,6 @@ $(function () {
         const url = $.trim(target.data('url') || target.attr('data-url') || '');
         const baseKey = $.trim(target.data('baseKey') || target.attr('data-base-key') || '');
         const winCode = $.trim(target.data('winCode') || target.attr('data-win-code') || '');
-        const menuName = $.trim(target.text() || '');
 
         if (!url) {
             if (typeof customAlert === 'function') customAlert('경고', '이동할 메뉴 URL이 없습니다.', 'WARN');
@@ -255,8 +254,7 @@ $(function () {
 
         cmMovePage(url, {
             ccBaseKey: baseKey,
-            ccWinCode: winCode,
-            ccMenuName: menuName
+            ccWinCode: winCode
         });
     }
 

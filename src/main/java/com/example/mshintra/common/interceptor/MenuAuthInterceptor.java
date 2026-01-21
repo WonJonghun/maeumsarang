@@ -27,10 +27,8 @@ public class MenuAuthInterceptor implements HandlerInterceptor {
 
         String ccWinCode = CmUtil.trim(request.getParameter("ccWinCode"));
         String ccBaseKey = CmUtil.trim(request.getParameter("ccBaseKey"));
-        String menuName = CmUtil.trim(request.getParameter("ccMenuName"));
 
         if (CmUtil.isBlank(ccWinCode)) return true; // 메뉴 이동 요청만 체크
-        if (CmUtil.isBlank(menuName)) menuName = CmUtil.trim(request.getParameter("menuName"));
 
         LoginUserDto loginUser = getLoginUser();
         String userId = (loginUser == null) ? "" : CmUtil.trim(loginUser.getIcCode());
@@ -42,7 +40,7 @@ public class MenuAuthInterceptor implements HandlerInterceptor {
 
         HttpSession session = request.getSession();
 
-        boolean ok = menuAuthService.checkAndSetSession(dto, menuName, session);
+        boolean ok = menuAuthService.checkAndSetSession(dto, session);
         if (!ok) {
             response.setStatus(403);
             response.setContentType("text/html; charset=UTF-8");
