@@ -13,9 +13,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AuthDto implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class MenuAuthDto implements Serializable {
 
     private String winCode;   // data-win-code
     private String winName;   // data-win-name

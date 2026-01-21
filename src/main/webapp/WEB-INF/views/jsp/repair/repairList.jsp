@@ -5,7 +5,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title><c:out value='${cmAuth.menuName}'/></title>
+    <title><c:out value='${menuAuth.menuName}'/></title>
     <%@ include file="../common/common-inc.jspf" %>
 
     <link rel="stylesheet" href="<c:url value='/css/page/repairList.css'/>">

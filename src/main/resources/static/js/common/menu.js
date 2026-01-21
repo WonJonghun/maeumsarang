@@ -4,7 +4,8 @@ $(function () {
     const searchInput = $('#menuSearch');
     const btnSearchClear = $('#btnMenuSearchClear');
 
-    const currentWinName = $.trim($('#currentWinName').val() || '');
+    const currentWinCode = $.trim($('#currentWinCode').val() || '');
+    const currentBaseKey = $.trim($('#currentBaseKey').val() || '');
 
     let menuLoaded = false;
     let menuTreeOrigin = [];
@@ -96,19 +97,23 @@ $(function () {
             $.each(root.children || [], function (_, d2) {
                 const d2Name = cmEscapeHtml(d2.ccMenuName);
                 const d2Code = cmEscapeHtml(d2.ccCode);
+                const d2Url = cmEscapeHtml(d2.ccMenu2);
+                const d2BaseKey = cmEscapeHtml(d2.ccBaseKey);
                 const d2WinCode = cmEscapeHtml(d2.ccWinCode);
                 const d2WinName = cmEscapeHtml(d2.ccWinName);
                 const d3 = d2.children || [];
 
                 if (d3.length > 0) {
                     panel += '<li class="menu-depth2-item">';
-                    panel += '<button type="button" class="menu-depth2-btn" aria-expanded="false" data-code="' + d2Code + '" data-win-code="' + d2WinCode + '" data-win-name="' + d2WinName + '">';
+                    panel += '<button type="button" class="menu-depth2-btn" aria-expanded="false" data-code="' + d2Code + '" data-url="' + d2Url + '" data-base-key="' + d2BaseKey + '" data-win-code="' + d2WinCode + '" data-win-name="' + d2WinName + '">';
                     panel += '<span class="menu-txt">' + d2Name + '</span><span class="menu-depth2-right"><i class="bi bi-chevron-down menu-depth2-chevron"></i></span></button>';
                     panel += '<ul class="menu-depth3" style="display:none">';
 
                     $.each(d3, function (_, d3m) {
                         const d3Name = cmEscapeHtml(d3m.ccMenuName);
                         const d3Code = cmEscapeHtml(d3m.ccCode);
+                        const d3Url = cmEscapeHtml(d3m.ccMenu2);
+                        const d3BaseKey = cmEscapeHtml(d3m.ccBaseKey);
                         const d3WinCode = cmEscapeHtml(d3m.ccWinCode);
                         const d3WinName = cmEscapeHtml(d3m.ccWinName);
 
@@ -116,7 +121,7 @@ $(function () {
                         if (d4.length > 0) {
                             panel += '<li class="menu-depth3-item">';
                             panel += '  <div class="menu-depth3-row">';
-                            panel += '    <a href="#" class="menu-depth3-link" data-code="' + d3Code + '" data-win-code="' + d3WinCode + '" data-win-name="' + d3WinName + '">' + d3Name + '</a>';
+                            panel += '    <a href="#" class="menu-depth3-link" data-code="' + d3Code + '" data-url="' + d3Url + '" data-base-key="' + d3BaseKey + '" data-win-code="' + d3WinCode + '" data-win-name="' + d3WinName + '">' + d3Name + '</a>';
                             panel += '    <button type="button" class="menu-depth3-toggle" aria-expanded="false"><i class="bi bi-chevron-down menu-depth3-chevron"></i></button>';
                             panel += '  </div>';
                             panel += '  <ul class="menu-depth4" style="display:none">';
@@ -124,21 +129,23 @@ $(function () {
                             $.each(d4, function (_, d4m) {
                                 const d4Name = cmEscapeHtml(d4m.ccMenuName);
                                 const d4Code = cmEscapeHtml(d4m.ccCode);
+                                const d4Url = cmEscapeHtml(d4m.ccMenu2);
+                                const d4BaseKey = cmEscapeHtml(d4m.ccBaseKey);
                                 const d4WinCode = cmEscapeHtml(d4m.ccWinCode);
                                 const d4WinName = cmEscapeHtml(d4m.ccWinName);
-                                panel += '<li><a href="#" data-code="' + d4Code + '" data-win-code="' + d4WinCode + '" data-win-name="' + d4WinName + '">' + d4Name + '</a></li>';
+                                panel += '<li><a href="#" data-code="' + d4Code + '" data-url="' + d4Url + '" data-base-key="' + d4BaseKey + '" data-win-code="' + d4WinCode + '" data-win-name="' + d4WinName + '">' + d4Name + '</a></li>';
                             });
 
                             panel += '  </ul>';
                             panel += '</li>';
                         } else {
-                            panel += '<li><a href="#" data-code="' + d3Code + '" data-win-code="' + d3WinCode + '" data-win-name="' + d3WinName + '">' + d3Name + '</a></li>';
+                            panel += '<li><a href="#" data-code="' + d3Code + '" data-url="' + d3Url + '" data-base-key="' + d3BaseKey + '" data-win-code="' + d3WinCode + '" data-win-name="' + d3WinName + '">' + d3Name + '</a></li>';
                         }
                     });
 
                     panel += '</ul></li>';
                 } else {
-                    panel += '<li class="menu-depth2-item"><a class="menu-depth2-link" href="#" data-code="' + d2Code + '" data-win-code="' + d2WinCode + '" data-win-name="' + d2WinName + '"><span class="menu-txt">' + d2Name + '</span></a></li>';
+                    panel += '<li class="menu-depth2-item"><a class="menu-depth2-link" href="#" data-code="' + d2Code + '" data-url="' + d2Url + '" data-base-key="' + d2BaseKey + '" data-win-code="' + d2WinCode + '" data-win-name="' + d2WinName + '"><span class="menu-txt">' + d2Name + '</span></a></li>';
                 }
             });
 
@@ -182,7 +189,9 @@ $(function () {
                         ccLevel: n.ccLevel,
                         ccWinName: n.ccWinName,
                         ccWinCode: n.ccWinCode,
-                        children: (n.children || []) // 매칭이면 하위 전체 유지
+                        ccMenu2: n.ccMenu2,
+                        ccBaseKey: n.ccBaseKey,
+                        children: (n.children || [])
                     });
                     return;
                 }
@@ -195,6 +204,8 @@ $(function () {
                         ccLevel: n.ccLevel,
                         ccWinName: n.ccWinName,
                         ccWinCode: n.ccWinCode,
+                        ccMenu2: n.ccMenu2,
+                        ccBaseKey: n.ccBaseKey,
                         children: children
                     });
                 }
@@ -226,6 +237,27 @@ $(function () {
             .next('.menu-depth3')
             .stop(true, true)
             .slideUp(speed);
+    }
+
+    function movePage(el) {
+        const target = $(el);
+
+        const url = $.trim(target.data('url') || target.attr('data-url') || '');
+        const baseKey = $.trim(target.data('baseKey') || target.attr('data-base-key') || '');
+        const winCode = $.trim(target.data('winCode') || target.attr('data-win-code') || '');
+        const menuName = $.trim(target.text() || '');
+
+        if (!url) {
+            if (typeof customAlert === 'function') customAlert('경고', '이동할 메뉴 URL이 없습니다.', 'WARN');
+            return;
+        }
+        closeMenu();
+
+        cmMovePage(url, {
+            ccBaseKey: baseKey,
+            ccWinCode: winCode,
+            ccMenuName: menuName
+        });
     }
 
     $('#btnMenuToggle').on('click', function () {
@@ -310,16 +342,7 @@ $(function () {
         resetSelection(panel, 0);
         a.addClass('is-active');
 
-        const winCode = $.trim(a.data('win-code') || '');
-        const winName = $.trim(a.data('win-name') || '');
-
-        if (winCode) {
-            closeMenu();
-            cmMoveWindow(winCode, winName);
-            return;
-        }
-
-        if (typeof customAlert === 'function') customAlert('경고', '이동할 메뉴 정보가 없습니다.', 'WARN');
+        movePage(a);
     });
 
     menu.on('click', '.menu-depth3 > li > a', function (e) {
@@ -331,16 +354,7 @@ $(function () {
         resetSelection(panel, 0);
         a.addClass('is-active');
 
-        const winCode = $.trim(a.data('win-code') || '');
-        const winName = $.trim(a.data('win-name') || '');
-
-        if (winCode) {
-            closeMenu();
-            cmMoveWindow(winCode, winName);
-            return;
-        }
-
-        if (typeof customAlert === 'function') customAlert('경고', '이동할 메뉴 정보가 없습니다.', 'WARN');
+        movePage(a);
     });
 
     menu.on('click', '.menu-depth3-toggle', function (e) {
@@ -390,36 +404,36 @@ $(function () {
         toggle.attr('aria-expanded', 'true');
         depth4.stop(true, true).slideDown(0);
 
-        const winCode = $.trim(a.data('win-code') || '');
-        const winName = $.trim(a.data('win-name') || '');
-
-        if (winCode) {
-            closeMenu();
-            cmMoveWindow(winCode, winName);
-            return;
-        }
-
-        if (typeof customAlert === 'function') customAlert('경고', '이동할 메뉴 정보가 없습니다.', 'WARN');
+        movePage(a);
     });
-
 
     function applyCurrentActive() {
         if (!menuLoaded) return;
-        if (!currentWinName) return;
+        if (!currentWinCode) return;
 
         const ctx = $.trim($('#appCtx').val() || '');
         const path = String(location.pathname || '');
         const relPath = (ctx && path.indexOf(ctx) === 0) ? path.substring(ctx.length) : path;
-        if (relPath === '' || relPath === '/' || relPath === '/main.do' || relPath === '/main') return; // 메인페이지는 기존 유지
+        if (relPath === '' || relPath === '/' || relPath === '/main.do' || relPath === '/main') return;
 
-        function getWinName(el) {
-            return $.trim($(el).data('win-name') || $(el).attr('data-win-name') || '');
+        function getWinCode(el) {
+            return $.trim($(el).data('winCode') || $(el).attr('data-win-code') || '');
+        }
+
+        function getBaseKey(el) {
+            return $.trim($(el).data('baseKey') || $(el).attr('data-base-key') || '');
+        }
+
+        function isMatch(el) {
+            if (getWinCode(el) !== currentWinCode) return false;
+            if (!currentBaseKey) return true;
+            return getBaseKey(el) === currentBaseKey;
         }
 
         function findFirstMatched(selector) {
             let found = null;
             menu.find(selector).each(function () {
-                if (getWinName(this) === currentWinName) {
+                if (isMatch(this)) {
                     found = $(this);
                     return false;
                 }
@@ -427,20 +441,18 @@ $(function () {
             return found;
         }
 
-        // winName만 기준. 중복이면 DOM상 먼저 찾힌 것 1개만 활성화.
         const target =
-            findFirstMatched('.menu-depth4 a[data-win-name]') ||
-            findFirstMatched('.menu-depth3 > li > a[data-win-name]') ||
-            findFirstMatched('.menu-depth3-link[data-win-name]') ||
-            findFirstMatched('.menu-depth2-link[data-win-name]') ||
-            findFirstMatched('.menu-depth2-btn[data-win-name]');
+            findFirstMatched('.menu-depth4 a[data-win-code]') ||
+            findFirstMatched('.menu-depth3 > li > a[data-win-code]') ||
+            findFirstMatched('.menu-depth3-link[data-win-code]') ||
+            findFirstMatched('.menu-depth2-link[data-win-code]') ||
+            findFirstMatched('.menu-depth2-btn[data-win-code]');
 
         if (!target || target.length === 0) return;
 
         const panel = target.closest('.menu-panel');
         if (panel.length === 0) return;
 
-        // depth1 탭 + 우측 panel 전환
         const panelId = panel.attr('id');
         if (panelId) {
             menu.find('.menu-panel').hide().removeClass('is-active');
@@ -453,7 +465,6 @@ $(function () {
             }
         }
 
-        // 초기화 후 경로 펼치기
         resetSelection(panel, 0);
         resetDepth2(panel, 0);
 
@@ -468,7 +479,6 @@ $(function () {
             }
         }
 
-        // depth3(depth4 포함) 펼침
         const depth3Item = target.closest('.menu-depth3-item');
         if (depth3Item.length > 0) {
             const row = depth3Item.find('> .menu-depth3-row');

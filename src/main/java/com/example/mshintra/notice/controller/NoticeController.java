@@ -1,5 +1,6 @@
 package com.example.mshintra.notice.controller;
 
+import com.example.mshintra.menu.dto.MenuDto;
 import com.example.mshintra.notice.dto.NoticeDto;
 import com.example.mshintra.notice.dto.NoticeMenuDto;
 import com.example.mshintra.notice.service.NoticeService;
@@ -44,10 +45,10 @@ public class NoticeController {
     }
 
     @GetMapping("/board.do")
-    public String board(@RequestParam(value = "baseKey", required = false) String baseKey,
-                        Model model) {
+    public String board(MenuDto menuDto, Model model) {
 
-        model.addAttribute("baseKey", baseKey);
+        model.addAttribute("baseKey", menuDto.getCcBaseKey());
+        model.addAttribute("menuName", menuDto.getCcMenuName());
         return "jsp/notice/noticeList";
     }
 }

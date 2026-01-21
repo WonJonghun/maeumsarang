@@ -15,14 +15,14 @@
         data-main-yn="<c:out value='${headerMainYn}'/>"
         data-search-yn="<c:out value='${headerSearchYn}'/>"
         data-date-yn="<c:out value='${headerDateYn}'/>"
-        data-title="<c:out value='${empty cmAuth ? "" : cmAuth.menuName}'/>">
+        data-title="<c:out value='${menuAuth.menuName}'/>">
 
     <div class="topbar-left">
         <button type="button" class="icon-button" id="btnMenuToggle" aria-label="메뉴">
             <i class="bi bi-list"></i>
         </button>
 
-        <p id="topbarTitle" class="topbar-title" hidden><c:out value="${empty cmAuth ? '' : cmAuth.menuName}"/></p>
+        <p id="topbarTitle" class="topbar-title" hidden><c:out value='${menuAuth.menuName}'/></p>
 
         <div id="topbarSearch" class="topbar-search" hidden>
             <form id="topbarSearchForm" autocomplete="off">
@@ -88,10 +88,10 @@
             <input type="hidden" id="loginFlag" value="<c:out value='${user.flag}'/>"/>
             <input type="hidden" id="loginIcCode" value="<c:out value='${user.icCode}'/>"/>
             <input type="hidden" id="loginBuser" value="<c:out value='${user.icBuser}'/>"/>
-            <input type="hidden" id="adminKey" value="<c:out value='${cmAuth.adminKey}'/>"/>
-            <input type="hidden" id="menuName" value="<c:out value='${cmAuth.menuName}'/>"/>
-            <input type="hidden" id="currentWinName" value="<c:out value='${empty cmAuth ? "" : cmAuth.winName}'/>"/>
-            <input type="hidden" id="appCtx" value="<c:out value='${pageContext.request.contextPath}'/>"/>
+            <input type="hidden" id="adminKey" value="<c:out value='${menuAuth.adminKey}'/>"/>
+            <input type="hidden" id="menuName" value="<c:out value='${menuAuth.menuName}'/>"/>
+            <input type="hidden" id="currentWinCode" value="<c:out value='${empty menuAuth ? "" : menuAuth.winCode}'/>"/>
+            <input type="hidden" id="currentBaseKey" value="<c:out value='${empty menuAuth ? "" : menuAuth.baseKey}'/>"/>
         </div>
 
         <!-- mainYn이 N이면 프로필 숨김 -->

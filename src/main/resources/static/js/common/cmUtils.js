@@ -46,41 +46,15 @@ function cmGetSearchBuserCd(adminKey) {
 }
 
 // 페이지 이동
-function cmMoveWindow(winCode, winName) {
-    const code = $.trim(winCode || '');
-    const name = $.trim(winName || '');
+function cmMovePage(url, data) {
+    let targetUrl = String(url || '');
 
-    if (!code || code === 'undefined' || code === 'null') {
-        if (typeof customAlert === 'function') customAlert('경고', '이동할 메뉴 코드가 없습니다.', 'WARN');
-        return $.Deferred().reject('PARAM_MISSING').promise();
+    if (data && typeof data === 'object') {
+        const qs = $.param(data);
+        if (qs) targetUrl += (targetUrl.indexOf('?') > -1 ? '&' : '?') + qs;
     }
 
-    return cmAjax('/window/window.do', 'POST', { winCode: code, winName: name }, true).done(function (res) {
-        let ok = false;
-        let url = '';
-        let msg = '';
-
-        if (typeof res === 'string') {
-            ok = true;
-            url = res;
-        } else if (res) {
-            ok = (res.success === true || res.success === 'Y' || res.success === 1 || res.result === true || res.result === 'SUCCESS' || res.code === 'SUCCESS');
-            url = res.url || (typeof res.data === 'string' ? res.data : (res.data && (res.data.url || res.data.redirectUrl)));
-            msg = res.message || res.msg || res.errorMessage || '';
-        }
-
-        if (ok) {
-            if (url) location.href = url; else location.reload();
-        } else {
-            if (typeof customAlert === 'function') customAlert('경고', msg || '권한이 없습니다.', 'WARN');
-        }
-    }).fail(function (xhr) {
-        let msg = '처리 중 오류 발생';
-        try {
-            if (xhr && xhr.responseJSON) msg = xhr.responseJSON.message || xhr.responseJSON.msg || xhr.responseJSON.detail || msg;
-        } catch (e) {}
-        if (typeof customAlert === 'function') customAlert('경고', msg, 'WARN');
-    });
+    location.href = targetUrl;
 }
 
 // XSS 방지용 HTML escape

@@ -6,56 +6,112 @@ $(function () {
         e.preventDefault();
 
         const a = $(this);
-        const winCode = $.trim(a.data('win-code') || '');
-        const winName = $.trim(a.data('win-name') || '');
+        const url = $.trim(a.data('url') || '');
+        const baseKey = $.trim(a.data('baseKey') || '');
+        const winCode = $.trim(a.data('winCode') || '');
+        const menuName = $.trim(a.data('menuName') || '');
 
-        if (!winCode) return;
-        cmMoveWindow(winCode, winName);
+        if (!url) return;
+
+        cmMovePage(url, {
+            ccBaseKey: baseKey,
+            ccWinCode: winCode,
+            ccMenuName: menuName
+        });
     });
 
     //달력 만들기
     let mainCalendar = createCalendar();
 
-    //달력 셀 선택 이벤트 0.5초 누르고있어야됨
+    //달력 셀 선택 이벤트
     if (mainCalendar && mainCalendar.grid) {
-        let pressTimer = null;
-        let moved = false;
 
-        mainCalendar.grid.on('mousedown touchstart', '.cal-day', function () {
-            moved = false;
+        //터치로 할때
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchMoved = false;
+        const MOVE_THRESHOLD = 10;
 
-            let cell = $(this);
-            let dateStr = cell.data('date');
+        mainCalendar.grid.on('touchstart', '.cal-day', function (e) {
+            const t = e.originalEvent.touches && e.originalEvent.touches[0];
+            if (!t) return;
+
+            touchStartX = t.clientX;
+            touchStartY = t.clientY;
+            touchMoved = false;
+        });
+
+        mainCalendar.grid.on('touchmove', '.cal-day', function (e) {
+            const t = e.originalEvent.touches && e.originalEvent.touches[0];
+            if (!t) return;
+
+            if (Math.abs(t.clientX - touchStartX) > MOVE_THRESHOLD || Math.abs(t.clientY - touchStartY) > MOVE_THRESHOLD) {
+                touchMoved = true;
+            }
+        });
+
+        mainCalendar.grid.on('touchend', '.cal-day', function (e) {
+            if (touchMoved) return; // 스크롤/드래그면 무시
+            e.preventDefault();
+
+            const cell = $(this);
+            const dateStr = cell.data('date');
             if (!dateStr) return;
 
-            // 같은 날짜면 동작 금지
-            let currentSelected = mainCalendar.grid.find('.cal-day.selected').data('date');
+            const currentSelected = mainCalendar.grid.find('.cal-day.selected').data('date');
             if (currentSelected === dateStr) return;
 
-            let dateDotStr = dateStr.replace(/-/g, '.');
+            const dateDotStr = dateStr.replace(/-/g, '.');
 
-            pressTimer = setTimeout(function () {
-                if (moved) return;
+            mainCalendar.grid.find('.cal-day').removeClass('selected');
+            cell.addClass('selected');
 
-                mainCalendar.grid.find('.cal-day').removeClass('selected');
-                cell.addClass('selected');
+            loadScheduleByDate(dateStr);
+            loadPatientStatusByDate(dateStr);
+            loadDayDutyByDate(dateStr);
 
-                loadScheduleByDate(dateStr);
-                loadPatientStatusByDate(dateStr);
-                loadDayDutyByDate(dateStr);
-
-                $('.card-subtitle').text(' / ' + dateDotStr);
-            }, 500); // 0.5초
+            $('.card-subtitle').text(' / ' + dateDotStr);
         });
 
-        mainCalendar.grid.on('mousemove touchmove', '.cal-day', function () {
-            moved = true;
-            clearTimeout(pressTimer);
-        });
-
-        mainCalendar.grid.on('mouseup mouseleave touchend touchcancel', '.cal-day', function () {
-            clearTimeout(pressTimer);
-        });
+        //길게누르기로 할때
+        // let pressTimer = null;
+        // let moved = false;
+        //
+        // mainCalendar.grid.on('mousedown touchstart', '.cal-day', function () {
+        //     moved = false;
+        //
+        //     let cell = $(this);
+        //     let dateStr = cell.data('date');
+        //     if (!dateStr) return;
+        //
+        //     // 같은 날짜면 동작 금지
+        //     let currentSelected = mainCalendar.grid.find('.cal-day.selected').data('date');
+        //     if (currentSelected === dateStr) return;
+        //
+        //     let dateDotStr = dateStr.replace(/-/g, '.');
+        //
+        //     pressTimer = setTimeout(function () {
+        //         if (moved) return;
+        //
+        //         mainCalendar.grid.find('.cal-day').removeClass('selected');
+        //         cell.addClass('selected');
+        //
+        //         loadScheduleByDate(dateStr);
+        //         loadPatientStatusByDate(dateStr);
+        //         loadDayDutyByDate(dateStr);
+        //
+        //         $('.card-subtitle').text(' / ' + dateDotStr);
+        //     }, 500); // 0.5초 (500)
+        // });
+        //
+        // mainCalendar.grid.on('mousemove touchmove', '.cal-day', function () {
+        //     moved = true;
+        //     clearTimeout(pressTimer);
+        // });
+        //
+        // mainCalendar.grid.on('mouseup mouseleave touchend touchcancel', '.cal-day', function () {
+        //     clearTimeout(pressTimer);
+        // });
     }
 
     // 게시글 클릭시

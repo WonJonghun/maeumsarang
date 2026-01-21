@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.mshintra.common.mapper.WindowMapper">
+<mapper namespace="com.example.mshintra.common.mapper.MenuAuthMapper">
 
-    <select id="selectAdminKey" parameterType="com.example.mshintra.common.dto.AuthDto" resultType="string">
+    <select id="selectAdminKey" parameterType="com.example.mshintra.common.dto.MenuAuthDto" resultType="string">
         SELECT dbo.Get_AdminKey(#{winCode}, #{baseKey}, #{userId})
     </select>
 
