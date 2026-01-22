@@ -90,8 +90,8 @@
             <input type="hidden" id="loginBuser" value="<c:out value='${user.icBuser}'/>"/>
             <input type="hidden" id="adminKey" value="<c:out value='${menuAuth.adminKey}'/>"/>
             <input type="hidden" id="menuName" value="<c:out value='${menuAuth.menuName}'/>"/>
-            <input type="hidden" id="currentWinCode" value="<c:out value='${empty menuAuth ? "" : menuAuth.winCode}'/>"/>
-            <input type="hidden" id="currentBaseKey" value="<c:out value='${empty menuAuth ? "" : menuAuth.baseKey}'/>"/>
+            <input type="hidden" id="winCode" value="<c:out value='${empty menuAuth ? "" : menuAuth.winCode}'/>"/>
+            <input type="hidden" id="baseKey" value="<c:out value='${empty menuAuth ? "" : menuAuth.baseKey}'/>"/>
         </div>
 
         <!-- mainYn이 N이면 프로필 숨김 -->

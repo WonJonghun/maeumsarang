@@ -1,5 +1,4 @@
 $(function () {
-
     // 초기 리스트 호출
     loadRepairList();
 

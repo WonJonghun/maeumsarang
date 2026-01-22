@@ -45,7 +45,7 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public List<HolidayDto> selectHolidayList(String year, String month) {
-        return scheduleMapper.selectHolidayList(year, month);
+    public List<HolidayDto> selectHolidayList(HolidayDto searchDto) {
+        return scheduleMapper.selectHolidayList(searchDto);
     }
 }

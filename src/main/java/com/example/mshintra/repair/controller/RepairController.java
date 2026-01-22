@@ -17,10 +17,7 @@ public class RepairController {
     private final RepairService repairService;
 
     @GetMapping("/repairList.do")
-    public String dataBoard(@RequestParam(value = "hcName", required = false) String hcName,
-                            Model model) {
-
-        model.addAttribute("hcName", hcName);
+    public String dataBoard() {
         return "jsp/repair/repairList";
     }
 

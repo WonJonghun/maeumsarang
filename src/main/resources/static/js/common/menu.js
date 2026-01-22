@@ -4,8 +4,8 @@ $(function () {
     const searchInput = $('#menuSearch');
     const btnSearchClear = $('#btnMenuSearchClear');
 
-    const currentWinCode = $.trim($('#currentWinCode').val() || '');
-    const currentBaseKey = $.trim($('#currentBaseKey').val() || '');
+    const winCode = $.trim($('#winCode').val() || '');
+    const baseKey = $.trim($('#baseKey').val() || '');
 
     let menuLoaded = false;
     let menuTreeOrigin = [];
@@ -407,7 +407,7 @@ $(function () {
 
     function applyCurrentActive() {
         if (!menuLoaded) return;
-        if (!currentWinCode) return;
+        if (!winCode) return;
 
         const ctx = $.trim($('#appCtx').val() || '');
         const path = String(location.pathname || '');
@@ -423,9 +423,9 @@ $(function () {
         }
 
         function isMatch(el) {
-            if (getWinCode(el) !== currentWinCode) return false;
-            if (!currentBaseKey) return true;
-            return getBaseKey(el) === currentBaseKey;
+            if (getWinCode(el) !== winCode) return false;
+            if (!baseKey) return true;
+            return getBaseKey(el) === baseKey;
         }
 
         function findFirstMatched(selector) {

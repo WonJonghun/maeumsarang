@@ -18,13 +18,9 @@ public class ImprvPropController {
     private final ImprvPropService imprvPropService;
 
     @GetMapping("/propList.do")
-    public String imprvPropList(@RequestParam(value = "baseKey", required = false) String baseKey,
-                                @RequestParam(value = "hcName", required = false) String hcName,
-                                Model model)  {
+    public String imprvPropList(@RequestParam(value = "baseKey", required = false) String baseKey, Model model)  {
 
         model.addAttribute("baseKey", baseKey);
-        model.addAttribute("hcName", hcName);
-
         return "jsp/imprvprop/propList";
     }
 

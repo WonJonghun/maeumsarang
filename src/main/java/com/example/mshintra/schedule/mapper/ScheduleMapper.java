@@ -17,5 +17,5 @@ public interface ScheduleMapper {
 
     List<DayDutyDto> selectOutDayDutyList(DayDutyDto searchDto);
 
-    List<HolidayDto> selectHolidayList(@Param("year") String year, @Param("month") String month);
+    List<HolidayDto> selectHolidayList(HolidayDto searchDto);
 }

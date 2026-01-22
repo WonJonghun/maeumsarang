@@ -72,9 +72,9 @@
                 , '') AS Du_Name;
     </select>
 
-    <select id="selectHolidayList" resultType="com.example.mshintra.schedule.dto.HolidayDto">
+    <select id="selectHolidayList" parameterType="com.example.mshintra.schedule.dto.HolidayDto" resultType="com.example.mshintra.schedule.dto.HolidayDto">
         SELECT *
-        FROM dbo.GetOffDayList(#{year}, 1)
+        FROM dbo.GetOffDayList(#{year}, #{ccWeekendCd})
         WHERE CONVERT(CHAR(6), cc_Dt, 112) = #{year} + #{month}
     </select>
 
