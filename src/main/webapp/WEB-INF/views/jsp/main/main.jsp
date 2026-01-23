@@ -79,7 +79,7 @@
                         <div class="dot-gray"></div>
                     </c:otherwise></c:choose>
                     <div class="notice-text">
-                        <p class="notice-title<c:if test='${notice.ccView eq "N"}'> text-deep-blue</c:if>"><c:out
+                        <p class="notice-title main-notice-title<c:if test='${notice.ccView eq "N"}'> text-deep-blue</c:if>"><c:out
                                 value="${notice.tnTitle}"/></p>
                         <p class="notice-date"><c:out value="${notice.tnDateStr}"/> · <c:out value="${notice.tnUk}"/> ·
                             조회 <c:out
@@ -115,7 +115,7 @@
                         <div class="dot-gray"></div>
                     </c:otherwise></c:choose>
                     <div class="notice-text">
-                        <p class="notice-title<c:if test='${board.ccView eq "N"}'> text-deep-blue</c:if>"><c:out
+                        <p class="notice-title main-notice-title<c:if test='${board.ccView eq "N"}'> text-deep-blue</c:if>"><c:out
                                 value="${board.tnTitle}"/></p>
                         <p class="notice-date"><c:out value="${board.tnDateStr}"/> · <c:out value="${board.tnUk}"/> · 조회
                             <c:out value="${board.viewCount}"/></p>

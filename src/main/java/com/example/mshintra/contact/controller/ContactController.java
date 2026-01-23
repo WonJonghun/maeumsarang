@@ -20,7 +20,7 @@ public class ContactController {
 
     @GetMapping("/contact.do")
     public String employeeContact() {
-        return "jsp/contact/contactList";
+        return "contactListTest";
     }
 
     @ResponseBody

@@ -14,6 +14,20 @@ $(function () {
     let menuHistoryPushed = false;
     let menuClosingByPop = false;
 
+    // swipe-to-close
+    let swipeStarted = false;
+    let swipeLocked = false;
+    let swipeStartX = 0;
+    let swipeStartY = 0;
+    let swipeLastX = 0;
+    let swipeStartAt = 0;
+    let menuW = 0;
+
+    function resetSwipeStyles() {
+        menu.removeClass('is-dragging').css({transform: '', transition: ''});
+        overlay.css({opacity: ''});
+    }
+
     function loadMenuAllIfNeeded() {
         if (menuLoaded) return $.Deferred().resolve().promise();
 
@@ -29,6 +43,7 @@ $(function () {
     }
 
     function openMenu() {
+        resetSwipeStyles();
         menu.addClass('open').attr('aria-hidden', 'false');
         overlay.prop('hidden', false);
         $('body').css('overflow', 'hidden');
@@ -49,6 +64,8 @@ $(function () {
     function closeMenu(useHistory) {
         if (useHistory === undefined) useHistory = true;
 
+        resetSwipeStyles();
+
         if (useHistory && menuHistoryPushed && !menuClosingByPop) {
             history.back();
             return;
@@ -58,6 +75,113 @@ $(function () {
         overlay.prop('hidden', true);
         $('body').css('overflow', '');
         menuHistoryPushed = false;
+    }
+
+    function bindSwipeToClose() {
+        // pointer events first (covers touch/pen/mouse), fallback to touch events
+        function getPoint(e) {
+            const oe = e.originalEvent || e;
+            if (oe.touches && oe.touches[0]) return oe.touches[0];
+            if (oe.changedTouches && oe.changedTouches[0]) return oe.changedTouches[0];
+            return oe;
+        }
+
+        function start(e) {
+            if (!menu.hasClass('open')) return;
+
+            if ($(e.target).is('input,textarea,select')) return;
+
+            const oe = e.originalEvent || e;
+            // mouse drag는 기본 비활성 (원하면 oe.pointerType === 'mouse'도 허용)
+            if (oe.pointerType && oe.pointerType === 'mouse') return;
+
+            const p = getPoint(e);
+            swipeStarted = true;
+            swipeLocked = false;
+            swipeStartX = p.clientX;
+            swipeStartY = p.clientY;
+            swipeLastX = p.clientX;
+            swipeStartAt = Date.now();
+            menuW = menu.outerWidth() || 0;
+        }
+
+        function move(e) {
+            if (!swipeStarted) return;
+
+            const p = getPoint(e);
+            const dx = p.clientX - swipeStartX;
+            const dy = p.clientY - swipeStartY;
+
+            // 수직 스크롤이면 스와이프 취소
+            if (!swipeLocked) {
+                if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+
+                // 오른쪽 스와이프는 무시
+                if (dx > 0) {
+                    swipeStarted = false;
+                    swipeLocked = false;
+                    return;
+                }
+
+                if (Math.abs(dy) > Math.abs(dx) * 1.15) {
+                    swipeStarted = false;
+                    swipeLocked = false;
+                    return;
+                }
+                swipeLocked = true;
+                menu.addClass('is-dragging').css('transition', 'none');
+            }
+
+            swipeLastX = p.clientX;
+
+            // 왼쪽(닫기) 방향만
+            const tx = Math.max(-menuW, Math.min(0, dx));
+            menu.css('transform', 'translateX(' + tx + 'px)');
+
+            const ratio = menuW ? (1 - (Math.abs(tx) / menuW)) : 1;
+            overlay.css('opacity', Math.max(0, Math.min(1, ratio)));
+
+            // 가로 스와이프 중이면 화면 스크롤 방지
+            e.preventDefault();
+        }
+
+        function end() {
+            if (!swipeStarted) return;
+
+            const dx = swipeLastX - swipeStartX;
+            const dt = Math.max(1, Date.now() - swipeStartAt);
+            const v = dx / dt; // px/ms
+
+            const closeByDistance = dx < -(menuW * 0.35);
+            const closeByVelocity = v < -0.5;
+
+            swipeStarted = false;
+
+            if (swipeLocked && (closeByDistance || closeByVelocity)) {
+                resetSwipeStyles();
+                closeMenu(true);
+                return;
+            }
+
+            // 원위치
+            menu.css('transition', 'transform .18s cubic-bezier(.2, .8, .2, 1)');
+            menu.css('transform', 'translateX(0)');
+            overlay.css('opacity', '1');
+
+            setTimeout(function () {
+                resetSwipeStyles();
+            }, 200);
+        }
+
+        // pointer events
+        menu.on('pointerdown', start);
+        menu.on('pointermove', move);
+        menu.on('pointerup pointercancel', end);
+
+        // touch fallback (구형 브라우저)
+        menu.on('touchstart', start);
+        menu.on('touchmove', move);
+        menu.on('touchend touchcancel', end);
     }
 
     $(window).on('popstate', function () {
@@ -505,4 +629,6 @@ $(function () {
         applyCurrentActive();
         searchInput.focus();
     });
+
+    bindSwipeToClose();
 });
