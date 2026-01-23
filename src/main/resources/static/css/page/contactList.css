@@ -22,9 +22,9 @@
     font-weight: 600;
 }
 
+/*부서명직급명 배경색*/
 .contact-table tbody td[rowspan] {
-    background: #d0dcea;
-    font-weight: 600;
+    /*background: #d0dcea;*/
 }
 
 .contact-table th:nth-child(1),
@@ -44,22 +44,7 @@
     white-space: nowrap;
 }
 
-.contact-table tbody td.group-cell {
-    background: #d0dcea;
-    font-weight: 600;
-}
-
-.contact-table tbody tr.dept-end td {
-    border-bottom: 2px solid #ababab;
-}
-.contact-table tbody td.dept-cell {
-    border-bottom: 2px solid #ababab;
-}
-.contact-table tbody td.dept-end-span {
-    border-bottom: 2px solid #ababab;
-}
-
 .contact-table a.tel-link {
-    color: inherit;
-    text-decoration: underline;
+    /*color: inherit;*/
+    text-decoration: none;
 }
