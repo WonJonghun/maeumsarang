@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.mshintra.contact.mapper.ContactMapper">
+
+    <select id="selectContactList" resultType="com.example.mshintra.contact.dto.ContactDto" statementType="CALLABLE">
+        { call dbo.Insa_Sawon_List(#{baseDt}, '1', 'KGH2010') }
+    </select>
+
+</mapper>

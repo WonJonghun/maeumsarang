@@ -16,7 +16,7 @@ public class CommonCodeService {
 
     private final CommonCodeMapper commonCodeMapper;
 
-    //근무코드
+    //근무코드 a1일부터 a31일까지 매핑해서 출력
     public <T> void mapGunmuCode(List<T> targetList) {
 
         List<CommonCodeDto> gunmuCodes = commonCodeMapper.selectGunmuCodeList();
@@ -47,13 +47,13 @@ public class CommonCodeService {
         }
     }
 
-    //부서코드
+    //부서코드 codeField에 변환할 부서코드 컬럼명, nameField에 반환할 컬럼명
     public <T> void mapBuserCode(List<T> targetList, String codeField, String nameField) {
         List<CommonCodeDto> codes = commonCodeMapper.selectBuserCodeList();
         applyCodeMapping(targetList, codeField, nameField, codes);
     }
 
-    //직급코드
+    //직급코드 codeField에 변환할 직급코드 컬럼명, nameField에 반환할 컬럼명
     public <T> void mapJikgubCode(List<T> targetList, String codeField, String nameField) {
         List<CommonCodeDto> codes = commonCodeMapper.selectJikgubCodeList();
         applyCodeMapping(targetList, codeField, nameField, codes);

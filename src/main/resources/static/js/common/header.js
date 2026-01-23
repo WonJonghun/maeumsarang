@@ -13,6 +13,7 @@ const storageKeys = {
 let searchEnabled = false;
 let dateEnabled = false;
 let searchOpen = false;
+let searchCloseTimer = null;
 
 //초기화
 function initHeader() {
@@ -88,7 +89,7 @@ function initHeader() {
     if (location.hash === '#search' || savedOpen === 'Y') {
         openSearch(topbar, searchWrap, searchInput, filterPanel, filterBtn, false);
     } else {
-        closeSearch(topbar, searchWrap, filterPanel, filterBtn);
+        closeSearch(topbar, searchWrap, filterPanel, filterBtn, true);
     }
 }
 
@@ -322,9 +323,21 @@ function fireSearch(searchInput, fromEl, toEl, source) {
 function openSearch(topbar, searchWrap, searchInput, filterPanel, filterBtn, pushHistory) {
     if (!searchEnabled || searchOpen) return;
 
+    if (searchCloseTimer) {
+        clearTimeout(searchCloseTimer);
+        searchCloseTimer = null;
+    }
+    searchWrap.off('transitionend.topbarSearch');
+
     searchOpen = true;
+
     topbar.addClass('search-mode');
     searchWrap.prop('hidden', false);
+
+    searchWrap.removeClass('is-open');
+    requestAnimationFrame(function () {
+        searchWrap.addClass('is-open');
+    });
 
     if (filterPanel && filterPanel.length) filterPanel.removeClass('is-open');
     if (filterBtn && filterBtn.length) filterBtn.removeClass('is-active');
@@ -339,17 +352,44 @@ function openSearch(topbar, searchWrap, searchInput, filterPanel, filterBtn, pus
     searchInput.focus();
 }
 
-function closeSearch(topbar, searchWrap, filterPanel, filterBtn) {
+function closeSearch(topbar, searchWrap, filterPanel, filterBtn, immediate) {
     if (!searchEnabled) return;
 
+    if (searchCloseTimer) {
+        clearTimeout(searchCloseTimer);
+        searchCloseTimer = null;
+    }
+    searchWrap.off('transitionend.topbarSearch');
+
     searchOpen = false;
-    topbar.removeClass('search-mode');
-    searchWrap.prop('hidden', true);
 
     if (filterPanel && filterPanel.length) filterPanel.removeClass('is-open');
     if (filterBtn && filterBtn.length) filterBtn.removeClass('is-active');
 
     ssSet(storageKeys.searchOpen, 'N');
+
+    if (immediate === true) {
+        searchWrap.removeClass('is-open').prop('hidden', true);
+        topbar.removeClass('search-mode');
+        return;
+    }
+
+    searchWrap.removeClass('is-open');
+
+    searchWrap.on('transitionend.topbarSearch', function (e) {
+        if (e.originalEvent && e.originalEvent.propertyName !== 'transform') return;
+
+        searchWrap.off('transitionend.topbarSearch');
+        searchWrap.prop('hidden', true);
+        topbar.removeClass('search-mode');
+    });
+
+    searchCloseTimer = setTimeout(function () {
+        searchWrap.off('transitionend.topbarSearch');
+        if (!searchWrap.prop('hidden')) searchWrap.prop('hidden', true);
+        topbar.removeClass('search-mode');
+        searchCloseTimer = null;
+    }, 260);
 }
 
 function openFilter(filterPanel, filterBtn) {

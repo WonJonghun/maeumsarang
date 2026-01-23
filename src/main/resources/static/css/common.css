@@ -185,17 +185,30 @@ button, .icon-button, .menu-depth1-btn, .menu-depth2-btn, .menu-depth2-link, .me
 
 .topbar-search-btn { display: none; }
 
-.topbar-search { display: none; width: 100%; min-width: 0; }
+/* 검색영역 애니메이션(오른쪽 -> 왼쪽) */
+.topbar-search {
+    display: none;
+    width: 100%;
+    min-width: 0;
+    flex: 1;
+    align-items: flex-start;
+
+    opacity: 0;
+    transform: translateX(30px);
+    transition: transform 180ms ease, opacity 180ms ease;
+    will-change: transform, opacity;
+}
+
 #topbarSearch[hidden] { display: none !important; }
 
 .topbar.search-mode #btnMenuToggle { display: none; }
 .topbar.search-mode #topbarTitle { display: none; }
 .topbar.search-mode #topbarSearch { display: flex; }
 
-.topbar-search {
-    flex: 1;
-    min-width: 0;
-    align-items: flex-start;
+/* 열림 상태 */
+.topbar.search-mode #topbarSearch.is-open {
+    opacity: 1;
+    transform: translateX(0);
 }
 
 #topbarSearchForm { width: 100%; min-width: 0; }

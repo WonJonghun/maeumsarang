@@ -8,22 +8,20 @@
     <title><c:out value='${menuAuth.menuName}'/></title>
     <%@ include file="../common/common-inc.jspf" %>
 
-    <link rel="stylesheet" href="<c:url value='/css/page/repairList.css'/>">
+    <link rel="stylesheet" href="<c:url value='/css/page/contactList.css'/>">
 </head>
 
-<body class="repair-page">
+<body class="contact-page">
 <div class="page-root">
     <c:set var="headerMainYn" value="N"/>
     <c:set var="headerSearchYn" value="Y"/>
-    <c:set var="headerDateYn" value="Y"/>
     <%@ include file="../common/header.jspf" %>
 
-    <main class="repair-list-wrap">
-        <div id="repairList"></div>
+    <main class="contact-list-wrap">
+        <div id="contactList"></div>
     </main>
 </div>
 
-<%@ include file="../common/detailDrawer.jspf" %>
-<script src="<c:url value='/js/repair/repairList.js'/>"></script>
+<script src="<c:url value='/js/contact/contactList.js'/>"></script>
 </body>
 </html>

@@ -1,0 +1,48 @@
+/* ================== 연락처 리스트 테이블 영역 ↓================== */
+#contactList { max-width: 100%; overflow-x: hidden; }
+
+.contact-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+    font-size: 12px;
+    line-height: 1.3;
+}
+
+.contact-table th,
+.contact-table td {
+    border: 1px solid #bdbcbc;
+    padding: 6px 6px;
+    vertical-align: middle;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.contact-table thead th {
+    background: #d0dcea;
+    font-weight: 600;
+}
+
+.contact-table tbody td[rowspan] {
+    background: #d0dcea;
+    font-weight: 600;
+}
+
+.contact-table th:nth-child(1),
+.contact-table td:nth-child(1),
+.contact-table th:nth-child(2),
+.contact-table td:nth-child(2),
+.contact-table th:nth-child(3),
+.contact-table td:nth-child(3) {
+    white-space: normal;
+    word-break: keep-all;
+}
+
+.contact-table th:nth-child(4),
+.contact-table td:nth-child(4),
+.contact-table th:nth-child(5),
+.contact-table td:nth-child(5) {
+    white-space: nowrap;
+}
+/* ================== 연락처 리스트 테이블 영역 ↑================== */
+
