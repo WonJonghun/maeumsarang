@@ -5,9 +5,12 @@ $(function () {
 
 const storageKeys = {
     searchOpen: 'SearchOpen',
+    searchOpenUrl: 'SearchOpenUrl',
     searchKeyword: 'SearchKeyword',
     searchFromDate: 'SearchFromDate',
-    searchToDate: 'SearchToDate'
+    searchToDate: 'SearchToDate',
+    skipBackOnce: 'TopbarSkipBackOnce',
+    skipBackUrl: 'TopbarSkipBackUrl'
 };
 
 let searchEnabled = false;
@@ -66,8 +69,12 @@ function initHeader() {
 
     openBtn.prop('hidden', false);
 
+    const navType = getNavType();
+    const curUrlKey = location.pathname + location.search;
+
     //저장값 복원
     const savedOpen = ssGet(storageKeys.searchOpen);
+    const savedOpenUrl = ssGet(storageKeys.searchOpenUrl);
     const savedKeyword = ssGet(storageKeys.searchKeyword);
     const savedFrom = ssGet(storageKeys.searchFromDate);
     const savedTo = ssGet(storageKeys.searchToDate);
@@ -86,10 +93,27 @@ function initHeader() {
         if (filterBtn.length) filterBtn.removeClass('is-active');
     }
 
-    if (location.hash === '#search' || savedOpen === 'Y') {
+    if (navType === 'reload') {
+        if (location.hash === '#search') {
+            ssSet(storageKeys.skipBackOnce, 'Y');
+            ssSet(storageKeys.skipBackUrl, curUrlKey);
+            history.replaceState(history.state, document.title, curUrlKey);
+        } else {
+            ssSet(storageKeys.skipBackOnce, 'N');
+            ssSet(storageKeys.skipBackUrl, '');
+        }
+
+        ssSet(storageKeys.searchOpen, 'N');
+        closeSearch(topbar, searchWrap, filterPanel, filterBtn, true);
+        return;
+    }
+
+    const shouldRestore = (navType === 'back_forward' && savedOpen === 'Y' && savedOpenUrl === curUrlKey);
+
+    if (location.hash === '#search' || shouldRestore) {
         openSearch(topbar, searchWrap, searchInput, filterPanel, filterBtn, false);
     } else {
-        closeSearch(topbar, searchWrap, filterPanel, filterBtn, true);
+        closeSearchView(topbar, searchWrap, filterPanel, filterBtn);
     }
 }
 
@@ -239,6 +263,7 @@ function headerEvents() {
 
         ssSet(storageKeys.searchKeyword, $.trim(searchInput.val() || ''));
         ssSet(storageKeys.searchOpen, 'Y');
+        ssSet(storageKeys.searchOpenUrl, location.pathname + location.search);
 
         if (dateEnabled && dateFrom.length && dateTo.length) {
             ssSet(storageKeys.searchFromDate, $.trim(dateFrom.val() || ''));
@@ -255,8 +280,19 @@ function headerEvents() {
     });
 
     //뒤로가기
-    $(window).off('popstate.topbarPop').on('popstate.topbarPop', function () {
+    $(window).off('popstate.topbarPop').on('popstate.topbarPop', function (e) {
         if (!searchEnabled) return;
+
+        const skipOnce = ssGet(storageKeys.skipBackOnce);
+        const skipUrl = ssGet(storageKeys.skipBackUrl);
+        const curUrlKey = location.pathname + location.search;
+
+        if (skipOnce === 'Y' && skipUrl === curUrlKey && location.hash !== '#search') {
+            ssSet(storageKeys.skipBackOnce, 'N');
+            ssSet(storageKeys.skipBackUrl, '');
+            history.back();
+            return;
+        }
 
         if (dateEnabled && filterPanel.length && filterPanel.hasClass('is-open')) {
             const hist = history.state || {};
@@ -269,8 +305,17 @@ function headerEvents() {
         }
 
         if (searchOpen) {
+            searchInput.val('');
+            ssSet(storageKeys.searchKeyword, '');
+
+            if (dateEnabled && dateFrom.length && dateTo.length) {
+                applyDefaultDates(dateFrom, dateTo);
+            }
+
+            fireSearch(searchInput, dateFrom, dateTo, 'close');
             closeSearch(topbar, searchWrap, filterPanel, filterBtn);
         }
+
     });
 
     //외부에서 상태 저장 필요할 때만(최소 전역)
@@ -294,6 +339,23 @@ function ssGet(key) {
 function ssSet(key, val) {
     try { sessionStorage.setItem(key, val); }
     catch (e) { /* ignore */ }
+}
+
+function getNavType() {
+    try {
+        const entries = performance.getEntriesByType('navigation');
+        if (entries && entries.length) return entries[0].type || 'navigate';
+    } catch (e) { /* ignore */ }
+
+    try {
+        // 구형 브라우저 fallback
+        if (performance && performance.navigation) {
+            if (performance.navigation.type === 1) return 'reload';
+            if (performance.navigation.type === 2) return 'back_forward';
+        }
+    } catch (e) { /* ignore */ }
+
+    return 'navigate';
 }
 
 function applyDefaultDates(fromEl, toEl) {
@@ -347,6 +409,7 @@ function openSearch(topbar, searchWrap, searchInput, filterPanel, filterBtn, pus
     }
 
     ssSet(storageKeys.searchOpen, 'Y');
+    ssSet(storageKeys.searchOpenUrl, location.pathname + location.search);
     ssSet(storageKeys.searchKeyword, $.trim(searchInput.val() || ''));
 
     searchInput.focus();
@@ -390,6 +453,25 @@ function closeSearch(topbar, searchWrap, filterPanel, filterBtn, immediate) {
         topbar.removeClass('search-mode');
         searchCloseTimer = null;
     }, 260);
+}
+
+function closeSearchView(topbar, searchWrap, filterPanel, filterBtn) {
+    if (!searchEnabled) return;
+
+    if (searchCloseTimer) {
+        clearTimeout(searchCloseTimer);
+        searchCloseTimer = null;
+    }
+    if (searchWrap && searchWrap.length) {
+        searchWrap.off('transitionend.topbarSearch');
+        searchWrap.removeClass('is-open').prop('hidden', true);
+    }
+
+    searchOpen = false;
+
+    if (filterPanel && filterPanel.length) filterPanel.removeClass('is-open');
+    if (filterBtn && filterBtn.length) filterBtn.removeClass('is-active');
+    if (topbar && topbar.length) topbar.removeClass('search-mode');
 }
 
 function openFilter(filterPanel, filterBtn) {

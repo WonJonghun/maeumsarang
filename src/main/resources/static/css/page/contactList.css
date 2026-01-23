@@ -1,4 +1,3 @@
-/* ================== 연락처 리스트 테이블 영역 ↓================== */
 #contactList { max-width: 100%; overflow-x: hidden; }
 
 .contact-table {
@@ -44,5 +43,23 @@
 .contact-table td:nth-child(5) {
     white-space: nowrap;
 }
-/* ================== 연락처 리스트 테이블 영역 ↑================== */
 
+.contact-table tbody td.group-cell {
+    background: #d0dcea;
+    font-weight: 600;
+}
+
+.contact-table tbody tr.dept-end td {
+    border-bottom: 2px solid #ababab;
+}
+.contact-table tbody td.dept-cell {
+    border-bottom: 2px solid #ababab;
+}
+.contact-table tbody td.dept-end-span {
+    border-bottom: 2px solid #ababab;
+}
+
+.contact-table a.tel-link {
+    color: inherit;
+    text-decoration: underline;
+}

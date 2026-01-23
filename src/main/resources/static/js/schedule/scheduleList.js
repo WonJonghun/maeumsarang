@@ -1,6 +1,7 @@
 $(function () {
     // 초기화
-    initYm();
+    const now = new Date();
+    setYmToInput(now.getFullYear(), now.getMonth() + 1);
 
     // 최초리스트 호출
     loadScheduleList();
@@ -13,7 +14,7 @@ function bindEvents() {
     // 검색
     $(document).off('topbar:search.schedule').on('topbar:search.schedule', function (e, p) {
         const kw = $.trim((p && p.searchKeyword) || $('#searchKeyword').val() || '');
-        renderFiltered(kw);
+        scheduleFiltered(kw);
     });
 
     // 이전/다음 달
@@ -50,11 +51,6 @@ function bindEvents() {
     $('#scheduleList').off('click.scheduleCell').on('click.scheduleCell', '.schedule-table tbody td.click-row', function () {
         selectScheduleCell($(this));
     });
-}
-
-function initYm() {
-    const now = new Date();
-    setYmToInput(now.getFullYear(), now.getMonth() + 1);
 }
 
 function moveYm(offsetMonth) {
@@ -166,13 +162,13 @@ function loadScheduleList() {
             scheduleState.holidayList = holidayList;
 
             const kw = $.trim($('#searchKeyword').val() || '');
-            renderFiltered(kw);
+            scheduleFiltered(kw);
         }).fail(function () {
             scheduleState.dataList = dataList;
             scheduleState.holidayList = [];
 
             const kw = $.trim($('#searchKeyword').val() || '');
-            renderFiltered(kw);
+            scheduleFiltered(kw);
         });
     }).fail(function () {
         $('#scheduleList').empty().append($('<div/>', { class: 'schedule-error', text: '스케줄 조회에 실패했습니다.' }));
@@ -180,7 +176,7 @@ function loadScheduleList() {
 }
 
 //검색
-function renderFiltered(keyword) {
+function scheduleFiltered(keyword) {
     const kw = $.trim(keyword || '');
     const src = scheduleState.dataList || [];
 
