@@ -72,6 +72,19 @@ function initHeader() {
     const navType = getNavType();
     const curUrlKey = location.pathname + location.search;
 
+    // 뒤로/앞으로 복원 대응
+    $(window).off('pageshow.topbar').on('pageshow.topbar', function (e) {
+        if (e.originalEvent && e.originalEvent.persisted) {
+            resetTopbarState(topbar, searchWrap, searchInput, filterPanel, filterBtn, dateFrom, dateTo, curUrlKey, 'back_forward');
+        }
+    });
+
+    // 새로고침/뒤로가기 로드 시 검색 상태/입력값 초기화
+    if (navType === 'reload' || navType === 'back_forward') {
+        resetTopbarState(topbar, searchWrap, searchInput, filterPanel, filterBtn, dateFrom, dateTo, curUrlKey, navType);
+        return;
+    }
+
     //저장값 복원
     const savedOpen = ssGet(storageKeys.searchOpen);
     const savedOpenUrl = ssGet(storageKeys.searchOpenUrl);
@@ -91,21 +104,6 @@ function initHeader() {
 
         if (filterPanel.length) filterPanel.removeClass('is-open');
         if (filterBtn.length) filterBtn.removeClass('is-active');
-    }
-
-    if (navType === 'reload') {
-        if (location.hash === '#search') {
-            ssSet(storageKeys.skipBackOnce, 'Y');
-            ssSet(storageKeys.skipBackUrl, curUrlKey);
-            history.replaceState(history.state, document.title, curUrlKey);
-        } else {
-            ssSet(storageKeys.skipBackOnce, 'N');
-            ssSet(storageKeys.skipBackUrl, '');
-        }
-
-        ssSet(storageKeys.searchOpen, 'N');
-        closeSearch(topbar, searchWrap, filterPanel, filterBtn, true);
-        return;
     }
 
     const shouldRestore = (navType === 'back_forward' && savedOpen === 'Y' && savedOpenUrl === curUrlKey);
@@ -373,6 +371,39 @@ function applyDefaultDates(fromEl, toEl) {
     ssSet(storageKeys.searchToDate, to);
 }
 
+function resetTopbarState(topbar, searchWrap, searchInput, filterPanel, filterBtn, dateFrom, dateTo, curUrlKey, navType) {
+    // reload에서 #search 해시 제거 처리(기존 로직 유지)
+    if (navType === 'reload') {
+        if (location.hash === '#search') {
+            ssSet(storageKeys.skipBackOnce, 'Y');
+            ssSet(storageKeys.skipBackUrl, curUrlKey);
+            history.replaceState(history.state, document.title, curUrlKey);
+        } else {
+            ssSet(storageKeys.skipBackOnce, 'N');
+            ssSet(storageKeys.skipBackUrl, '');
+        }
+    } else {
+        ssSet(storageKeys.skipBackOnce, 'N');
+        ssSet(storageKeys.skipBackUrl, '');
+    }
+
+    if (searchInput && searchInput.length) searchInput.val('');
+    ssSet(storageKeys.searchKeyword, '');
+    ssSet(storageKeys.searchOpen, 'N');
+    ssSet(storageKeys.searchOpenUrl, '');
+
+    if (dateEnabled && dateFrom && dateFrom.length && dateTo && dateTo.length) {
+        applyDefaultDates(dateFrom, dateTo);
+    }
+
+    // hash 남아있으면 제거
+    if (location.hash) {
+        history.replaceState(history.state, document.title, curUrlKey);
+    }
+
+    closeSearchView(topbar, searchWrap, filterPanel, filterBtn);
+}
+
 function fireSearch(searchInput, fromEl, toEl, source) {
     $(document).trigger('topbar:search', [{
         searchKeyword: $.trim(searchInput.val() || ''),
@@ -398,7 +429,9 @@ function openSearch(topbar, searchWrap, searchInput, filterPanel, filterBtn, pus
 
     searchWrap.removeClass('is-open');
     requestAnimationFrame(function () {
-        searchWrap.addClass('is-open');
+        requestAnimationFrame(function () {
+            searchWrap.addClass('is-open');
+        });
     });
 
     if (filterPanel && filterPanel.length) filterPanel.removeClass('is-open');

@@ -18,7 +18,19 @@
     <%@ include file="../common/header.jspf" %>
 
     <main class="contact-list-wrap">
-        <div id="contactList"></div>
+        <!-- 카테고리 -->
+        <div class="contact-category-bar">
+            <div class="contact-tabs" role="tablist" aria-label="연락처 보기 옵션">
+                <button type="button" class="contact-tab is-active" data-view="all" role="tab" aria-selected="true">전체</button>
+                <button type="button" class="contact-tab" data-view="myDept" role="tab" aria-selected="false">내 부서</button>
+                <button type="button" class="contact-tab" data-view="compact" role="tab" aria-selected="false">간편조회</button>
+            </div>
+        </div>
+
+        <div id="contactList">
+          <div id="viewAll" class="contact-view"></div>
+          <div id="viewCompact" class="contact-view" style="display:none;"></div>
+        </div>
     </main>
 </div>
 

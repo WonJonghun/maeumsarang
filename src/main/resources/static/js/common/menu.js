@@ -14,7 +14,6 @@ $(function () {
     let menuHistoryPushed = false;
     let menuClosingByPop = false;
 
-    // swipe-to-close
     let swipeStarted = false;
     let swipeLocked = false;
     let swipeStartX = 0;
@@ -69,6 +68,13 @@ $(function () {
         if (useHistory && menuHistoryPushed && !menuClosingByPop) {
             history.back();
             return;
+        }
+
+        const activeEl = document.activeElement;
+        if (activeEl && menu[0] && menu[0].contains(activeEl)) {
+            const toggleBtn = $('#btnMenuToggle');
+            if (toggleBtn.length) toggleBtn.focus();
+            else activeEl.blur();
         }
 
         menu.removeClass('open').attr('aria-hidden', 'true');
@@ -374,6 +380,9 @@ $(function () {
             if (typeof customAlert === 'function') customAlert('경고', '이동할 메뉴 URL이 없습니다.', 'WARN');
             return;
         }
+
+        if (typeof cmShowLdg === 'function') cmShowLdg();
+
         closeMenu();
 
         cmMovePage(url, {
