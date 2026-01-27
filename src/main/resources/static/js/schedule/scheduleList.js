@@ -369,6 +369,7 @@ function renderScheduleTable(dataList, holidayList, year, month) {
     tableEl.css('--sticky-name-left', '0px');
 
     selectMyRow();
+    focusTodayColumn(year, month);
 }
 
 //공휴
@@ -425,4 +426,60 @@ function selectMyRow() {
     if (!myTd.length) return;
 
     selectScheduleCell(myTd);
+}
+
+// 오늘날짜 포커스 + 내 사번 로우 포커스
+function focusTodayColumn(year, month) {
+    const now = new Date();
+    const isThisMonth = (year === now.getFullYear() && month === (now.getMonth() + 1));
+    if (!isThisMonth) return;
+
+    const wrapEl = $('#scheduleList');
+    if (!wrapEl.length) return;
+
+    const tableEl = wrapEl.find('.schedule-table');
+    if (!tableEl.length) return;
+
+    const targetTh = tableEl.find('thead tr:nth-child(2) th.col-today').first();
+    if (!targetTh.length) return;
+
+    if (!targetTh.attr('tabindex')) targetTh.attr('tabindex', '-1');
+
+    const wrapDom = wrapEl.get(0);
+    const tableDom = tableEl.get(0);
+    const targetDom = targetTh.get(0);
+    if (!wrapDom || !tableDom || !targetDom) return;
+
+    const wrapOffset = wrapEl.offset();
+    const targetOffset = targetTh.offset();
+    if (!wrapOffset || !targetOffset) return;
+
+    const currentLeft = wrapDom.scrollLeft;
+    const targetLeftInWrap = targetOffset.left - wrapOffset.left + currentLeft;
+
+    const wrapW = wrapDom.clientWidth || wrapEl.width() || 0;
+    const targetW = targetTh.outerWidth() || 0;
+    const desiredLeft = targetLeftInWrap - Math.max(0, (wrapW - targetW) / 2);
+    const maxLeft = Math.max(0, (tableDom.scrollWidth || tableEl.outerWidth() || 0) - wrapW);
+    wrapDom.scrollLeft = Math.max(0, Math.min(maxLeft, desiredLeft));
+
+    const myTr = tableEl.find('tbody tr.row-selected').first();
+    if (myTr.length) {
+        if (!myTr.attr('tabindex')) myTr.attr('tabindex', '-1');
+
+        const trDom = myTr.get(0);
+        const wrapH = wrapDom.clientHeight || wrapEl.height() || 0;
+
+        const trTop = trDom.offsetTop;
+        const trH = trDom.offsetHeight;
+
+        const desiredTop = Math.max(0, trTop - Math.max(0, (wrapH - trH) / 2));
+        const maxTop = Math.max(0, (wrapDom.scrollHeight || 0) - wrapH);
+        wrapDom.scrollTop = Math.min(maxTop, desiredTop);
+
+        try { trDom.focus({ preventScroll: true }); } catch (e) { trDom.focus(); }
+        return;
+    }
+
+    try { targetDom.focus({ preventScroll: true }); } catch (e) { targetDom.focus(); }
 }

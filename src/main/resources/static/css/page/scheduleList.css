@@ -246,3 +246,13 @@
     .schedule-monthbar{gap:3px;padding:8px 8px}
     .schedule-monthbar input#scheduleYm.ym-input{width:84px}
 }
+
+#scheduleList .schedule-table th.col-today:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+#scheduleList .schedule-table th.col-today:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+}
