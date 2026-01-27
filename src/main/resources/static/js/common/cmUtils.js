@@ -14,6 +14,29 @@ function cmGetToday(param) {
     return y + param + m + param + day;
 }
 
+// YYYYMMDD 또는 YYYY-MM-DD 받고 subDays만큼 빼서 리턴
+function cmSubDays(dateStr, subDays, param) {
+    if (!dateStr) return '';
+    subDays = parseInt(subDays, 10) || 0;
+    param = (param == null) ? '' : String(param);
+
+    const digits = String(dateStr).replace(/\D/g, '');
+    if (digits.length !== 8) return '';
+
+    const y = parseInt(digits.slice(0, 4), 10);
+    const m = parseInt(digits.slice(4, 6), 10);
+    const d = parseInt(digits.slice(6, 8), 10);
+
+    const dt = new Date(y, m - 1, d);
+    dt.setDate(dt.getDate() - subDays);
+
+    const yy = dt.getFullYear();
+    const mm = ('0' + (dt.getMonth() + 1)).slice(-2);
+    const dd = ('0' + dt.getDate()).slice(-2);
+
+    return '' + yy + param + mm + param + dd;
+}
+
 function cmFormatYmd(d, param) {
     if (!d) return '';
     let dt = (d instanceof Date) ? d : new Date(d);

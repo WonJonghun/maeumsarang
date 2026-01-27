@@ -239,6 +239,7 @@ function setView(view) {
 //간편조회 테이블 그리기
 function compactContactList(list, keyword) {
     list = list || [];
+    $('#contactTotalCnt').text(Number(list.length || 0).toLocaleString());
 
     let html = ''
         + '<div class="contact-table-wrap">'
@@ -316,6 +317,7 @@ function compactContactList(list, keyword) {
 //연락처 목록 그리기
 function contactList(list, keyword) {
     list = list || [];
+    $('#contactTotalCnt').text(Number(list.length || 0).toLocaleString());
 
     //가나다라 정렬
     const sortedList = list.slice().sort(function (a, b) {

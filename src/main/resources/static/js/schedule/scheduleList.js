@@ -14,7 +14,12 @@ function bindEvents() {
     // 검색
     $(document).off('topbar:search.schedule').on('topbar:search.schedule', function (e, p) {
         const kw = $.trim((p && p.searchKeyword) || $('#searchKeyword').val() || '');
-        scheduleFiltered(kw);
+        scheduleFiltered(kw, { skipFocus: true });
+    });
+
+    // 타이핑 즉시 필터링
+    $('#searchKeyword').off('input.scheduleList').on('input.scheduleList', function () {
+        scheduleFiltered($(this).val(), { skipFocus: true });지
     });
 
     // 이전/다음 달
@@ -176,12 +181,13 @@ function loadScheduleList() {
 }
 
 //검색
-function scheduleFiltered(keyword) {
+function scheduleFiltered(keyword, opt) {
+    const opts = opt || {};
     const kw = $.trim(keyword || '');
     const src = scheduleState.dataList || [];
 
     if (!kw) {
-        renderScheduleTable(src, scheduleState.holidayList || [], scheduleState.year, scheduleState.month);
+        renderScheduleTable(src, scheduleState.holidayList || [], scheduleState.year, scheduleState.month, opts);
         return;
     }
 
@@ -198,11 +204,13 @@ function scheduleFiltered(keyword) {
             filtered.push(it);
         }
     }
-    renderScheduleTable(filtered, scheduleState.holidayList || [], scheduleState.year, scheduleState.month);
+    renderScheduleTable(filtered, scheduleState.holidayList || [], scheduleState.year, scheduleState.month, opts);
 }
 
 //근무표 구현
-function renderScheduleTable(dataList, holidayList, year, month) {
+function renderScheduleTable(dataList, holidayList, year, month, opt) {
+    const opts = opt || {};
+
     const now = new Date();
     const isThisMonth = (year === now.getFullYear() && month === (now.getMonth() + 1));
     const todayD = now.getDate();
@@ -269,11 +277,15 @@ function renderScheduleTable(dataList, holidayList, year, month) {
     theadEl.append(tr0El).append(tr1El).append(tr2El);
     tableEl.append(theadEl);
 
-    //tbody
     const tbodyEl = $('<tbody/>');
 
     if (!dataList.length) {
-        customAlert('경고', '조회 결과가 없습니다.', 'WARN');
+        const kw = $.trim($('#searchKeyword').val() || '');
+
+        if (!kw && typeof customAlert === 'function') {
+            customAlert('경고', '조회 결과가 없습니다.', 'WARN');
+        }
+
         tbodyEl.append(
             $('<tr/>').append(
                 $('<td/>', { colspan: 3 + dayCount, class: 'td-empty', text: '조회 결과가 없습니다.' })
@@ -369,7 +381,10 @@ function renderScheduleTable(dataList, holidayList, year, month) {
     tableEl.css('--sticky-name-left', '0px');
 
     selectMyRow();
-    focusTodayColumn(year, month);
+
+    if (!opts.skipFocus) {
+        focusTodayColumn(year, month);
+    }
 }
 
 //공휴

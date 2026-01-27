@@ -6,7 +6,18 @@
     z-index: 50;
     background:#fff;
     border-bottom:1px solid #e6e6e6;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
 }
+
+.contact-category-right{
+    padding-right:16px;
+    font-size:13px;
+    color:#666;
+    white-space:nowrap;
+}
+.contact-category-right strong{ color:var(--blue-2563eb); }
 
 .contact-tabs{
     display:flex;
@@ -107,7 +118,7 @@
 }
 
 .contact-card-item{
-    padding:14px 16px;
+    padding:14px 16px 14px 20px;
     border-bottom:1px solid #eee;
 }
 
@@ -118,10 +129,10 @@
 }
 
 .contact-profile-img{
-    width:44px;
-    height:44px;
+    width:45px;
+    height:45px;
     border-radius:50%;
-    flex:0 0 44px;
+    flex:0 0 45px;
     object-fit:cover;
     display:block;
     background:#d9d9d9;
@@ -157,8 +168,9 @@
 }
 
 .contact-meta{
+    color:var(--gray-4b5563);
     margin-top:4px;
-    font-size:13px;
+    font-size:14px;
     line-height:1.2;
     opacity:.8;
     white-space:nowrap;
@@ -199,8 +211,8 @@
 
 .contact-phone-label{
     display:inline-block;
-    width:40px;
-    font-weight: 700;
+    width:37px;
+    font-weight: 600;
     color:#666;
 }
 
@@ -284,10 +296,15 @@
 .contact-row{
     display:flex;
     align-items:flex-start;
-    gap:12px;
+    gap:15px;
 }
 
 .contact-body{
     flex:1 1 auto;
     min-width:0;
+}
+
+.contact-category-right {
+    left: auto;
+    right: 0;
 }

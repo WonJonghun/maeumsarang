@@ -13,13 +13,13 @@ import java.util.List;
 @Service
 public class ContactService {
 
-    private final ContactMapper ContactMapper;
+    private final ContactMapper contactMapper;
     private final CommonCodeService commonCodeService;
 
     @Transactional(readOnly = true)
     public List<ContactDto> selectContactList(String baseDt) {
 
-        List<ContactDto> list = ContactMapper.selectContactList(baseDt);
+        List<ContactDto> list = contactMapper.selectContactList(baseDt);
         commonCodeService.mapBuserCode(list, "icBuser", "icBuserNm");
 
         return list;

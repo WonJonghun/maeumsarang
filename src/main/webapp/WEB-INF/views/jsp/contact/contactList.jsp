@@ -23,7 +23,10 @@
             <div class="contact-tabs" role="tablist" aria-label="연락처 보기 옵션">
                 <button type="button" class="contact-tab is-active" data-view="all" role="tab" aria-selected="true">전체</button>
                 <button type="button" class="contact-tab" data-view="myDept" role="tab" aria-selected="false">내 부서</button>
-                <button type="button" class="contact-tab" data-view="compact" role="tab" aria-selected="false">간편조회</button>
+                <%--<button type="button" class="contact-tab" data-view="compact" role="tab" aria-selected="false">간편조회</button>--%>
+            </div>
+            <div class="contact-category-right">
+                총 <strong id="contactTotalCnt">0</strong>명
             </div>
         </div>
 
