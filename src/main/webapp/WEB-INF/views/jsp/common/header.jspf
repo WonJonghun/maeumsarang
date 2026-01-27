@@ -80,7 +80,7 @@
             <i class="bi bi-search"></i>
         </button>
 
-        <!-- mainYn이 N이면 이름 숨김 -->
+        <!-- mainYn이 N이면 숨김 -->
         <div class="topbar-user-text" style="${headerMainYn eq 'N' ? 'display:none;' : ''}">
             <p class="user-name text-blue"><c:out value="${user.icName}"/></p>
             <p class="user-team"><c:out value="${user.ccBuser}"/></p>
@@ -94,11 +94,11 @@
             <input type="hidden" id="baseKey" value="<c:out value='${empty menuAuth ? "" : menuAuth.baseKey}'/>"/>
         </div>
 
-        <!-- mainYn이 N이면 프로필 숨김 -->
+        <!-- mainYn이 N이면 숨김 -->
         <div class="profile" style="${headerMainYn eq 'N' ? 'display:none;' : ''}">
             <c:choose>
                 <c:when test="${not empty user.afContent}">
-                    <img src="<c:url value='/profileImage.do'/>" alt="프로필 이미지" class="profile-img"/>
+                    <img src="<c:url value='/attach/profileImage.do'/>" alt="프로필 이미지" class="profile-img"/>
                 </c:when>
                 <c:otherwise>
                     <i class="bi bi-person-circle profile-icon"></i>

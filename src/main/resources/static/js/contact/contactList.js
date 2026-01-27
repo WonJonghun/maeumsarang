@@ -317,6 +317,7 @@ function compactContactList(list, keyword) {
 function contactList(list, keyword) {
     list = list || [];
 
+    //가나다라 정렬
     const sortedList = list.slice().sort(function (a, b) {
         const nameA = (a && a.icName ? a.icName : '');
         const nameB = (b && b.icName ? b.icName : '');
@@ -342,6 +343,8 @@ function contactList(list, keyword) {
         return;
     }
 
+    const defaultAvatarUrl = '/img/common/avatar.png';
+
     for (let i = 0; i < sortedList.length; i++) {
         const row = sortedList[i] || {};
 
@@ -351,6 +354,10 @@ function contactList(list, keyword) {
 
         const hpRaw = row.icHPphone || row.icHp || '';
         const saRaw = row.icSaphone || row.icTel || '';
+
+        const afNum = $.trim(row.icCode || ''); // 사번
+        const photoUrl = afNum ? ('/attach/blobImageRequest.do?afNum=' + encodeURIComponent(afNum)) : '';
+        const imgUrl = photoUrl ? photoUrl : defaultAvatarUrl;
 
         const name = kwHighlight(nameRaw, keyword);
         const rank = kwHighlight(rankRaw, keyword);
@@ -364,32 +371,35 @@ function contactList(list, keyword) {
 
         html += ''
             + '    <li class="contact-card-item" data-phone="' + actionPhone + '">'
-            + '      <div class="contact-card">'
-            + '        <div class="contact-profile-img" aria-hidden="true"></div>'
-            + '        <div class="contact-info">'
-            + '          <div class="contact-name">' + name + '</div>'
-            + '          <div class="contact-meta">' + rank + (rankRaw && deptRaw ? ' / ' : '') + dept + '</div>'
-            + '        </div>'
-            + '        <span class="contact-toggle-ico" aria-hidden="true"></span>'
-            + '      </div>'
-
-            + '      <div class="contact-expand" style="display:none;">'
-            + '        <div class="contact-expand-inner">'
-
-            + '          <div class="contact-phone-lines">'
-            + '            <div class="contact-phone-line"><span class="contact-phone-label">휴대폰</span><span class="contact-phone-sep"> | </span><span class="contact-phone-val">' + hp + '</span></div>'
-            + '            <div class="contact-phone-line"><span class="contact-phone-label">직&nbsp;&nbsp;&nbsp;통</span><span class="contact-phone-sep"> | </span><span class="contact-phone-val contact-ext-call" data-ext="' + ext + '">' + sa + '</span></div>'
+            + '      <div class="contact-row">'
+            + '        <img class="contact-profile-img" alt="" loading="lazy" decoding="async"'
+            + '             src="' + imgUrl + '"'
+            + '             data-default="' + defaultAvatarUrl + '" />'
+            + '        <div class="contact-body">'
+            + '          <div class="contact-card">'
+            + '            <div class="contact-info">'
+            + '              <div class="contact-name">' + name + '</div>'
+            + '              <div class="contact-meta">' + rank + (rankRaw && deptRaw ? ' / ' : '') + dept + '</div>'
+            + '            </div>'
+            + '            <span class="contact-toggle-ico" aria-hidden="true"></span>'
             + '          </div>'
+            + '          <div class="contact-expand" style="display:none;">'
+            + '            <div class="contact-expand-inner">'
 
-            + '          <div class="contact-actions" data-phone="' + actionPhone + '">'
-            + '            <button type="button" class="contact-action-btn contact-action-call" aria-label="전화">'
-            + '              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8c1.6 3 3.7 5.1 6.7 6.7l2.2-2.2c.3-.3.7-.4 1.1-.3 1.2.4 2.5.7 3.8.7.6 0 1 .4 1 1V21c0 .6-.4 1-1 1C10.6 22 2 13.4 2 3c0-.6.4-1 1-1h3.6c.6 0 1 .4 1 1 0 1.3.2 2.6.7 3.8.1.4 0 .8-.3 1.1l-2.4 2.1z"/></svg>'
-            + '            </button>'
-            + '            <button type="button" class="contact-action-btn contact-action-sms" aria-label="문자">'
-            + '              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 1.4 0 2 0V4c0-1.1-.9-2-2-2z"/></svg>'
-            + '            </button>'
+            + '              <div class="contact-phone-lines">'
+            + '                <div class="contact-phone-line"><span class="contact-phone-label">휴대폰</span><span class="contact-phone-sep"> | </span><span class="contact-phone-val">' + hp + '</span></div>'
+            + '                <div class="contact-phone-line"><span class="contact-phone-label">직&nbsp;&nbsp;&nbsp;통</span><span class="contact-phone-sep"> | </span><span class="contact-phone-val contact-ext-call" data-ext="' + ext + '">' + sa + '</span></div>'
+            + '              </div>'
+            + '              <div class="contact-actions" data-phone="' + actionPhone + '">'
+            + '                <button type="button" class="contact-action-btn contact-action-call" aria-label="전화">'
+            + '                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8c1.6 3 3.7 5.1 6.7 6.7l2.2-2.2c.3-.3.7-.4 1.1-.3 1.2.4 2.5.7 3.8.7.6 0 1 .4 1 1V21c0 .6-.4 1-1 1C10.6 22 2 13.4 2 3c0-.6.4-1 1-1h3.6c.6 0 1 .4 1 1 0 1.3.2 2.6.7 3.8.1.4 0 .8-.3 1.1l-2.4 2.1z"/></svg>'
+            + '                </button>'
+            + '                <button type="button" class="contact-action-btn contact-action-sms" aria-label="문자">'
+            + '                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 1.4 0 2 0V4c0-1.1-.9-2-2-2z"/></svg>'
+            + '                </button>'
+            + '              </div>'
+            + '            </div>'
             + '          </div>'
-
             + '        </div>'
             + '      </div>'
             + '    </li>';

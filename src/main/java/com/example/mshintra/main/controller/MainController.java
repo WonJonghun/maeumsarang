@@ -126,11 +126,4 @@ public class MainController {
 
         return "jsp/main/main";
     }
-
-    @GetMapping(value = "/profileImage.do", produces = MediaType.IMAGE_JPEG_VALUE)
-    public @ResponseBody byte[] profileImage(@AuthenticationPrincipal LoginUserDto loginUser) {
-        if (loginUser == null || loginUser.getAfContent() == null || loginUser.getAfContent().length == 0)
-            return new byte[0];
-        return loginUser.getAfContent();
-    }
 }

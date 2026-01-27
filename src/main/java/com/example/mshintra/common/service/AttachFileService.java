@@ -123,4 +123,10 @@ public class AttachFileService {
             this.contentType = contentType;
         }
     }
+
+    @Transactional(readOnly = true)
+    public AttachFileDto selectImageBlob(String afNum, int afSeq) {
+        if (afNum == null || afNum.isBlank()) return null;
+        return attachFileMapper.selectAttachOne(afNum, afSeq);
+    }
 }

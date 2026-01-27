@@ -7,6 +7,7 @@
                Af_Seq                                  AS afSeq,
                Af_Flag                                 AS afFlag,
                Af_FileName                             AS afFileName,
+               Af_Content                              AS afContent,
                Af_FileSize                             AS afFileSize,
                CONVERT(varchar (19), Af_RegDate, 120)  AS afRegDate,
                Af_UserID                               AS afUserId,
@@ -18,10 +19,12 @@
     </select>
 
     <select id="selectAttachOne" resultType="com.example.mshintra.common.dto.AttachFileDto">
-        SELECT Af_Num                                  AS afNum,
+        SELECT TOP 1
+               Af_Num                                  AS afNum,
                Af_Seq                                  AS afSeq,
                Af_Flag                                 AS afFlag,
                Af_FileName                             AS afFileName,
+               Af_Content                              AS afContent,
                Af_FileSize                             AS afFileSize,
                CONVERT(varchar (19), Af_RegDate, 120)  AS afRegDate,
                Af_UserID                               AS afUserId,

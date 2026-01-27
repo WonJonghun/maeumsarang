@@ -15,9 +15,9 @@
             END,
             Pl_FileName = CASE
             WHEN ISNULL(Pl_ImgNum, '') <![CDATA[<>]]> '' THEN (
-            SELECT MAX(Af_filename)
-            FROM File_DB.dbo.I_AddFile
-            WHERE Af_Num = Pl_ImgNum
+                SELECT MAX(Af_filename)
+                FROM File_DB.dbo.I_AddFile
+                WHERE Af_Num = Pl_ImgNum
             )
             ELSE ''
             END,

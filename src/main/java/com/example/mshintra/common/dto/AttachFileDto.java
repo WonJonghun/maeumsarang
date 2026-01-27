@@ -11,7 +11,7 @@ public class AttachFileDto {
     private int afSeq;
     private int afFlag;
     private String afFileName;     // 원본명
-    private String afContent;
+    private byte[] afContent;      // 파일
     private long afFileSize;
     private String afRegDate;
     private String afUserId;

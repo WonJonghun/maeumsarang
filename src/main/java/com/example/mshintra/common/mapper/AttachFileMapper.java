@@ -7,6 +7,8 @@ import java.util.List;
 
 @Mapper
 public interface AttachFileMapper {
+
     List<AttachFileDto> selectAttachList(@Param("afNum") String afNum);
+
     AttachFileDto selectAttachOne(@Param("afNum") String afNum,@Param("afSeq") int afSeq);
 }
