@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.mshintra.approval.mapper.ApprovalMapper">
+
+    <select id="selectApprovalFlowlist" resultType="com.example.mshintra.approval.dto.ApprovalDto" statementType="CALLABLE">
+        { call dbo.Intranet_ElecApproval_Count(#{searchToDate}, #{searchFromDate}, #{searchId}) }
+    </select>
+
+    <select id="selectApprovalList" resultType="com.example.mshintra.approval.dto.ApprovalDto" statementType="CALLABLE">
+        { call dbo.Intranet_ElecApproval_Sign(#{searchToDate}, #{searchFromDate}, #{searchId}, #{ccFlag}) }
+    </select>
+
+</mapper>

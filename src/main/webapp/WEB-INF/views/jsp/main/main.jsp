@@ -32,7 +32,7 @@
             <%--슬로건 i_mission 테이블에서 불러오면 됨, 허나 하드코딩--%>
             <div class="welcome-logo-box">
                 <div class="logo-slogan-top">
-                    <p class="logo-slogan-title">"2025년 슬로건"</p>
+                    <p class="logo-slogan-title">"2026년 슬로건"</p>
                     <p class="logo-slogan-sub text-blue">더 높이! 더 가까이!</p>
                 </div>
                 <div class="logo-heart-wrap">
@@ -40,7 +40,7 @@
                     <div class="logo-slogan-inner">
                         <p class="slogan-title">MISSION</p>
                         <p class="slogan-content">최상의 의료서비스로 "인간사랑" 구현</p>
-                        <p class="slogan-title">VISION 2025</p>
+                        <p class="slogan-title">VISION 2026</p>
                         <ul class="slogan-list">
                             <li>전문성 있는 진료로 신뢰받는 병원</li>
                             <li>사랑실천으로 고객이 행복한 병원</li>
