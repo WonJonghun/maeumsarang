@@ -4,11 +4,11 @@
 <mapper namespace="com.example.mshintra.approval.mapper.ApprovalMapper">
 
     <select id="selectApprovalFlowlist" resultType="com.example.mshintra.approval.dto.ApprovalDto" statementType="CALLABLE">
-        { call dbo.Intranet_ElecApproval_Count(#{searchToDate}, #{searchFromDate}, #{searchId}) }
+        { call dbo.Intranet_ElecApproval_Count(#{searchFromDate}, #{searchToDate}, #{searchId}) }
     </select>
 
     <select id="selectApprovalList" resultType="com.example.mshintra.approval.dto.ApprovalDto" statementType="CALLABLE">
-        { call dbo.Intranet_ElecApproval_Sign(#{searchToDate}, #{searchFromDate}, #{searchId}, #{ccFlag}) }
+        { call dbo.Intranet_ElecApproval_Sign(#{searchFromDate}, #{searchToDate}, #{searchId}, #{ccFlag}) }
     </select>
 
 </mapper>
