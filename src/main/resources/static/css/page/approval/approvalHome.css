@@ -1,0 +1,102 @@
+/* ================== 전자결재 홈(분기 카드) 영역 ↓================== */
+body.approval-home-page {
+    background: var(--gray-f9fafb);
+}
+
+.approval-Home-wrap,
+.approval-home-wrap {
+    padding: 14px 16px 24px;
+}
+
+#approvalHome {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.approval-branch-card {
+    width: 100%;
+    border: 0;
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: 0 0 7px rgba(0,0,0,0.15);
+}
+
+.approval-branch-card:active {
+    transform: translateY(1px);
+}
+
+/* 배경만 활성/비활성 */
+.approval-branch-card.is-active {
+    background: #e2ecff;
+}
+
+.approval-branch-card.is-inactive {
+    background: #f1f3f6;
+}
+
+.approval-branch-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.approval-branch-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 21px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    flex: 0 0 auto;
+}
+
+.approval-branch-icon.flag-1  { background: #45cbdd; }
+.approval-branch-icon.flag-2  { background: #49aaf5; }
+.approval-branch-icon.flag-3  { background: #619bf8; }
+.approval-branch-icon.flag-4  { background: #7a8cfc; }
+.approval-branch-icon.flag-5  { background: #927dff; }
+.approval-branch-icon.flag-6  { background: #af86f3; }
+.approval-branch-icon.flag-10 { background: #cc8fe7; }
+
+.approval-branch-text {
+    min-width: 0;
+}
+
+.approval-branch-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #1f2937;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.approval-branch-desc {
+    margin-top: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+    line-height: 1.2;
+}
+
+.approval-branch-right {
+    flex: 0 0 auto;
+    padding-left: 16px;
+}
+
+.approval-branch-count {
+    font-size: 15px;
+    font-weight: 900;
+    color: #111827;
+    white-space: nowrap;
+    letter-spacing: -0.2px;
+}
+/* ================== 전자결재 홈(분기 카드) 영역 ↑================== */

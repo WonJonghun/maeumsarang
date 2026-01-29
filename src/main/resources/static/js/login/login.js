@@ -1,6 +1,8 @@
 $(function(){
     //공백, 특수문자 예외
     $('#loginForm').on('submit',function(e){
+        $('#cmLoadingLayer').css('display', 'flex');
+
         let loginIdVal = $('#loginId');
         let loginError = $('#loginError');
         let loginId = loginIdVal.val().trim();

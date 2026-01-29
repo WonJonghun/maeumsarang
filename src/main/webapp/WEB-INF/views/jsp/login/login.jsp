@@ -34,17 +34,21 @@
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
             <div class="form-group">
                 <label class="form-label" for="loginId">아이디</label>
-                <input class="form-input" type="text" id="loginId" name="loginId" autocomplete="username">
+                <input class="form-input" type="text" id="loginId" name="loginId" autocomplete="username" placeholder="아이디 또는 사번">
             </div>
             <div class="form-group">
                 <label class="form-label" for="loginPw">비밀번호</label>
-                <input class="form-input" type="password" id="loginPw" name="loginPw" autocomplete="current-password">
+                <input class="form-input" type="password" id="loginPw" name="loginPw" autocomplete="current-password" placeholder="비밀번호">
             </div>
             <button type="submit" class="login-btn">로그인</button>
         </form>
 
         <div class="login-footer">ⓒ Maeumsarang Hospital</div>
     </div>
+</div>
+
+<div id="cmLoadingLayer" class="cm-loading-layer">
+    <div class="cm-loading-spinner"></div>
 </div>
 
 <script src="<c:url value='/js/common/jquery-3.7.1.min.js'/>"></script>

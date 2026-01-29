@@ -8,8 +8,8 @@ let flagCd = '1';
 // 전자결재 목록 호출
 function loadApprovalList() {
     const data = {
-        searchFromDate: cmGetToday('-'),
-        searchToDate: cmSubDays(cmGetToday('-'), 90, '-'),
+        searchToDate: cmGetToday('-'),
+        searchFromDate: cmSubDays(cmGetToday('-'), 90, '-'),
         searchId: $.trim($('#loginIcCode').val() || ''),
         ccFlag: flagCd
     };

@@ -28,7 +28,7 @@
             <form id="topbarSearchForm" autocomplete="off">
                 <div class="topbar-search-row">
                     <div class="topbar-search-field">
-                        <input type="text"
+                        <input type="search"
                                id="searchKeyword"
                                class="topbar-search-input"
                                placeholder="검색어를 입력해주세요."

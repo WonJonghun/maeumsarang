@@ -49,15 +49,13 @@ body.login-page {
     display: block;
     margin-bottom: 6px;
     font-size: 13px;
+    font-weight: 500;
+    color: var(--blue-2563eb);
 }
 
 .form-input {
     width: 100%;
     padding: 10px 12px;
-    font-size: 14px;
-    border: 1px solid var(--gray-cccccc);
-    border-radius: 6px;
-    box-sizing: border-box;
 }
 
 .form-input:focus {

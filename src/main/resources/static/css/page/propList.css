@@ -93,7 +93,8 @@
 
 .prop-detail-body {
     font-size: 14px;
-    line-height: 1.6;
+    line-height: 1.8;
+    letter-spacing : 0.04em;
     word-break: break-word;
     font-weight: 400;
 }
