@@ -21,6 +21,7 @@ body.login-page {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     padding: 24px;
     box-sizing: border-box;
+    --login-field-width: 85%;
 }
 /* ================== 로그인 레이아웃/카드 영역 ↑================== */
 
@@ -42,7 +43,7 @@ body.login-page {
 
 /* ================== 폼 공통 영역 ↓================== */
 .form-group {
-    margin-bottom: 16px;
+    margin-bottom: 10px;
 }
 
 .form-label {
@@ -67,7 +68,8 @@ body.login-page {
 
 /* ================== 로그인 버튼 영역 ↓================== */
 .login-btn {
-    width: 100%;
+    width: var(--login-field-width);
+    display: block;
     padding: 10px 12px;
     font-size: 15px;
     font-weight: 600;
@@ -76,6 +78,7 @@ body.login-page {
     background: var(--blue-007bff);
     color: var(--white);
     cursor: pointer;
+    margin: 40px auto 0;
 }
 
 .login-btn:active {
@@ -112,3 +115,33 @@ body.login-page {
     padding: 10px;
 }
 /* ================== 로그인 로고 영역 ↑================== */
+
+/* ================== 입력 아이콘 영역 ↓================== */
+.input-with-icon {
+    position: relative;
+    width: var(--login-field-width);
+    margin: 0 auto;
+}
+
+.input-with-icon .input-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray-6b7280);
+    background: transparent;
+    pointer-events: none;
+}
+
+.input-with-icon .form-input {
+    width: 100%;
+    padding-left: 40px !important;
+}
+
+.input-with-icon:focus-within .input-icon {
+    color: var(--blue-007bff);
+}
+/* ================== 입력 아이콘 영역 ↑================== */
