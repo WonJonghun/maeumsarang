@@ -18,15 +18,27 @@
         data-title="<c:out value='${menuAuth.menuName}'/>">
 
     <div class="topbar-left">
-        <button type="button" class="icon-button" id="btnMenuToggle" aria-label="메뉴">
-            <i class="bi bi-list"></i>
-        </button>
+        <c:choose>
+            <c:when test="${headerMainYn eq 'Y'}">
+                <button type="button" class="icon-button" id="btnMenuToggle" aria-label="메뉴">
+                    <i class="bi bi-list"></i>
+                </button>
+            </c:when>
+            <c:otherwise>
+                <button type="button" class="menu-top-close" id="btnTopbarBack" aria-label="뒤로가기">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+            </c:otherwise>
+        </c:choose>
 
         <p id="topbarTitle" class="topbar-title" hidden><c:out value='${menuAuth.menuName}'/></p>
 
         <div id="topbarSearch" class="topbar-search" hidden>
             <form id="topbarSearchForm" autocomplete="off">
                 <div class="topbar-search-row">
+                    <button type="button" id="topbarSearchClose" class="icon-button topbar-close-btn" aria-label="닫기">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
                     <div class="topbar-search-field">
                         <input type="search"
                                id="searchKeyword"
@@ -45,10 +57,6 @@
                             <i class="bi bi-gear"></i>
                         </button>
                     </c:if>
-
-                    <button type="button" id="topbarSearchClose" class="icon-button topbar-close-btn" aria-label="닫기">
-                        <i class="bi bi-x-lg"></i>
-                    </button>
                 </div>
 
                 <%--날짜옵션--%>

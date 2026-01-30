@@ -18,6 +18,24 @@
     <%@ include file="../common/header.jspf" %>
 
     <main class="schedule-list-wrap">
+        <div class="schedule-monthbar">
+            <button type="button" id="btnYmPrev" class="ym-btn" aria-label="이전 달">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+
+            <input type="text"
+                   id="scheduleYm"
+                   class="ym-input"
+                   inputmode="numeric"
+                   maxlength="7"
+                   placeholder="YYYY-MM"
+                   autocomplete="off" />
+
+            <button type="button" id="btnYmNext" class="ym-btn" aria-label="다음 달">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+        </div>
+
         <div id="scheduleList" class="schedule-body"></div>
     </main>
 </div>

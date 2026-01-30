@@ -133,6 +133,16 @@ function headerEvents() {
     const dateTo = $('#searchToDate');
     const resetBtn = $('#topbarFilterReset');
 
+    //뒤로가기
+    const backBtn = $('#btnTopbarBack');
+    if (backBtn.length) {
+        backBtn.off('click.topbarBack').on('click.topbarBack', function (e) {
+            e.preventDefault();
+            history.back();
+            return false;
+        });
+    }
+
     if (!searchEnabled) return;
 
     //검색 열기

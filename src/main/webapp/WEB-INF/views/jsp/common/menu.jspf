@@ -5,9 +5,9 @@
 <nav id="menu" class="menu" aria-hidden="true">
     <div class="menu-top">
         <div class="menu-top-row">
-            <a href="<c:url value='/main.do'/>" class="menu-home-link" aria-label="홈">
-                <i class="bi bi-house-door-fill"></i>
-            </a>
+            <button type="button" class="menu-top-close" id="btnMenuTopClose" aria-label="뒤로가기">
+                <i class="bi bi-chevron-left"></i>
+            </button>
 
             <div class="menu-search">
                 <i class="bi bi-search menu-search-ico"></i>
@@ -17,11 +17,10 @@
                 </button>
             </div>
 
-            <button type="button" class="menu-top-close" id="btnMenuTopClose" aria-label="닫기">
-                <i class="bi bi-x-lg"></i>
-            </button>
+            <a href="<c:url value='/main.do'/>" class="menu-home-link" aria-label="홈">
+                <i class="bi bi-house-door-fill"></i>
+            </a>
         </div>
-
     </div>
 
     <div class="menu-wrap">
