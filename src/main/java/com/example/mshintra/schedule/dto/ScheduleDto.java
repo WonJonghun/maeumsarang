@@ -15,6 +15,8 @@ public class ScheduleDto {
     private String icCode;      // 코드
     private String icName;      // 성명
     private String ccGunmu;     // 근무형태
+    private String icHpPhone;   // 휴대폰
+    private String icSaPhone;   // 직통
 
     // 일자
     private String a1;

@@ -1,5 +1,6 @@
 package com.example.mshintra.schedule.controller;
 
+import com.example.mshintra.common.dto.SearchDto;
 import com.example.mshintra.menu.dto.MenuDto;
 import com.example.mshintra.schedule.dto.*;
 import com.example.mshintra.schedule.service.ScheduleService;
@@ -24,10 +25,18 @@ public class ScheduleController {
         return "jsp/schedule/scheduleList";
     }
 
+    //월단위 근무일정
     @ResponseBody
     @GetMapping("/scheduleList.do")
     public List<ScheduleDto> selectScheduleList(@ModelAttribute ScheduleMenuDto searchDto) {
         return scheduleService.selectScheduleList(searchDto);
+    }
+
+    //주단위 근무일정
+    @ResponseBody
+    @GetMapping("/scheduleWeekList.do")
+    public List<ScheduleDto> selectScheduleWeekList(@ModelAttribute SearchDto searchDto) {
+        return scheduleService.selectScheduleWeekList(searchDto);
     }
 
     @ResponseBody

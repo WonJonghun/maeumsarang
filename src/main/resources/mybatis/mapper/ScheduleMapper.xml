@@ -7,6 +7,167 @@
         { call dbo.Intranet_Duty_List(#{baseDt}, #{flagCd}<if test="saCd != null and saCd != ''">, #{saCd}</if>) }
     </select>
 
+    <select id="selectScheduleWeekList" parameterType="com.example.mshintra.common.dto.SearchDto" resultType="com.example.mshintra.schedule.dto.ScheduleDto">
+        <![CDATA[
+            WITH evt AS (  -- 근무/휴가/당직 데이터 합치기
+                SELECT
+                    cc_code  = Gu_Code1,
+                    cc_buser = CASE WHEN ISNULL(Gu_Code2,'') = '' THEN ISNULL(Id_Job,Gu_Ward) ELSE Gu_Code2 END,
+                    kk       = DATEDIFF(DAY, CAST(#{searchFromDate} AS DATE), Gu_Date) + 1,
+                    cc_flag  = CASE WHEN ISNULL(Du_Flag,'') = '' THEN Gu_Flag ELSE '당직' END,
+                    cc_chk   = CASE WHEN #{searchKeyword} IN ('1') AND ISNULL(Gu_Code2,'') <> '' THEN 1 ELSE 0 END
+                FROM I_GunMu
+                         LEFT JOIN I_Duty
+                                   ON Du_Date = Gu_Date
+                                       AND Gu_Code1 = Du_Code1
+                                       AND Du_Flag = 2
+                         LEFT JOIN P_InsaDetail
+                                   ON Id_Code = Gu_Code1
+                                       AND Id_DtFlag = 4
+                                       AND Id_Saflag = 1
+                                       AND Gu_Date BETWEEN Id_Date1 AND ISNULL(Id_Date2,'2099-12-31')
+                WHERE Gu_Date BETWEEN CAST(#{searchFromDate} AS DATE) AND CAST(#{searchToDate} AS DATE)
+                  AND (
+                    #{searchId} IS NULL OR #{searchId} = ''
+                        OR Gu_Code1 = #{searchId}
+                    )
+
+                UNION ALL
+
+                SELECT
+                    cc_code  = Od_Code,
+                    cc_buser = ISNULL(Id_Job,''),
+                    kk       = DATEDIFF(DAY, CAST(#{searchFromDate} AS DATE), Od_Date) + 1,
+                    cc_flag  = CONVERT(VARCHAR(2),Od_OffFlag) + CONVERT(VARCHAR(2),Od_OffType),
+                    cc_chk   = 0
+                FROM P_Offday
+                         LEFT JOIN P_InsaDetail
+                                   ON Id_code = Od_Code
+                                       AND Id_DtFlag = 4
+                                       AND Id_Saflag = 1
+                                       AND Od_Date BETWEEN Id_Date1 AND ISNULL(Id_Date2,'2099-12-31')
+                WHERE Od_Date BETWEEN CAST(#{searchFromDate} AS DATE) AND CAST(#{searchToDate} AS DATE)
+                  AND Od_OffFlag <> '0'
+                  AND (
+                    #{searchId} IS NULL OR #{searchId} = ''
+                        OR Od_Code = #{searchId}
+                    )
+
+                UNION ALL
+
+                SELECT
+                    cc_code  = Du_Code1,
+                    cc_buser = ISNULL(Id_Job,''),
+                    kk       = DATEDIFF(DAY, CAST(#{searchFromDate} AS DATE), Du_Date) + 1,
+                    cc_flag  = '당직',
+                    cc_chk   = 0
+                FROM I_Duty
+                         LEFT JOIN P_InsaDetail
+                                   ON Id_Code = Du_Code1
+                                       AND Id_DtFlag = 4
+                                       AND Id_Saflag = 1
+                                       AND Du_Date BETWEEN Id_Date1 AND ISNULL(Id_Date2,'2099-12-31')
+                WHERE #{searchKeyword} IN ('7')
+                  AND Du_Date BETWEEN CAST(#{searchFromDate} AS DATE) AND CAST(#{searchToDate} AS DATE)
+                  AND (
+                    #{searchId} IS NULL OR #{searchId} = ''
+                        OR Du_Code1 = #{searchId}
+                    )
+            ),
+                 pvt AS ( -- 주간데이터를 월~일로 매핑
+                     SELECT
+                         cc_code,
+                         cc_buser,
+                         cc_chk = MAX(cc_chk),
+                         a1 = MAX(CASE WHEN kk = 1 THEN cc_flag ELSE '' END),
+                         a2 = MAX(CASE WHEN kk = 2 THEN cc_flag ELSE '' END),
+                         a3 = MAX(CASE WHEN kk = 3 THEN cc_flag ELSE '' END),
+                         a4 = MAX(CASE WHEN kk = 4 THEN cc_flag ELSE '' END),
+                         a5 = MAX(CASE WHEN kk = 5 THEN cc_flag ELSE '' END),
+                         a6 = MAX(CASE WHEN kk = 6 THEN cc_flag ELSE '' END),
+                         a7 = MAX(CASE WHEN kk = 7 THEN cc_flag ELSE '' END)
+                     FROM evt
+                     WHERE kk BETWEEN 1 AND 7
+                     GROUP BY cc_code, cc_buser
+                 ),
+                 emp AS ( -- 대상 직원 목록(직종/조건/재직기간/saCd) + 기본근무코드
+                     SELECT
+                         Ic_Saflag = MAX(Ic_Saflag),
+                         Ic_Code   = Ic_Code,
+                         Ic_Name   = MAX(RTRIM(Ic_Name)),
+                         Ic_Buser  = CONVERT(VARCHAR(10), ISNULL(Id_Job, Ic_Buser)),
+                         Ic_Buser1 = MAX(CONVERT(VARCHAR(10), ISNULL(Id_Job, Ic_Buser))),
+                         Ic_Indate = MAX(Ic_Indate),
+                         Ic_Jikgub  = MAX(CONVERT(VARCHAR(3), ISNULL(Id_Amount, Ic_Jikgub))),
+                         Ic_Jikchek = MAX(ISNULL(Id_Famname, Ic_Jikchek)),
+                         cc_Gunmu   = MAX(ISNULL(Id_GunMu,'D-')),
+                         Ic_SaPhone = MAX(RTRIM(ISNULL(Ic_Saphone,''))),
+                         Sort       = MAX(CASE WHEN Ic_Code IN ('190103','190104') THEN 1 ELSE 0 END)
+                     FROM P_InSaCode
+                              LEFT JOIN P_InsaDetail
+                                        ON Id_code = Ic_code
+                                            AND Id_DtFlag = 4
+                                            AND Id_Saflag = Ic_Saflag
+                     WHERE Id_Saflag < 3
+                       AND Id_Date1 <= CAST(#{searchToDate} AS DATE)
+                       AND ISNULL(Id_Date2,'2099-12-31') >= CAST(#{searchFromDate} AS DATE)
+                       AND 1 = CASE
+                                   WHEN #{searchKeyword} = '1' AND ISNULL(Id_Job, Ic_Buser) BETWEEN 200 AND 299 THEN 1
+                                   WHEN #{searchKeyword} = '2' AND ISNULL(Id_FamName, Ic_Jikchek) IN (25,26,27) THEN 1
+                                   WHEN #{searchKeyword} = '7' AND ISNULL(Id_FamName, Ic_Jikchek) IN (1) THEN 1
+                                   WHEN #{searchKeyword} = '9'
+                                       AND ISNULL(Id_FamName, Ic_Jikchek) NOT IN (1,3,17,19,25,26,27)
+                                       AND ISNULL(Id_Job, Ic_Buser) <> '110'
+                                       AND ISNULL(Id_Job, Ic_Buser) NOT BETWEEN 200 AND 299 THEN 1
+                                   ELSE 0
+                         END
+                       AND (
+                         #{searchId} IS NULL OR #{searchId} = ''
+                             OR Ic_Code = #{searchId}
+                         )
+                     GROUP BY Ic_Code, CONVERT(VARCHAR(10), ISNULL(Id_Job, Ic_Buser))
+                 )
+
+            SELECT
+                Chk = 0,
+                e.Ic_Saflag,
+                e.Ic_Code,
+                e.Ic_Name,
+                Ic_Buser  = e.Ic_Buser,
+                Ic_Buser1 = e.Ic_Buser1,
+                e.Ic_Indate,
+                Ic_ResNum = '',
+                Ic_Jikgub  = e.Ic_Jikgub,
+                Ic_Jikchek = e.Ic_Jikchek,
+                Flag  = 7,
+                tDate = CAST(#{searchFromDate} AS DATE),
+                icHpPhone = ISNULL(dbo.GetPWChange_2('KGH2010','InsaCode',e.Ic_Code,'PhoneHp'),''),
+                icSaPhone = CASE
+                                WHEN ISNULL(e.Ic_SaPhone,'') = '' THEN ''
+                                WHEN LEN(e.Ic_SaPhone) < 5 THEN '☏ ' + e.Ic_SaPhone
+                                ELSE e.Ic_SaPhone
+                    END,
+
+                a1 = ISNULL(p.a1,'') + CASE WHEN ISNULL(p.cc_chk,0)=1 AND ISNULL(p.a1,'')<>'' THEN 'ⓗ' ELSE '' END,
+                a2 = ISNULL(p.a2,'') + CASE WHEN ISNULL(p.cc_chk,0)=1 AND ISNULL(p.a2,'')<>'' THEN 'ⓗ' ELSE '' END,
+                a3 = ISNULL(p.a3,'') + CASE WHEN ISNULL(p.cc_chk,0)=1 AND ISNULL(p.a3,'')<>'' THEN 'ⓗ' ELSE '' END,
+                a4 = ISNULL(p.a4,'') + CASE WHEN ISNULL(p.cc_chk,0)=1 AND ISNULL(p.a4,'')<>'' THEN 'ⓗ' ELSE '' END,
+                a5 = ISNULL(p.a5,'') + CASE WHEN ISNULL(p.cc_chk,0)=1 AND ISNULL(p.a5,'')<>'' THEN 'ⓗ' ELSE '' END,
+                a6 = ISNULL(p.a6,'') + CASE WHEN ISNULL(p.cc_chk,0)=1 AND ISNULL(p.a6,'')<>'' THEN 'ⓗ' ELSE '' END,
+                a7 = ISNULL(p.a7,'') + CASE WHEN ISNULL(p.cc_chk,0)=1 AND ISNULL(p.a7,'')<>'' THEN 'ⓗ' ELSE '' END,
+
+                Filter = 1,
+                cc_Gunmu = (SELECT Gc_Name + '(' + STUFF(Gc_Time1,3,0,':') + '~' + STUFF(Gc_Time2,3,0,':') + ')'
+                            FROM I_GunmuCode
+                            WHERE Gc_Code = ISNULL(e.cc_Gunmu,'D-'))
+            FROM emp e
+                     LEFT JOIN pvt p
+                               ON e.Ic_Code = p.cc_code
+                                   AND e.Ic_Buser1 = p.cc_buser
+            ORDER BY e.Ic_Buser, e.Ic_Jikgub, e.Sort, e.Ic_Indate;
+        ]]>
+    </select>
+
     <select id="selectTodayScheduleList" parameterType="com.example.mshintra.schedule.dto.CalendarDto" resultType="com.example.mshintra.schedule.dto.CalendarDto">
         SELECT cc_Time,
                cc_RMK

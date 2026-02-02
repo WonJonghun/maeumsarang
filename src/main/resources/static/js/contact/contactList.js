@@ -345,7 +345,7 @@ function contactList(list, keyword) {
         return;
     }
 
-    const defaultAvatarUrl = '/img/common/avatar.png';
+    const defaultAvatarUrl = '/images/emptyUser.png';
 
     for (let i = 0; i < sortedList.length; i++) {
         const row = sortedList[i] || {};

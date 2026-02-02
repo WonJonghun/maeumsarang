@@ -1,5 +1,6 @@
 package com.example.mshintra.schedule.service;
 
+import com.example.mshintra.common.dto.SearchDto;
 import com.example.mshintra.common.service.CommonCodeService;
 import com.example.mshintra.schedule.dto.*;
 import com.example.mshintra.schedule.mapper.ScheduleMapper;
@@ -20,6 +21,18 @@ public class ScheduleService {
     public List<ScheduleDto> selectScheduleList(ScheduleMenuDto searchDto) {
 
         List<ScheduleDto> list = scheduleMapper.selectScheduleList(searchDto);
+
+        commonCodeService.mapGunmuCode(list);
+        commonCodeService.mapBuserCode(list, "icBuser", "icBuserNm");
+        commonCodeService.mapJikgubCode(list, "icJikgub", "icJikgubNm");
+        commonCodeService.formatSabun(list, "icCode");
+
+        return list;
+    }
+
+    @Transactional(readOnly = true)
+    public List<ScheduleDto> selectScheduleWeekList(SearchDto searchDto) {
+        List<ScheduleDto> list = scheduleMapper.selectScheduleWeekList(searchDto);
 
         commonCodeService.mapGunmuCode(list);
         commonCodeService.mapBuserCode(list, "icBuser", "icBuserNm");
