@@ -65,10 +65,10 @@ public class SecurityConfig {
         //로그아웃
         http.logout(logout -> logout
                 .logoutUrl("/logout.do")
-                .logoutSuccessUrl("/login/login.do")
+                .logoutSuccessUrl("/login.do")
                 .invalidateHttpSession(true)
+                .clearAuthentication(true)
                 .deleteCookies("JSESSIONID")
-                .permitAll()
         );
 
         http.headers(headers -> headers

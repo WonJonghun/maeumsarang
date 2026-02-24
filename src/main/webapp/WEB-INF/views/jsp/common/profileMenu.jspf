@@ -19,13 +19,17 @@
             <div class="profile-drawer-headtext">
                 <div class="profile-drawer-name"><c:out value="${user.icName}"/></div>
                 <div class="profile-drawer-sub"><c:out value="${user.icJikgubNm}"/> · <c:out value="${user.ccBuser}"/></div>
-                <a href="<c:url value='/profile/myInfo.do'/>" class="profile-myinfo-link">내 정보 관리 <i class="bi bi-chevron-right" aria-hidden="true"></i>
-                </a>
+                <a href="<c:url value='/profile/myInfo.do'/>" class="profile-myinfo-link">내 정보 관리 <i class="bi bi-chevron-right" aria-hidden="true"></i></a>
             </div>
-            <a class="profile-drawer-link profile-drawer-logout" href="<c:url value='/logout.do'/>">
+
+            <a class="profile-drawer-link profile-drawer-logout" href="#" id="btnLogout">
                 <img class="profile-drawer-logout-icon" src="<c:url value='/images/logout.png'/>" alt="" aria-hidden="true"/>
                 로그아웃
             </a>
+
+            <form id="logoutForm" action="<c:url value='/logout.do'/>" method="post" style="display:none;">
+                <input type="hidden" name="<c:out value='${_csrf.parameterName}'/>" value="<c:out value='${_csrf.token}'/>"/>
+            </form>
         </div>
 
         <div class="profile-head-overlap">

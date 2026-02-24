@@ -1,6 +1,12 @@
 $(function () {
     loadCheckApproList();
     bindEvents();
+
+    $(document).off('click.logout').on('click.logout', '#btnLogout', function (e) {
+        e.preventDefault();
+        $('#logoutForm').submit();
+        return false;
+    });
 });
 
 //이벤트 바인딩
