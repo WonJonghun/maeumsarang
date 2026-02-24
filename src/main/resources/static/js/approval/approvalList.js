@@ -33,24 +33,28 @@ function loadApprovalList() {
             const team = $.trim(row.ccBuserNm || '');
             const fgNm = $.trim(row.ccFgNm || '');
 
-            const subText = [ [ymd, day].filter(Boolean).join(' '), team, fgNm ]
+            const subText = [[ymd, day].filter(Boolean).join(' '), team, fgNm]
                 .filter(Boolean)
                 .join(' · ');
 
             const isDone = Number(row.ccOK1 || 0) === 1;
             const statusText = isDone ? '결재완료' : '진행중';
-            const statusCls = isDone ? 'approval-status-done' : 'approval-status-ing';
+            const statusCls = isDone ? 'text-green' : 'text-yellow';
 
             const rowEl = $('<div/>', {
                 class: 'approval-row',
                 'data-cc-code': row.ccCode || ''
             });
 
+            // 제목 단독
+            rowEl.append($('<div/>', { class: 'approval-title', text: title }));
+
+            // 서브타이틀 오른쪽에 딱지
             rowEl.append(
-                $('<div/>', { class: 'approval-title', text: title })
+                $('<div/>', { class: 'approval-sub' })
+                    .append($('<span/>', { class: 'approval-sub-text', text: subText }))
                     .append($('<span/>', { class: 'approval-status ' + statusCls, text: statusText }))
             );
-            rowEl.append($('<div/>', { class: 'approval-sub', text: subText }));
 
             approvalListEl.append(rowEl);
         }

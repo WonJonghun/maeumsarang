@@ -41,7 +41,7 @@ function loadPropList() {
             let partClass = '';
             switch (Number(item.plPartflag)) {
                 case 1: partText = '제안'; partClass = 'text-green'; break;
-                case 2: partText = '개선'; partClass = 'text-deep-blue'; break;
+                case 2: partText = '개선'; partClass = 'text-blue'; break;
                 default: partText = ''; partClass = ''; break;
             }
 
@@ -80,8 +80,8 @@ function propDetail(rowEl) {
     let partText = '';
     let partChipClass = '';
     switch (partFlag) {
-        case 1: partText = '제안'; partChipClass = 'is-prop'; break;
-        case 2: partText = '개선'; partChipClass = 'is-imprv'; break;
+        case 1: partText = '제안'; partChipClass = 'text-green'; break;
+        case 2: partText = '개선'; partChipClass = 'text-blue'; break;
         default: partText = ''; partChipClass = ''; break;
     }
 
