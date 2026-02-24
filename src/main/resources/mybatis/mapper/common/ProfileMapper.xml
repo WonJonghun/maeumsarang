@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.mshintra.profile.mapper.ProfileMapper">
+
+    <select id="selectCheckApproList" resultType="com.example.mshintra.profile.dto.ProfileDto" statementType="CALLABLE">
+        { call dbo.Intranet_Paper_SignCnt(#{searchId}, #{searchDate}) }
+    </select>
+
+    <select id="selectCommuteStat" parameterType="com.example.mshintra.common.dto.SearchDto" resultType="com.example.mshintra.profile.dto.CommuteDto">
+        SELECT
+            Il_Date,
+            Il_day = SUBSTRING(DATENAME (weekday, Il_Date), 1, 1),
+            Il_Code,
+            Il_Buser,
+            Il_GunFlag,
+            Il_Intime,
+            Il_Outtime,
+            Il_Flag,
+            Il_InPC,
+            Il_OutPC,
+            Il_Remark,
+            Il_RegDate,
+            Il_UserID
+        FROM
+            I_InoutList
+        WHERE
+            Il_Date = #{searchDate}
+          AND Il_code = #{searchId}
+    </select>
+
+</mapper>

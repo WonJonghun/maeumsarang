@@ -11,6 +11,8 @@
             Bs_Name      AS ccBuser,
             Af_FileName  AS afFilename,
             Af_Content	 AS afContent,
+            Ic_Jikgub    AS icJikgub,
+            dbo.GetJikgubNm(Ic_Jikgub) AS icJikgubNm,
             CASE
                 WHEN ISNULL(Id_Job, Ic_Buser) BETWEEN 200 AND 299 THEN '1'              -- 간호사/간호조무사
                 WHEN ISNULL(Id_FamName, Ic_Jikchek) IN (25,26,27) THEN '2'              -- 조리사

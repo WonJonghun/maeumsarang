@@ -8,18 +8,19 @@ import com.example.mshintra.notice.dto.NoticeDto;
 import com.example.mshintra.notice.service.NoticeService;
 import com.example.mshintra.schedule.dto.CalendarDto;
 import com.example.mshintra.schedule.dto.DayDutyDto;
+import com.example.mshintra.schedule.dto.ScheduleDto;
+import com.example.mshintra.schedule.dto.ScheduleMenuDto;
 import com.example.mshintra.schedule.service.ScheduleService;
 import com.example.mshintra.vacation.dto.VacationDto;
 import com.example.mshintra.vacation.service.VacationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Controller
@@ -35,36 +36,36 @@ public class MainController {
     public String mainPage(@AuthenticationPrincipal LoginUserDto loginUser, Model model) {
 
         //일주일 업무만 보여주던것
-//        ScheduleMenuDto scheduleMenuDto = new ScheduleMenuDto(DateUtil.getTodayYmd("-"), loginUser.getFlag(), null, loginUser.getIcCode());
-//        List<ScheduleDto> scheduleList = scheduleService.selectScheduleList(scheduleMenuDto);
-//
-//        List<Map<String, Object>> weekDays = DateUtil.getThisWeek();
-//
-//        // 금주 나의 근무 데이터
-//        if (scheduleList != null && !scheduleList.isEmpty()) {
-//            ScheduleDto schedule = scheduleList.getFirst();
-//
-//            for (Map<String, Object> day : weekDays) {
-//                Object domObj = day.get("dayOfMonth");
-//                if (domObj == null) continue;
-//                int dayOfMonth = (domObj instanceof Integer) ? (Integer) domObj : Integer.parseInt(domObj.toString());
-//
-//                String status = schedule.getDayValue(dayOfMonth);
-//                // 행정직원일때
-//                if ("9".equals(String.valueOf(loginUser.getFlag()))) {
-//                    if (status == null || status.isBlank()) {
-//                        Object dowObj = day.get("dayOfWeek");
-//                        int dayOfWeek = (dowObj instanceof Integer) ? (Integer) dowObj : Integer.parseInt(dowObj.toString());
-//                        if (dayOfWeek == 6 || dayOfWeek == 7) {
-//                            status = "휴일";
-//                        } else {
-//                            status = "D^";
-//                        }
-//                    }
-//                }
-//                day.put("status", status);
-//            }
-//        }
+        ScheduleMenuDto scheduleMenuDto = new ScheduleMenuDto(DateUtil.getTodayYmd("-"), loginUser.getFlag(), null, loginUser.getIcCode());
+        List<ScheduleDto> scheduleList = scheduleService.selectScheduleList(scheduleMenuDto);
+
+        List<Map<String, Object>> weekDays = DateUtil.getThisWeek();
+
+        // 금주 나의 근무 데이터
+        if (scheduleList != null && !scheduleList.isEmpty()) {
+            ScheduleDto schedule = scheduleList.getFirst();
+
+            for (Map<String, Object> day : weekDays) {
+                Object domObj = day.get("dayOfMonth");
+                if (domObj == null) continue;
+                int dayOfMonth = (domObj instanceof Integer) ? (Integer) domObj : Integer.parseInt(domObj.toString());
+
+                String status = schedule.getDayValue(dayOfMonth);
+                // 행정직원일때
+                if ("9".equals(String.valueOf(loginUser.getFlag()))) {
+                    if (status == null || status.isBlank()) {
+                        Object dowObj = day.get("dayOfWeek");
+                        int dayOfWeek = (dowObj instanceof Integer) ? (Integer) dowObj : Integer.parseInt(dowObj.toString());
+                        if (dayOfWeek == 6 || dayOfWeek == 7) {
+                            status = "휴일";
+                        } else {
+                            status = "D^";
+                        }
+                    }
+                }
+                day.put("status", status);
+            }
+        }
 
         //공지
         NoticeDto noticeDto = new NoticeDto();
@@ -114,7 +115,7 @@ public class MainController {
 
         model.addAttribute("welcomeDate", DateUtil.getTodayKorMd());
         model.addAttribute("workWeek", DateUtil.getTodayKorMw());
-//        model.addAttribute("weekDays", weekDays);
+        model.addAttribute("weekDays", weekDays);
         model.addAttribute("noticeList", noticeList);
         model.addAttribute("boardList", boardList);
         model.addAttribute("todayYmdDot", DateUtil.getTodayYmd("."));

@@ -96,6 +96,7 @@
             <input type="hidden" id="loginFlag" value="<c:out value='${user.flag}'/>"/>
             <input type="hidden" id="loginIcCode" value="<c:out value='${user.icCode}'/>"/>
             <input type="hidden" id="loginBuser" value="<c:out value='${user.icBuser}'/>"/>
+            <input type="hidden" id="loginJikgub" value="<c:out value='${user.icJikgubNm}'/>"/>
             <input type="hidden" id="adminKey" value="<c:out value='${menuAuth.adminKey}'/>"/>
             <input type="hidden" id="menuName" value="<c:out value='${menuAuth.menuName}'/>"/>
             <input type="hidden" id="winCode" value="<c:out value='${empty menuAuth ? "" : menuAuth.winCode}'/>"/>
@@ -103,19 +104,27 @@
         </div>
 
         <!-- mainYn이 N이면 숨김 -->
-        <div class="profile" style="${headerMainYn eq 'N' ? 'display:none;' : ''}">
-            <c:choose>
-                <c:when test="${not empty user.afContent}">
-                    <img src="<c:url value='/attach/profileImage.do'/>" alt="프로필 이미지" class="profile-img"/>
-                </c:when>
-                <c:otherwise>
-                    <i class="bi bi-person-circle profile-icon"></i>
-                </c:otherwise>
-            </c:choose>
+        <div class="profile is-topbar" style="${headerMainYn eq 'N' ? 'display:none;' : ''}">
+            <span class="profile-check-badge main-badge" data-key="total" style="display:none;">0</span>
+
+            <div class="profile-inner">
+                <c:choose>
+                    <c:when test="${not empty user.afContent}">
+                        <img src="<c:url value='/attach/profileImage.do'/>" alt="프로필 이미지" class="profile-img"/>
+                    </c:when>
+                    <c:otherwise>
+                        <i class="bi bi-person-circle profile-icon"></i>
+                    </c:otherwise>
+                </c:choose>
+            </div>
         </div>
     </div>
 </header>
 
-<%--메뉴--%>
-<%@ include file="menu.jspf" %>
+<c:if test="${headerMainYn eq 'Y'}">
+    <%--메뉴--%>
+    <%@ include file="menu.jspf" %>
+    <%--프로필 메뉴--%>
+    <%@ include file="profileMenu.jspf" %>
+</c:if>
 <script src="<c:url value='/js/common/header.js'/>"></script>

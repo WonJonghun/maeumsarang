@@ -135,7 +135,7 @@ function detailDrawerLoadAttach(afNum) {
         });
 }
 
-//드로워 표시
+//드로워 표시, useHistory 있으면 뒤로가기하면 닫힘, afNum 첨부파일기능
 function detailDrawerShow(html, useHistory, afNum) {
     if (!ensureDrawerLayout()) return;
 

@@ -54,7 +54,7 @@ function loadRepairList() {
                 case 1: statusText = '진행중'; statusClass = 'text-yellow'; break;
                 case 2: statusText = '수리완료'; statusClass = 'text-green'; break;
                 case 3: statusText = '수리불가'; statusClass = 'text-red'; break;
-                case 4: statusText = 'AS신청'; statusClass = 'text-green'; break;
+                case 4: statusText = 'AS신청'; statusClass = 'text-blue'; break;
                 default: statusText = '진행중'; statusClass = 'text-yellow'; break;
             }
 
@@ -177,7 +177,7 @@ function repairDetail(rowEl) {
     html += '      <label><input type="radio"' + chk(d.rpReFlag, 1) + ' tabindex="-1"><span class="text-yellow">진행중</span></label>';
     html += '      <label><input type="radio"' + chk(d.rpReFlag, 2) + ' tabindex="-1"><span class="text-green">수리완료</span></label>';
     html += '      <label><input type="radio"' + chk(d.rpReFlag, 3) + ' tabindex="-1"><span class="text-red">수리불가</span></label>';
-    html += '      <label><input type="radio"' + chk(d.rpReFlag, 4) + ' tabindex="-1"><span class="text-green">AS신청</span></label>';
+    html += '      <label><input type="radio"' + chk(d.rpReFlag, 4) + ' tabindex="-1"><span class="text-blue">AS신청</span></label>';
     html += '    </div>';
     html += '  </div>';
 
