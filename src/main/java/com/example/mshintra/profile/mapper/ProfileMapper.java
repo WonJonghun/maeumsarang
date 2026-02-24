@@ -12,5 +12,7 @@ public interface ProfileMapper {
 
     List<ProfileDto> selectCheckApproList(SearchDto searchDto);
 
+    int selectCoopCnt(SearchDto searchDto);
+
     List<CommuteDto> selectCommuteStat(SearchDto searchDto);
 }

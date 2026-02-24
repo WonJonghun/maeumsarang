@@ -4,8 +4,10 @@ import com.example.mshintra.approval.dto.ApprovalDto;
 import com.example.mshintra.approval.service.ApprovalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
@@ -23,7 +25,8 @@ public class ApprovalController {
     }
 
     @GetMapping("/approvalList.do")
-    public String approvalList()  {
+    public String approvalList(@RequestParam(required = false) String ccFlag, Model model)  {
+        model.addAttribute("ccFlag", ccFlag);
         return "jsp/approval/approvalList";
     }
 

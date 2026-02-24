@@ -29,4 +29,15 @@
           AND Il_code = #{searchId}
     </select>
 
+    <select id="selectCoopCnt" parameterType="com.example.mshintra.common.dto.SearchDto" resultType="int">
+        SELECT COUNT(*)
+        FROM I_ElecSign
+        WHERE Es_Date &gt;= CONVERT(datetime, #{searchFromDate})
+          AND Es_Date &lt;  DATEADD(day, 1, CONVERT(datetime, #{searchToDate}))
+          AND (
+            #{searchId} IN (Es_HubJo1, Es_HubJo2, Es_HubJo3, Es_HubJo4, Es_HubJo5)
+                OR #{searchBuserCd} IN (Es_HubJo1, Es_HubJo2, Es_HubJo3, Es_HubJo4, Es_HubJo5)
+            )
+    </select>
+
 </mapper>

@@ -21,6 +21,9 @@
     <main class="approval-list-wrap">
         <div id="approvalList"></div>
     </main>
+
+    <input type="hidden" id="ccFlag" value="<c:out value='${ccFlag}'/>"/>
+
 </div>
 
 <%@ include file="../common/detailDrawer.jspf" %>

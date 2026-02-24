@@ -326,6 +326,7 @@ function renderScheduleList(list, keyword) {
 
     scheduleBodyEl.append(bodyEl);
     applyTodayHighlight();
+    focusMyRowAndHighlight(viewList);
 }
 
 //내부서 + 검색(이름/부서/직급/휴대폰/직통)
@@ -490,4 +491,51 @@ function buildNameHighlightHtml(name, keyword) {
     const after = nm.substring(idx + k.length);
 
     return escape(before) + '<span class="name-hit">' + escape(mid) + '</span>' + escape(after);
+}
+
+//내 사번 행 포커스 + 기존 셀클릭 하이라이트 재사용
+function focusMyRowAndHighlight(viewList) {
+    const loginIcCode = String($('#loginIcCode').val() == null ? '' : $('#loginIcCode').val());
+    const myKey = String(loginIcCode).replace(/\D/g, '');
+    if (!myKey) return;
+
+    const rows = $.isArray(viewList) ? viewList : [];
+    let myIdx = -1;
+
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        if (!row) continue;
+
+        const rowKey = String(row.icCode == null ? '' : row.icCode).replace(/\D/g, '');
+        if (rowKey && rowKey === myKey) {
+            myIdx = i;
+            break;
+        }
+    }
+    if (myIdx < 0) return;
+
+    const trEl = $('#scheduleTbody .schedule-tr').eq(myIdx);
+    if (!trEl.length) return;
+
+    const todayDash = cmSubDays(cmGetToday(''), 0, '-');
+    let colIdx = -1;
+
+    for (let i = 0; i < 7; i++) {
+        const ymdDash = cmSubDays(currentMonYmd, -i, '-');
+        if (ymdDash === todayDash) {
+            colIdx = i;
+            break;
+        }
+    }
+
+    const cellEl = trEl.find('.td-days .day-cell').eq(colIdx < 0 ? 0 : colIdx);
+    if (cellEl.length) cellEl.trigger('click');
+
+    const trDom = trEl[0];
+    if (trDom && trDom.scrollIntoView) trDom.scrollIntoView({ block: 'center', inline: 'nearest' });
+
+    const leftEl = trEl.find('.td-left');
+    if (!leftEl.length) return;
+
+    const leftDom = leftEl[0];
 }

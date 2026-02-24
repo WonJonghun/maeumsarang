@@ -44,6 +44,9 @@ function bindEvents() {
 function loadCheckApproList() {
     const param = {
         searchId: $('#loginIcCode').val(),
+        searchBuserCd: $('#loginBuser').val(),
+        searchFromDate: $('#fromDate').val(),
+        searchToDate: $('#toDate').val(),
         searchDate: cmGetToday('-'),
     };
 
@@ -56,7 +59,7 @@ function loadCheckApproList() {
         // if (!$('#profileCheckGrid').length) return;
         if (!profileCheckData) return;
 
-        const approval = (Number(profileCheckData.ccCnt1) || 0) + (Number(profileCheckData.ccCnt111) || 0);
+        const approval = (Number(profileCheckData.ccCnt1) || 0) /* + (Number(profileCheckData.ccCnt111) || 0) */;
         const mail = Number(profileCheckData.ccCnt99) || 0;
         const official = Number(profileCheckData.ccCnt12) || 0;
         const post = Number(profileCheckData.ccCnt22) || 0;

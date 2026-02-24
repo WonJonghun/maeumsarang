@@ -3,15 +3,14 @@ $(function () {
 });
 
 let approvalListAll = [];
-let flagCd = '1';
 
 // 전자결재 목록 호출
 function loadApprovalList() {
     const data = {
-        searchToDate: cmGetToday('-'),
-        searchFromDate: cmSubDays(cmGetToday('-'), 90, '-'),
-        searchId: $.trim($('#loginIcCode').val() || ''),
-        ccFlag: flagCd
+        searchFromDate: $('#searchFromDate').val(),
+        searchToDate: $('#searchToDate').val(),
+        searchId: $('#loginIcCode').val(),
+        ccFlag: $('#ccFlag').val()
     };
 
     cmAjax('/approval/list.do', 'GET', data, true).done(function (list) {

@@ -18,7 +18,18 @@ public class ProfileService {
 
     @Transactional(readOnly = true)
     public List<ProfileDto> selectCheckApproList(SearchDto searchDto) {
-        return profileMapper.selectCheckApproList(searchDto);
+        List<ProfileDto> list = profileMapper.selectCheckApproList(searchDto);
+
+        int coopCnt = profileMapper.selectCoopCnt(searchDto);
+
+        if (list == null || list.isEmpty()) {
+            ProfileDto dto = new ProfileDto();
+            dto.setCcCnt2(coopCnt);
+            return List.of(dto);
+        }
+
+        list.get(0).setCcCnt2(coopCnt);
+        return list;
     }
 
     @Transactional(readOnly = true)
