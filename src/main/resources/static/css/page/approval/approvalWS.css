@@ -1,0 +1,440 @@
+/* ================== 전자문서 상세 영역 ↓================== */
+.approval-ws-wrap {
+    padding: 10px;
+}
+/* ================== 전자문서 상세 영역 ↑================== */
+
+/* ================== 헤더 영역 ↓================== */
+.approval-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 4px;
+    min-width: 0;
+}
+
+.approval-ws-title {
+    flex: 0 0 auto;
+    width: 40%;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--blue-007bff);
+}
+/* ================== 헤더 영역 ↑================== */
+
+/* ================== 결재선 영역 ↓================== */
+.approval-sign-wrap {
+    flex: 0 0 auto;
+    margin-left: auto;
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-end;
+    width: 60%;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+.approval-sign-wrap::-webkit-scrollbar {
+    height: 6px;
+}
+
+.approval-sign-wrap::-webkit-scrollbar-thumb {
+    background: #c7c7c7;
+    border-radius: 999px;
+}
+
+.approval-sign-wrap::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.approval-sign-label {
+    width: 28px;
+    min-width: 28px;
+    border: 1px solid #666;
+    border-right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    color: #222;
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    letter-spacing: 1px;
+    flex: 0 0 auto;
+}
+
+.approval-sign-table {
+    display: flex;
+    border: 1px solid #666;
+    background: #fff;
+    flex: 0 0 auto;
+}
+
+.approval-sign-col {
+    width: 60px;
+    min-width: 60px;
+    border-left: 1px solid #666;
+    flex: 0 0 auto;
+    min-width: 0;
+}
+
+.approval-sign-col:first-child {
+    border-left: 0;
+}
+
+.approval-sign-title {
+    height: 18px;
+    border-bottom: 1px solid #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 2px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #222;
+    background: #fafafa;
+    text-align: center;
+    word-break: break-all;
+    line-height: 1.1;
+    overflow: hidden;
+}
+
+.approval-sign-box {
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    overflow: hidden;
+    position: relative;
+}
+
+.approval-sign-mark {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    color: #333;
+    transform: none;
+    text-align: center;
+    word-break: break-all;
+    overflow: hidden;
+}
+
+.approval-sign-date {
+    min-height: 12px;
+    margin-top: -7px;
+    padding: 0 2px 3px;
+    font-size: 9px;
+    line-height: 1.2;
+    color: #555;
+    text-align: center;
+    word-break: break-all;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    white-space: pre-line;
+}
+/* ================== 결재선 영역 ↑================== */
+
+/* ================== 결재칸 3개 이상 축소 ↓================== */
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(3)) .approval-sign-label {
+    width: 26px;
+    min-width: 26px;
+    font-size: 10px;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(3)) .approval-sign-col {
+    width: 54px;
+    min-width: 54px;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(3)) .approval-sign-title {
+    height: 17px;
+    font-size: 9px;
+    padding: 0 1px;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(3)) .approval-sign-box {
+    height: 42px;
+    padding: 2px;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(3)) .approval-sign-mark {
+    font-size: 12px;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(3)) .approval-sign-date {
+    min-height: 16px;
+    margin-top: -6px;
+    font-size: 8px;
+}
+/* ================== 결재칸 3개 이상 축소 ↑================== */
+
+/* ================== 결재칸 4개 이상 위로 이동 + 전체폭 균등분할 ↓================== */
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(4)) {
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(4)) .approval-sign-wrap {
+    order: -1;
+    width: 100%;
+    margin-left: 0;
+    margin-bottom: 8px;
+    justify-content: flex-start;
+    overflow-x: hidden;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(4)) .approval-sign-label {
+    width: 24px;
+    min-width: 24px;
+    font-size: 10px;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(4)) .approval-sign-table {
+    display: flex;
+    flex: 1 1 auto;
+    width: calc(100% - 24px);
+    min-width: 0;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(4)) .approval-sign-col {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(4)) .approval-ws-title {
+    width: 100%;
+    min-height: 60px;
+    /*justify-content: flex-start;*/
+    /*text-align: left;*/
+    padding-left: 8px;
+    font-size: 20px;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(4)) .approval-sign-title {
+    height: 16px;
+    font-size: 8px;
+    padding: 0 1px;
+    line-height: 1.1;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(4)) .approval-sign-box {
+    height: 38px;
+    padding: 1px;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(4)) .approval-sign-mark {
+    font-size: 11px;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(4)) .approval-sign-date {
+    min-height: 14px;
+    margin-top: -5px;
+    font-size: 8px;
+    line-height: 1.1;
+}
+/* ================== 결재칸 4개 이상 위로 이동 + 전체폭 균등분할 ↑================== */
+
+/* ================== 결재칸 5개 이상 추가 축소 ↓================== */
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(5)) .approval-sign-label {
+    width: 22px;
+    min-width: 22px;
+    font-size: 9px;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(5)) .approval-sign-table {
+    width: calc(100% - 22px);
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(5)) .approval-sign-title {
+    font-size: 8px;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(5)) .approval-sign-box {
+    height: 36px;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(5)) .approval-sign-mark {
+    font-size: 10px;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(5)) .approval-sign-date {
+    font-size: 8px;
+}
+/* ================== 결재칸 5개 이상 추가 축소 ↑================== */
+
+/* ================== 결재칸 6개 이상 추가 축소 ↓================== */
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(6)) .approval-sign-label {
+    width: 20px;
+    min-width: 20px;
+    font-size: 8px;
+    letter-spacing: 0;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(6)) .approval-sign-table {
+    width: calc(100% - 20px);
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(6)) .approval-sign-title {
+    font-size: 7px;
+    line-height: 1.05;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(6)) .approval-sign-box {
+    height: 34px;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(6)) .approval-sign-mark {
+    font-size: 9px;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(6)) .approval-sign-date {
+    font-size: 8px;
+}
+/* ================== 결재칸 6개 이상 추가 축소 ↑================== */
+
+/* ================== 결재칸 7개 이상 추가 축소 ↓================== */
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(7)) .approval-sign-label {
+    width: 18px;
+    min-width: 18px;
+    font-size: 7px;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(7)) .approval-sign-table {
+    width: calc(100% - 18px);
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(7)) .approval-sign-title {
+    height: 15px;
+    font-size: 7px;
+    padding: 0;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(7)) .approval-sign-box {
+    height: 32px;
+    padding: 1px;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(7)) .approval-sign-mark {
+    font-size: 8px;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(7)) .approval-sign-date {
+    min-height: 12px;
+    font-size: 7px;
+}
+/* ================== 결재칸 7개 이상 추가 축소 ↑================== */
+
+/* ================== 결재칸 8개 이상 최대 축소 ↓================== */
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(8)) .approval-sign-label {
+    width: 16px;
+    min-width: 16px;
+    font-size: 6px;
+    letter-spacing: 0;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(8)) .approval-sign-table {
+    width: calc(100% - 16px);
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(8)) .approval-sign-title {
+    height: 14px;
+    font-size: 6px;
+    padding: 0;
+    line-height: 1;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(8)) .approval-sign-box {
+    height: 28px;
+    padding: 0;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(8)) .approval-sign-mark {
+    font-size: 7px;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(8)) .approval-sign-date {
+    min-height: 10px;
+    margin-top: -3px;
+    font-size: 6px;
+    line-height: 1;
+}
+
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(8)) .approval-ws-title {
+    min-height: 52px;
+    font-size: 18px;
+}
+/* ================== 결재칸 8개 이상 최대 축소 ↑================== */
+
+/* ================== 본문 항목 영역 ↓================== */
+.approval-kv-list {
+    border-top: 1px solid #dcdcdc;
+}
+
+.approval-kv-row {
+    display: flex;
+    border-bottom: 1px solid #dcdcdc;
+}
+
+.approval-kv-key {
+    width: 140px;
+    min-width: 140px;
+    padding: 12px 10px;
+    background: #f8f8f8;
+    font-size: 14px;
+    font-weight: 600;
+    color: #222;
+    box-sizing: border-box;
+}
+
+.approval-kv-val {
+    flex: 1;
+    padding: 12px 10px;
+    font-size: 14px;
+    color: #222;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+    box-sizing: border-box;
+}
+/* ================== 본문 항목 영역 ↑================== */
+
+/* ================== 모바일 영역 ↓================== */
+@media (max-width: 768px) {
+    .approval-header {
+        gap: 6px;
+    }
+
+    .approval-ws-title {
+        font-size: 18px;
+    }
+
+    .approval-kv-key {
+        width: 100px;
+        min-width: 100px;
+    }
+}
+/* ================== 모바일 영역 ↑================== */
+
+
+.detail-image-no-border {
+    display: block;
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    margin-top: 5px;
+}

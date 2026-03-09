@@ -132,6 +132,33 @@
                 </div>
             </div>
 
+            <%--당직자--%>
+            <div class="dashboard-block">
+                <div class="card-header">
+                    <div class="card-header-left"><h3 class="card-title">당직자 / 외래진료</h3></div>
+                </div>
+                <div class="card-body">
+                    <div class="duty-layout">
+                        <div class="duty-column">
+                            <div class="duty-section-title">당직자</div>
+                            <ul class="duty-list">
+                                <c:forEach var="item" items="${dayDutyList}">
+                                    <li class="duty-row"><span class="duty-role"><c:out value="${item.hcName}"/></span><span class="duty-name"><c:out value="${item.duName}"/></span></li>
+                                </c:forEach>
+                            </ul>
+                        </div>
+                        <div class="outduty-column">
+                            <div class="duty-section-title">외래진료</div>
+                            <ul class="duty-list">
+                                <c:forEach var="item" items="${outDayDutyList}">
+                                    <li class="duty-row"><span class="outduty-role"><c:out value="${item.hcName}"/></span><span class="duty-name"><c:out value="${item.duName}"/></span></li>
+                                </c:forEach>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <%--일정--%>
             <div class="dashboard-block">
                 <div class="card-header">
@@ -223,33 +250,6 @@
                         <p>(진료완료 / 외래접수)</p>
                     </div></div>
                 </div>
-                </div>
-            </div>
-
-            <%--당직자--%>
-            <div class="dashboard-block">
-                <div class="card-header">
-                    <div class="card-header-left"><h3 class="card-title">당직자 / 외래진료</h3></div>
-                </div>
-                <div class="card-body">
-                    <div class="duty-layout">
-                        <div class="duty-column">
-                            <div class="duty-section-title">당직자</div>
-                            <ul class="duty-list">
-                                <c:forEach var="item" items="${dayDutyList}">
-                                    <li class="duty-row"><span class="duty-role"><c:out value="${item.hcName}"/></span><span class="duty-name"><c:out value="${item.duName}"/></span></li>
-                                </c:forEach>
-                            </ul>
-                        </div>
-                        <div class="outduty-column">
-                            <div class="duty-section-title">외래진료</div>
-                            <ul class="duty-list">
-                                <c:forEach var="item" items="${outDayDutyList}">
-                                    <li class="duty-row"><span class="outduty-role"><c:out value="${item.hcName}"/></span><span class="duty-name"><c:out value="${item.duName}"/></span></li>
-                                </c:forEach>
-                            </ul>
-                        </div>
-                    </div>
                 </div>
             </div>
         </section>

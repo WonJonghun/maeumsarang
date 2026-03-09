@@ -64,7 +64,7 @@ function loadApprovalFlowList() {
 
             const textEl = $('<div/>', { class: 'approval-branch-text' });
             textEl.append($('<div/>', { class: 'approval-branch-title', text: title }));
-            textEl.append($('<div/>', { class: 'approval-branch-desc', text: '전자결재' }));
+            // textEl.append($('<div/>', { class: 'approval-branch-desc', text: '전자결재' }));
             leftEl.append(textEl);
 
             btnEl.append(leftEl);

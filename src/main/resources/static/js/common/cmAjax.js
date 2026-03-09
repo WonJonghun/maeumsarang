@@ -64,6 +64,20 @@
         });
     };
 
+    //HTML 응답
+    global.cmAjaxHtml = function (url, type, paramData, loading) {
+        const data = (paramData === undefined || paramData === null) ? {} : paramData;
+        return cmAjaxRequest({
+            url: url,
+            type: type,
+            data: data,
+            loading: (loading !== false),
+            dataType: 'html',
+            processData: true,
+            contentType: 'application/x-www-form-urlencoded; charset=UTF-8'
+        });
+    };
+
     //JSON Body
     global.cmAjaxBody = function (url, type, jsonData, loading) {
         const body = (jsonData === undefined || jsonData === null) ? {} : jsonData;

@@ -25,7 +25,7 @@
 
 .approval-sub {
     margin: 0;
-    padding: 0 10px 0 10px;
+    padding: 0 0 0 10px;
     color: var(--gray-6b7280);
     font-size: 12px;
     display: flex;
@@ -70,3 +70,21 @@
     background: rgba(245, 158, 11, 0.10);
     border-color: rgba(245, 158, 11, 0.25);
 }
+
+.approval-detail-sub-line{
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.approval-detail-sub-left{
+    min-width: 0;
+    font-size: 14px;
+    color: var(--gray-6b7280);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+

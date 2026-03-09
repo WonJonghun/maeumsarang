@@ -56,6 +56,7 @@ body.approval-home-page {
     justify-content: center;
     color: #ffffff;
     flex: 0 0 auto;
+    font-size: 21px;
 }
 
 .approval-branch-icon.flag-1  { background: #45cbdd; }
@@ -71,8 +72,8 @@ body.approval-home-page {
 }
 
 .approval-branch-title {
-    font-size: 15px;
-    font-weight: 800;
+    font-size: 17px;
+    font-weight: 600;
     color: #1f2937;
     overflow: hidden;
     text-overflow: ellipsis;

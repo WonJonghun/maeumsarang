@@ -11,4 +11,22 @@
         { call dbo.Intranet_ElecApproval_Sign(#{searchFromDate}, #{searchToDate}, #{searchId}, #{ccFlag}) }
     </select>
 
+    <select id="selectApprovalDetail" resultType="hashmap" statementType="CALLABLE">
+        { call dbo.Intranet_ElecApproval_Form(#{ccCode}, #{ccFlag}) }
+    </select>
+
+    <select id="selectApprovalSignNum" resultType="hashmap">
+        SELECT
+            CASE WHEN LEN(ISNULL(Es_Sign1, '')) > 6 THEN Es_Sign1 ELSE '' END AS esSign1,
+            CASE WHEN LEN(ISNULL(Es_Sign2, '')) > 6 THEN Es_Sign2 ELSE '' END AS esSign2,
+            CASE WHEN LEN(ISNULL(Es_Sign3, '')) > 6 THEN Es_Sign3 ELSE '' END AS esSign3,
+            CASE WHEN LEN(ISNULL(Es_Sign4, '')) > 6 THEN Es_Sign4 ELSE '' END AS esSign4,
+            CASE WHEN LEN(ISNULL(Es_Sign5, '')) > 6 THEN Es_Sign5 ELSE '' END AS esSign5,
+            CASE WHEN LEN(ISNULL(Es_Sign6, '')) > 6 THEN Es_Sign6 ELSE '' END AS esSign6,
+            CASE WHEN LEN(ISNULL(Es_Sign7, '')) > 6 THEN Es_Sign7 ELSE '' END AS esSign7,
+            CASE WHEN LEN(ISNULL(Es_Sign8, '')) > 6 THEN Es_Sign8 ELSE '' END AS esSign8
+        FROM I_ElecSign
+        WHERE Es_Code = #{ccCode}
+          AND Es_Flag = #{ccFlag}
+    </select>
 </mapper>
