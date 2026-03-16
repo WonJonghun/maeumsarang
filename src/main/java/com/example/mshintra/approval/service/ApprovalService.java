@@ -3,6 +3,7 @@ package com.example.mshintra.approval.service;
 import com.example.mshintra.approval.dto.ApprovalDetailDto;
 import com.example.mshintra.approval.dto.ApprovalDetailItemDto;
 import com.example.mshintra.approval.dto.ApprovalDto;
+import com.example.mshintra.approval.dto.ApprovalSignDto;
 import com.example.mshintra.approval.mapper.ApprovalMapper;
 import com.example.mshintra.common.service.CommonCodeService;
 import com.example.mshintra.common.util.CmUtil;
@@ -22,8 +23,10 @@ public class ApprovalService {
     private final CommonCodeService commonCodeService;
 
     private static final Pattern P_SEQ_KEY =
-            Pattern.compile("^(ccTitle|cc_Title|ccRmk|cc_RMK|ccFont|cc_Font|ccFontBold|cc_FontBold|ccFontColor|cc_FontColor)(\\d+)$",
-                    Pattern.CASE_INSENSITIVE);
+            Pattern.compile(
+                    "^(ccTitle|cc_Title|ccRmk|cc_RMK|ccFont|cc_Font|ccFontBold|cc_FontBold|ccFontColor|cc_FontColor)(\\d+)$",
+                    Pattern.CASE_INSENSITIVE
+            );
 
     @Transactional(readOnly = true)
     public List<ApprovalDto> selectApprovalFlowlist(ApprovalDto searchDto) {
@@ -34,7 +37,9 @@ public class ApprovalService {
     public List<ApprovalDto> selectApprovalList(ApprovalDto searchDto) {
 
         List<ApprovalDto> list = approvalMapper.selectApprovalList(searchDto);
-        if (list == null || list.isEmpty()) return list;
+        if (list == null || list.isEmpty()) {
+            return list;
+        }
 
         commonCodeService.mapBuserCode(list, "ccBuser", "ccBuserNm");
         return list;
@@ -46,14 +51,20 @@ public class ApprovalService {
         Map<String, Object> row = approvalMapper.selectApprovalDetail(ccCode, ccFlag);
         Map<String, Object> signRow = approvalMapper.selectApprovalSignNum(ccCode, ccFlag);
 
-        if (row == null) row = Collections.emptyMap();
-        if (signRow == null) signRow = Collections.emptyMap();
+        if (row == null) {
+            row = Collections.emptyMap();
+        }
+
+        if (signRow == null) {
+            signRow = Collections.emptyMap();
+        }
 
         ApprovalDetailDto dto = new ApprovalDetailDto();
 
         dto.setCcCode(CmUtil.str(CmUtil.getIgnoreCase(row, "cc_Code")));
         dto.setCcFlag(CmUtil.str(CmUtil.getIgnoreCase(row, "cc_Flag")));
         dto.setCcSeFg(CmUtil.str(CmUtil.getIgnoreCase(row, "cc_SeFg")));
+        dto.setCcFlagNm(getApprovalTitle(dto.getCcFlag(), dto.getCcSeFg()));
         dto.setCcDate(CmUtil.str(CmUtil.getIgnoreCase(row, "cc_Date")));
         dto.setCcBuser(CmUtil.str(CmUtil.getIgnoreCase(row, "cc_Buser")));
         dto.setCcSignCnt(CmUtil.toInt(CmUtil.getIgnoreCase(row, "cc_SignCnt")));
@@ -138,7 +149,125 @@ public class ApprovalService {
             items.add(item);
         }
 
+        applyWsItemTitles(items, dto.getCcFlag(), dto.getCcSeFg());
+
         dto.setItems(items);
+        dto.setSignList(buildSignList(dto));
+
         return dto;
+    }
+
+    private List<ApprovalSignDto> buildSignList(ApprovalDetailDto dto) {
+
+        List<ApprovalSignDto> signList = new ArrayList<>();
+        int signCnt = dto.getCcSignCnt() == null ? 0 : dto.getCcSignCnt();
+
+        if (signCnt > 8) {
+            signCnt = 8;
+        }
+
+        for (int i = 1; i <= signCnt; i++) {
+            ApprovalSignDto sign = new ApprovalSignDto();
+            sign.setSeq(i);
+
+            switch (i) {
+                case 1:
+                    sign.setSignTitle(dto.getCcSignTt1());
+                    sign.setSignDate(dto.getCcSignDt1());
+                    sign.setSignNo(dto.getEsSign1());
+                    break;
+                case 2:
+                    sign.setSignTitle(dto.getCcSignTt2());
+                    sign.setSignDate(dto.getCcSignDt2());
+                    sign.setSignNo(dto.getEsSign2());
+                    break;
+                case 3:
+                    sign.setSignTitle(dto.getCcSignTt3());
+                    sign.setSignDate(dto.getCcSignDt3());
+                    sign.setSignNo(dto.getEsSign3());
+                    break;
+                case 4:
+                    sign.setSignTitle(dto.getCcSignTt4());
+                    sign.setSignDate(dto.getCcSignDt4());
+                    sign.setSignNo(dto.getEsSign4());
+                    break;
+                case 5:
+                    sign.setSignTitle(dto.getCcSignTt5());
+                    sign.setSignDate(dto.getCcSignDt5());
+                    sign.setSignNo(dto.getEsSign5());
+                    break;
+                case 6:
+                    sign.setSignTitle(dto.getCcSignTt6());
+                    sign.setSignDate(dto.getCcSignDt6());
+                    sign.setSignNo(dto.getEsSign6());
+                    break;
+                case 7:
+                    sign.setSignTitle(dto.getCcSignTt7());
+                    sign.setSignDate(dto.getCcSignDt7());
+                    sign.setSignNo(dto.getEsSign7());
+                    break;
+                case 8:
+                    sign.setSignTitle(dto.getCcSignTt8());
+                    sign.setSignDate(dto.getCcSignDt8());
+                    sign.setSignNo(dto.getEsSign8());
+                    break;
+                default:
+                    break;
+            }
+
+            signList.add(sign);
+        }
+
+        return signList;
+    }
+
+    private void applyWsItemTitles(List<ApprovalDetailItemDto> items, String ccFlag, String ccSeFg) {
+
+        if (!"WS".equals(ccFlag) || items == null || items.isEmpty()) {
+            return;
+        }
+
+        String prevTitle;
+        String nextTitle;
+
+        if ("20".equals(ccSeFg)) {
+            prevTitle = "지난주시행사항";
+            nextTitle = "이번주계획사항";
+        } else if ("30".equals(ccSeFg)) {
+            prevTitle = "금월시행사항";
+            nextTitle = "차월계획사항";
+        } else if ("40".equals(ccSeFg)) {
+            prevTitle = "금년시행사항";
+            nextTitle = "차년계획사항";
+        } else {
+            prevTitle = "금일시행사항";
+            nextTitle = "익일계획사항";
+        }
+
+        if (items.size() >= 1) {
+            items.get(0).setTitle(prevTitle);
+        }
+
+        if (items.size() >= 3) {
+            items.get(2).setTitle(nextTitle);
+        }
+    }
+
+    private String getApprovalTitle(String ccFlag, String ccSeFg) {
+
+        if ("WS".equals(ccFlag)) {
+            if ("20".equals(ccSeFg)) {
+                return "주간업무보고";
+            }
+            if ("30".equals(ccSeFg)) {
+                return "월간업무보고";
+            }
+            if ("40".equals(ccSeFg)) {
+                return "연간업무보고";
+            }
+            return "일업무보고";
+        }
+
+        return commonCodeService.getHelpCodeName("Elec00", ccFlag);
     }
 }

@@ -989,6 +989,7 @@ body.drawer-open {
 .post-detail-head {
     position: sticky;
     top: 0;
+    z-index: 20;
     background: var(--gray-f9fafb);
     padding: 16px 16px 12px;
     border-bottom: 1px solid #e6e6e6;

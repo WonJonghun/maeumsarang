@@ -18,4 +18,24 @@
         FROM P_Jikgub
     </select>
 
+    <select id="selectHelpCodeList" parameterType="string" resultType="com.example.mshintra.common.dto.HelpCodeDto">
+        SELECT
+        Hc_Code     AS hcCode,
+        Hc_Seq      AS hcSeq,
+        Hc_Name     AS hcName,
+        Hc_RMK      AS hcRmk,
+        Hc_ColumNm  AS hcColumNm,
+        Hc_Filter   AS hcFilter,
+        Hc_SqlFg    AS hcSqlFg,
+        Hc_Sql      AS hcSql,
+        Hc_Ratio    AS hcRatio,
+        Hc_Code1    AS hcCode1,
+        Hc_UpFlag   AS hcUpFlag,
+        Hc_RegDt    AS hcRegDt
+        FROM I_HelpCD
+        <where>
+            AND Hc_Code = #{hcCode}
+        </where>
+        ORDER BY Hc_Seq
+    </select>
 </mapper>

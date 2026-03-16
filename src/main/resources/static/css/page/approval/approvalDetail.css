@@ -1,5 +1,5 @@
 /* ================== 전자문서 상세 영역 ↓================== */
-.approval-ws-wrap {
+.approval-detail-wrap {
     padding: 10px;
 }
 /* ================== 전자문서 상세 영역 ↑================== */
@@ -11,11 +11,11 @@
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    margin-bottom: 4px;
+    margin-bottom: 12px;
     min-width: 0;
 }
 
-.approval-ws-title {
+.approval-detail-title {
     flex: 0 0 auto;
     width: 40%;
     min-width: 0;
@@ -42,6 +42,7 @@
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
+    padding-right: 10px;
 }
 
 .approval-sign-wrap::-webkit-scrollbar {
@@ -195,6 +196,7 @@
     margin-bottom: 8px;
     justify-content: flex-start;
     overflow-x: hidden;
+    padding-right: 0;
 }
 
 .approval-header:has(.approval-sign-table .approval-sign-col:nth-child(4)) .approval-sign-label {
@@ -216,11 +218,9 @@
     min-width: 0;
 }
 
-.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(4)) .approval-ws-title {
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(4)) .approval-detail-title {
     width: 100%;
     min-height: 60px;
-    /*justify-content: flex-start;*/
-    /*text-align: left;*/
     padding-left: 8px;
     font-size: 20px;
 }
@@ -374,63 +374,54 @@
     line-height: 1;
 }
 
-.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(8)) .approval-ws-title {
+.approval-header:has(.approval-sign-table .approval-sign-col:nth-child(8)) .approval-detail-title {
     min-height: 52px;
     font-size: 18px;
 }
 /* ================== 결재칸 8개 이상 최대 축소 ↑================== */
 
-/* ================== 본문 항목 영역 ↓================== */
-.approval-kv-list {
-    border-top: 1px solid #dcdcdc;
+/* ================== 본문 상세 영역 ↓================== */
+.approval-detail-list {
+    margin-top: 12px;
+    border-top: 1px dashed var(--gray-cccccc);
 }
 
-.approval-kv-row {
-    display: flex;
-    border-bottom: 1px solid #dcdcdc;
+.approval-detail-section {
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--gray-cccccc);
 }
 
-.approval-kv-key {
-    width: 140px;
-    min-width: 140px;
-    padding: 12px 10px;
-    background: #f8f8f8;
+.approval-detail-section:last-child {
+    border-bottom: 0;
+}
+
+.approval-detail-subtitle {
     font-size: 14px;
-    font-weight: 600;
-    color: #222;
-    box-sizing: border-box;
-}
-
-.approval-kv-val {
-    flex: 1;
-    padding: 12px 10px;
-    font-size: 14px;
-    color: #222;
+    margin: 0 0 6px 0;
+    font-weight: 700;
+    color: var(--blue-003399);
     line-height: 1.5;
-    white-space: pre-wrap;
+}
+
+.approval-detail-body {
+    min-height: 25px;
+    font-size: 14px;
+    line-height: 1.8;
+    letter-spacing: 0.04em;
     word-break: break-word;
-    box-sizing: border-box;
+    white-space: pre-wrap;
+    font-weight: 400;
+    color: #222;
+    padding: 0 7px 0 7px;
 }
-/* ================== 본문 항목 영역 ↑================== */
 
-/* ================== 모바일 영역 ↓================== */
-@media (max-width: 768px) {
-    .approval-header {
-        gap: 6px;
-    }
-
-    .approval-ws-title {
-        font-size: 18px;
-    }
-
-    .approval-kv-key {
-        width: 100px;
-        min-width: 100px;
-    }
+.approval-detail-body.is-empty {
+    color: #999;
+    text-align: center;
 }
-/* ================== 모바일 영역 ↑================== */
+/* ================== 본문 상세 영역 ↑================== */
 
-
+/* ================== 이미지 영역 ↓================== */
 .detail-image-no-border {
     display: block;
     max-width: 100%;
@@ -438,3 +429,16 @@
     height: auto;
     margin-top: 5px;
 }
+/* ================== 이미지 영역 ↑================== */
+
+/* ================== 모바일 영역 ↓================== */
+@media (max-width: 768px) {
+    .approval-header {
+        gap: 6px;
+    }
+
+    .approval-detail-title {
+        font-size: 18px;
+    }
+}
+/* ================== 모바일 영역 ↑================== */

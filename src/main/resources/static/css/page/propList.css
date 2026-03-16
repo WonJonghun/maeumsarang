@@ -123,6 +123,7 @@
     letter-spacing : 0.04em;
     word-break: break-word;
     font-weight: 400;
+    padding: 0 7px 0 7px;
 }
 
 .prop-detail-sub-line {

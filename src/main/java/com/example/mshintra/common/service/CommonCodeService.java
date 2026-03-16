@@ -1,11 +1,13 @@
 package com.example.mshintra.common.service;
 
 import com.example.mshintra.common.dto.CommonCodeDto;
+import com.example.mshintra.common.dto.HelpCodeDto;
 import com.example.mshintra.common.mapper.CommonCodeMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,7 +43,6 @@ public class CommonCodeService {
                     field.set(dto, mappedName);
 
                 } catch (NoSuchFieldException | IllegalAccessException e) {
-                    // log.debug("error!@", e);
                 }
             }
         }
@@ -59,10 +60,38 @@ public class CommonCodeService {
         applyCodeMapping(targetList, codeField, nameField, codes);
     }
 
-    //코드매핑
-    private <T> void applyCodeMapping(List<T> targetList, String codeField, String nameField, List<CommonCodeDto> codeList) {
+    //헬프코드 목록
+    public List<HelpCodeDto> selectHelpCodeList(String hcCode) {
+        if (hcCode == null || hcCode.isBlank()) {
+            return Collections.emptyList();
+        }
+        return commonCodeMapper.selectHelpCodeList(hcCode);
+    }
 
-        Map<String, String> codeMap = codeList.stream().collect(Collectors.toMap(CommonCodeDto::getCode, CommonCodeDto::getCodeNm));
+    //헬프코드명 반환
+    public String getHelpCodeName(String hcCode, String codeValue) {
+        if (codeValue == null || codeValue.isBlank()) {
+            return codeValue;
+        }
+
+        return selectHelpCodeList(hcCode).stream()
+                .filter(item -> codeValue.equalsIgnoreCase(item.getHcColumNm()))
+                .map(HelpCodeDto::getHcName)
+                .findFirst()
+                .orElse(codeValue);
+    }
+
+    //헬프코드 매핑, codeField 값(Hc_ColumNm) -> nameField(Hc_Name)
+    public <T> void mapHelpCode(List<T> targetList, String codeField, String nameField, String hcCode) {
+
+        List<HelpCodeDto> helpCodeList = selectHelpCodeList(hcCode);
+        Map<String, String> codeMap = helpCodeList.stream()
+                .filter(item -> item.getHcColumNm() != null)
+                .collect(Collectors.toMap(
+                        HelpCodeDto::getHcColumNm,
+                        HelpCodeDto::getHcName,
+                        (a, b) -> a
+                ));
 
         for (T dto : targetList) {
             try {
@@ -73,10 +102,38 @@ public class CommonCodeService {
                 nameF.setAccessible(true);
 
                 String code = (String) codeF.get(dto);
-                if (code == null) continue;
+                if (code == null || code.isBlank()) {
+                    continue;
+                }
 
                 nameF.set(dto, codeMap.getOrDefault(code, code));
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    //코드매핑
+    private <T> void applyCodeMapping(List<T> targetList, String codeField, String nameField, List<CommonCodeDto> codeList) {
+
+        Map<String, String> codeMap = codeList.stream()
+                .collect(Collectors.toMap(CommonCodeDto::getCode, CommonCodeDto::getCodeNm));
+
+        for (T dto : targetList) {
+            try {
+                Field codeF = dto.getClass().getDeclaredField(codeField);
+                Field nameF = dto.getClass().getDeclaredField(nameField);
+
+                codeF.setAccessible(true);
+                nameF.setAccessible(true);
+
+                String code = (String) codeF.get(dto);
+                if (code == null) {
+                    continue;
+                }
+
+                nameF.set(dto, codeMap.getOrDefault(code, code));
+            } catch (Exception ignored) {
+            }
         }
     }
 
@@ -101,8 +158,8 @@ public class CommonCodeService {
                     field.set(list, formatted);
                 }
 
-            } catch (NoSuchFieldException | IllegalAccessException ignored) {}
+            } catch (NoSuchFieldException | IllegalAccessException ignored) {
+            }
         }
     }
-
 }

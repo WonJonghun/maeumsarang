@@ -51,13 +51,18 @@ public class ApprovalController {
 
         ApprovalDetailDto detail = approvalService.getApprovalDetail(ccCode, ccFlag);
 
+        String flag = ccFlag == null ? "" : ccFlag.trim().toUpperCase();
+        String bodyPage = "/WEB-INF/views/jsp/approval/detail/approvalDetail.jsp";
+
+//        if ("WS".equals(flag) || "IO".equals(flag)) {
+//            bodyPage = "/WEB-INF/views/jsp/approval/detail/approval" + flag + ".jsp";
+//        }
+
         model.addAttribute("detail", detail);
         model.addAttribute("ccCode", ccCode);
-        model.addAttribute("ccFlag", ccFlag);
+        model.addAttribute("ccFlag", flag);
+        model.addAttribute("bodyPage", bodyPage);
 
-        String flag = (ccFlag == null) ? "" : ccFlag.trim().toUpperCase();
-        if (flag.isEmpty()) return "jsp/approval/detail/approvalDefault";
-
-        return "jsp/approval/detail/approval" + flag;
+        return "jsp/approval/detail/approvalDetailLayout";
     }
 }

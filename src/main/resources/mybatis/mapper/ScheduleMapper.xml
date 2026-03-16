@@ -239,4 +239,46 @@
         WHERE CONVERT(CHAR(6), cc_Dt, 112) = #{year} + #{month}
     </select>
 
+    <select id="selectMonthDutyList" parameterType="com.example.mshintra.schedule.dto.ScheduleMenuDto" resultType="com.example.mshintra.schedule.dto.MonthDutyDto">
+        <![CDATA[
+        SELECT
+            TMP.Du_Date AS duDate,
+            TMP.Du_Flag AS duFlag,
+            TMP.Du_Code1 AS duCode1,
+            TMP.Du_Name1 AS duName1,
+            H.Hc_Name AS hcName
+        FROM (
+            SELECT
+                D.Du_Date,
+                D.Du_Flag,
+                D.Du_Code1,
+                dbo.GetSaNm(D.Du_Code1) AS Du_Name1
+            FROM I_Duty D
+            WHERE D.Du_Date >= DATEFROMPARTS(YEAR(CAST(#{baseDt} AS DATE)), MONTH(CAST(#{baseDt} AS DATE)), 1)
+              AND D.Du_Date < DATEADD(MONTH, 1, DATEFROMPARTS(YEAR(CAST(#{baseDt} AS DATE)), MONTH(CAST(#{baseDt} AS DATE)), 1))
+              AND D.Du_Flag NOT IN (9, 10)
+              AND D.Du_Code1 = #{saCd}
+
+            UNION ALL
+
+            SELECT
+                G.Gu_Date AS Du_Date,
+                CASE WHEN P.Ic_Buser = '140' THEN '21' ELSE '22' END AS Du_Flag,
+                G.Gu_Code1 AS Du_Code1,
+                P.Ic_Name AS Du_Name1
+            FROM I_Gunmu G
+            LEFT JOIN P_InsaCode P
+                ON P.Ic_Code = G.Gu_Code1
+            WHERE G.Gu_Date >= DATEFROMPARTS(YEAR(CAST(#{baseDt} AS DATE)), MONTH(CAST(#{baseDt} AS DATE)), 1)
+              AND G.Gu_Date < DATEADD(MONTH, 1, DATEFROMPARTS(YEAR(CAST(#{baseDt} AS DATE)), MONTH(CAST(#{baseDt} AS DATE)), 1))
+              AND P.Ic_Jikchek = 35
+              AND LEFT(G.Gu_Flag, 1) = 'N'
+              AND G.Gu_Code1 = #{saCd}
+        ) TMP
+        LEFT JOIN I_HelpCD H
+            ON H.Hc_Code = 'Int000060'
+           AND H.Hc_Seq = TMP.Du_Flag
+        ORDER BY TMP.Du_Date, H.Hc_Filter
+        ]]>
+    </select>
 </mapper>

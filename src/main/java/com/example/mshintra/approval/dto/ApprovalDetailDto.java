@@ -13,6 +13,7 @@ public class ApprovalDetailDto {
 
     private String ccCode;        // 문서코드
     private String ccFlag;        // 구분(Flag)
+    private String ccFlagNm;      // 구분명
     private String ccSeFg;        // 서식구분
     private String ccDate;        // 작성/신청일자
     private String ccBuser;       // 부서(또는 작성부서)
@@ -88,4 +89,5 @@ public class ApprovalDetailDto {
     private String esSign8;
 
     private List<ApprovalDetailItemDto> items;
+    private List<ApprovalSignDto> signList;
 }
