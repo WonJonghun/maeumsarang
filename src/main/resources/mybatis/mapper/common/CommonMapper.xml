@@ -38,4 +38,8 @@
         </where>
         ORDER BY Hc_Seq
     </select>
+
+    <select id="executeProcedure" parameterType="string" resultType="String">
+        SELECT dbo.${procNm}(#{param});
+    </select>
 </mapper>

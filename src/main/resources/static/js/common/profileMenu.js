@@ -31,13 +31,13 @@ function bindEvents() {
         });
 
     //프로필 메뉴(6개) 클릭 -> 임시로 메인 이동
-    $(document)
-        .off('click.profileMenuGoMain', '.profile-check-item')
-        .on('click.profileMenuGoMain', '.profile-check-item', function (e) {
-            e.preventDefault();
-            location.href = '/main.do';
-            return false;
-        });
+    // $(document)
+    //     .off('click.profileMenuGoMain', '.profile-check-item')
+    //     .on('click.profileMenuGoMain', '.profile-check-item', function (e) {
+    //         e.preventDefault();
+    //         location.href = '/main.do';
+    //         return false;
+    //     });
 }
 
 //전자결재 및 우편 등 확인할 내용 불러오기

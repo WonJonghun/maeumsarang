@@ -74,7 +74,7 @@ function loadPropList() {
 function propDetail(rowEl) {
     const selRow = $(rowEl);
 
-    window.detailDrawerShow('<div style="padding:16px;">상세 조회중...</div>', true);
+    detailDrawerShow('<div style="padding:16px;">상세 조회중...</div>', true);
 
     const partFlag = Number(selRow.data('pl-partflag'));
     let partText = '';
@@ -93,7 +93,7 @@ function propDetail(rowEl) {
 
     cmAjax('/imprvProp/propDetail.do', 'GET', data, true).done(function (res) {
         if (!res || res.length === 0) {
-            window.detailDrawerShow('<div style="padding:16px;">상세 데이터가 없습니다.</div>', true);
+            detailDrawerShow('<div style="padding:16px;">상세 데이터가 없습니다.</div>', true);
             return;
         }
 
@@ -127,11 +127,11 @@ function propDetail(rowEl) {
         }
         html += '</div>';
 
-        window.detailDrawerShow(html, true, $.trim(selRow.data('pl-img-num')));
+        detailDrawerShow(html, true, $.trim(selRow.data('pl-img-num')));
 
     }).fail(function (xhr) {
         console.log('propDetail fail:', xhr);
-        window.detailDrawerShow('<div style="padding:16px;">상세 조회 실패</div>', true);
+        detailDrawerShow('<div style="padding:16px;">상세 조회 실패</div>', true);
     });
 }
 

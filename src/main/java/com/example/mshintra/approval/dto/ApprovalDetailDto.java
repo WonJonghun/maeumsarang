@@ -8,7 +8,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class ApprovalDetailDto {
 
     private String ccCode;        // 문서코드
@@ -16,7 +15,9 @@ public class ApprovalDetailDto {
     private String ccFlagNm;      // 구분명
     private String ccSeFg;        // 서식구분
     private String ccDate;        // 작성/신청일자
-    private String ccBuser;       // 부서(또는 작성부서)
+    private String ccBuser;       // 부서
+    private String ccBuserNm;     // 부서명
+    private String userNm;        // 유저명
     private Integer ccSignCnt;    // 결재자수
 
     private String ccSign1;       // 결재1

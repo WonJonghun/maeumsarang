@@ -11,7 +11,7 @@ $(function () {
     $(document).on('click', '#repairList .repair-row', function (e) {
         if ($(e.target).closest('a,button,input,select,textarea,label').length > 0) return;
         e.preventDefault();
-        if (!window.detailDrawerShow) return;
+        if (!detailDrawerShow) return;
 
         repairDetail(this);
     });

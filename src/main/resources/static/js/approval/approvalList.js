@@ -5,7 +5,7 @@ $(function () {
     $(document).on('click', '#approvalList .approval-row', function (e) {
         if ($(e.target).closest('a,button,input,select,textarea,label').length > 0) return;
         e.preventDefault();
-        if (!window.detailDrawerShow) return;
+        if (!detailDrawerShow) return;
 
         approvalDetail(this);
     });
@@ -41,6 +41,7 @@ function loadApprovalList() {
             const day = String(row.ccDay).substring(0, 1);
             const team = $.trim(row.ccBuserNm || '');
             const fgNm = $.trim(row.ccFgNm || '');
+            const fcNum = $.trim(row.fcNum || '');
 
             const subText = [[ymd, day].filter(Boolean).join(' '), team, fgNm]
                 .filter(Boolean)
@@ -52,7 +53,8 @@ function loadApprovalList() {
 
             const rowEl = $('<div/>', {
                 class: 'approval-row',
-                'data-cc-code': row.ccCode || ''
+                'data-cc-code': row.ccCode || '',
+                'data-fc-num': fcNum
             });
 
             // 제목 단독
@@ -74,7 +76,7 @@ function loadApprovalList() {
 function approvalDetail(rowEl) {
     const selRow = $(rowEl);
 
-    if (!window.detailDrawerShow) return;
+    if (!detailDrawerShow) return;
 
     const ccCode = $.trim(selRow.data('cc-code') || '');
     const row = (approvalListAll || []).find(function (x) {
@@ -87,6 +89,7 @@ function approvalDetail(rowEl) {
     const team = $.trim(row.ccBuserNm || '');
     const fgNm = $.trim(row.ccFgNm || '');
     const ccFlag = $.trim(row.ccFlag || '');
+    const fcNum = $.trim(selRow.data('fc-num') || row.fcNum || '');
 
     const subText = [[ymd, day].filter(Boolean).join(' '), team, fgNm]
         .filter(Boolean)
@@ -105,18 +108,21 @@ function approvalDetail(rowEl) {
     headHtml += '  </div>';
     headHtml += '</div>';
 
-    window.detailDrawerShow(headHtml, true);
+    detailDrawerShow(headHtml, true);
 
     const data = {
         ccCode: ccCode,
-        ccFlag: ccFlag
+        ccFlag: ccFlag,
+        ymd: ymd,
+        fcNum: fcNum,
+        ccSeq: row.ccSeq
     };
 
     cmAjaxHtml('/approval/approvalDetail.do', 'GET', data, true).done(function (bodyHtml) {
         if (!bodyHtml) return;
-        window.detailDrawerShow(headHtml + bodyHtml, true);
+        detailDrawerShow(headHtml + bodyHtml, true, row.ccImgNO);
     }).fail(function (xhr) {
         console.log('detail fail:', xhr);
-        window.detailDrawerShow(headHtml + '<div style="padding:16px;">상세 조회 실패</div>', true);
+        detailDrawerShow(headHtml + '<div style="padding:16px;">상세 조회 실패</div>', true);
     });
 }

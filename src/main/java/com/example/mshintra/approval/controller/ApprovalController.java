@@ -1,6 +1,7 @@
 package com.example.mshintra.approval.controller;
 
 import com.example.mshintra.approval.dto.ApprovalDetailDto;
+import com.example.mshintra.approval.dto.ApprovalDetailFCDto;
 import com.example.mshintra.approval.dto.ApprovalDto;
 import com.example.mshintra.approval.service.ApprovalService;
 import lombok.RequiredArgsConstructor;
@@ -47,16 +48,29 @@ public class ApprovalController {
     @GetMapping(value = "/approvalDetail.do", produces = "text/html; charset=UTF-8")
     public String approvalDetail(@RequestParam("ccCode") String ccCode,
                                  @RequestParam("ccFlag") String ccFlag,
+                                 @RequestParam(value = "ymd", required = false, defaultValue = "") String ymd,
+                                 @RequestParam(value = "fcNum", required = false, defaultValue = "") String fcNum,
+                                 @RequestParam(value = "ccSeq", required = false, defaultValue = "") Integer ccSeq,
                                  Model model) {
 
-        ApprovalDetailDto detail = approvalService.getApprovalDetail(ccCode, ccFlag);
-
         String flag = ccFlag == null ? "" : ccFlag.trim().toUpperCase();
+        ApprovalDetailDto detail;
+        detail = approvalService.getApprovalDetail(ccCode, ccFlag);
+
+        //기안 공문일때
+        if ("FC".equals(flag)) {
+            List<ApprovalDetailFCDto> fcDetail = approvalService.getApprovalFcDetail(ccCode, flag, ymd, fcNum, ccSeq);
+            model.addAttribute("fcDetail", fcDetail);
+        }
+
         String bodyPage = "/WEB-INF/views/jsp/approval/detail/approvalDetail.jsp";
 
-//        if ("WS".equals(flag) || "IO".equals(flag)) {
-//            bodyPage = "/WEB-INF/views/jsp/approval/detail/approval" + flag + ".jsp";
-//        }
+        //전자결재 분기처리
+        if ("OF".equals(flag)
+                || "IO".equals(flag)
+                || "FC".equals(flag)) {
+            bodyPage = "/WEB-INF/views/jsp/approval/detail/approval" + flag + ".jsp";
+        }
 
         model.addAttribute("detail", detail);
         model.addAttribute("ccCode", ccCode);

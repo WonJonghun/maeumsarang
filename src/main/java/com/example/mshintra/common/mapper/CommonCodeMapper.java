@@ -13,4 +13,5 @@ public interface CommonCodeMapper {
     List<CommonCodeDto> selectBuserCodeList();
     List<CommonCodeDto> selectJikgubCodeList();
     List<HelpCodeDto> selectHelpCodeList(String hcCode);
+    String executeProcedure(String procNm,String param);
 }

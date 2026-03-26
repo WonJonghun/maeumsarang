@@ -8,11 +8,15 @@
 //detailDrawerShow(html, false, afNum);
 $(function () {
     if (!hasDrawerDom()) return;
+    ensureImageViewerDom();
     bindDetailDrawerEvents();
 });
 
 let drawerHistoryPushed = false;
+let imageViewerHistoryPushed = false;
 let closingByPop = false;
+let pendingDrawerClose = false;
+let pendingDrawerClearBody = true;
 let currentAfNum = null;
 
 //DOM 체크
@@ -51,6 +55,26 @@ function ensureAttachDom() {
     ).appendTo(root);
 
     return true;
+}
+
+//이미지 전체화면 DOM 생성
+function ensureImageViewerDom() {
+    if ($('#detailImageViewer').length > 0) return;
+
+    $('body').append(
+        $('<div/>', { id: 'detailImageViewer', class: 'detail-image-viewer', style: 'display:none;' }).append(
+            $('<button/>', {
+                type: 'button',
+                class: 'detail-image-viewer-close',
+                'aria-label': '닫기'
+            }).html('&times;'),
+            $('<img/>', {
+                id: 'detailImageViewerImg',
+                class: 'detail-image-viewer-img',
+                alt: ''
+            })
+        )
+    );
 }
 
 //첨부 초기화
@@ -165,10 +189,19 @@ function detailDrawerOpen(useHistory) {
 function detailDrawerClose(useHistory, clearBody) {
     if (useHistory === undefined) useHistory = true;
 
+    if (useHistory && detailImageViewerIsOpen() && imageViewerHistoryPushed && !closingByPop) {
+        pendingDrawerClose = true;
+        pendingDrawerClearBody = clearBody;
+        history.back();
+        return;
+    }
+
     if (useHistory && drawerHistoryPushed && !closingByPop) {
         history.back();
         return;
     }
+
+    closeDetailImageViewerUi();
 
     $('#detailDrawerBackdrop').removeClass('is-open');
     $('#detailDrawer').removeClass('is-open').attr('aria-hidden', 'true').css('transform', '');
@@ -178,11 +211,57 @@ function detailDrawerClose(useHistory, clearBody) {
     detailDrawerClearAttach();
 
     drawerHistoryPushed = false;
+    imageViewerHistoryPushed = false;
+    pendingDrawerClose = false;
+    pendingDrawerClearBody = true;
 }
 
 //열림 여부
 function detailDrawerIsOpen() {
     return $('#detailDrawer').hasClass('is-open');
+}
+
+//이미지 전체화면 상태 확인
+function detailImageViewerIsOpen() {
+    return $('#detailImageViewer').is(':visible');
+}
+
+//이미지 전체화면 열기
+function openDetailImageViewer(src, alt) {
+    if (!src) return;
+    if (detailImageViewerIsOpen()) return;
+
+    ensureImageViewerDom();
+
+    $('#detailImageViewerImg')
+        .attr('src', src)
+        .attr('alt', alt || '');
+
+    $('#detailImageViewer').fadeIn(120);
+    $('body').addClass('image-viewer-open');
+
+    history.pushState({ detailImageViewerOpen: true }, document.title, location.href);
+    imageViewerHistoryPushed = true;
+}
+
+//이미지 전체화면 UI 닫기
+function closeDetailImageViewerUi() {
+    $('#detailImageViewer').hide();
+    $('#detailImageViewerImg').attr('src', '').attr('alt', '');
+    $('body').removeClass('image-viewer-open');
+}
+
+//이미지 전체화면 닫기
+function closeDetailImageViewer() {
+    if (!detailImageViewerIsOpen()) return;
+
+    if (imageViewerHistoryPushed && !closingByPop) {
+        history.back();
+        return;
+    }
+
+    closeDetailImageViewerUi();
+    imageViewerHistoryPushed = false;
 }
 
 //이벤트 바인딩
@@ -192,19 +271,69 @@ function bindDetailDrawerEvents() {
         detailDrawerClose(true);
     });
 
+    //미리보기 이미지 클릭 -> 전체화면
+    $(document).on('click', '#detailImagePreview .detail-image', function () {
+        openDetailImageViewer($(this).attr('src'), $(this).attr('alt'));
+    });
+
+    //전체화면 배경 클릭 닫기
+    $(document).on('click', '#detailImageViewer', function () {
+        closeDetailImageViewer();
+    });
+
+    //전체화면 닫기 버튼 클릭
+    $(document).on('click', '#detailImageViewer .detail-image-viewer-close', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        closeDetailImageViewer();
+    });
+
+    //이미지 자체 클릭 시 닫힘 방지
+    $(document).on('click', '#detailImageViewer .detail-image-viewer-img', function (e) {
+        e.stopPropagation();
+    });
+
     //ESC 닫기
     $(document).on('keydown', function (e) {
-        if (e.key === 'Escape' && detailDrawerIsOpen()) detailDrawerClose(true);
+        if (e.key !== 'Escape') return;
+
+        if (detailImageViewerIsOpen()) {
+            closeDetailImageViewer();
+            return;
+        }
+
+        if (detailDrawerIsOpen()) detailDrawerClose(true);
     });
 
     //뒤로가기(popstate) 연동
     window.addEventListener('popstate', function () {
+        if (detailImageViewerIsOpen()) {
+            closingByPop = true;
+            closeDetailImageViewerUi();
+            closingByPop = false;
+            imageViewerHistoryPushed = false;
+
+            if (pendingDrawerClose && detailDrawerIsOpen()) {
+                closingByPop = true;
+                detailDrawerClose(false, pendingDrawerClearBody);
+                closingByPop = false;
+            }
+
+            pendingDrawerClose = false;
+            pendingDrawerClearBody = true;
+            return;
+        }
+
         if (detailDrawerIsOpen()) {
             closingByPop = true;
             detailDrawerClose(false);
             closingByPop = false;
+            drawerHistoryPushed = false;
         }
-        drawerHistoryPushed = false;
+
+        imageViewerHistoryPushed = false;
+        pendingDrawerClose = false;
+        pendingDrawerClearBody = true;
     });
 
     //스와이프 닫기
@@ -297,8 +426,14 @@ function bindDetailDrawerEvents() {
     }
 
     let bound = false;
-    function onMoveBind(e) { onMove(e); }
-    function onEndBind() { onEnd(); }
+
+    function onMoveBind(e) {
+        onMove(e);
+    }
+
+    function onEndBind() {
+        onEnd();
+    }
 
     function onMoveEnd() {
         if (bound) return;
@@ -322,6 +457,7 @@ function bindDetailDrawerEvents() {
 
     function onStart(e) {
         if (!detailDrawerIsOpen()) return;
+        if (detailImageViewerIsOpen()) return;
         if (e && e.touches && e.touches.length > 1) return;
         if (e && e.type === 'mousedown' && e.button !== 0) return;
 

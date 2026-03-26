@@ -3,7 +3,22 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <div class="approval-header">
-    <div class="approval-detail-title"><c:out value="${detail.ccFlagNm}" /></div>
+    <div class="approval-detail-title">
+        <c:set var="bracketIdx" value="${fn:indexOf(detail.ccFlagNm, '(')}" />
+
+        <c:choose>
+            <c:when test="${bracketIdx ne -1}">
+                <c:out value="${fn:substring(detail.ccFlagNm, 0, bracketIdx)}" />
+                <br>
+                <c:out value="${fn:substring(detail.ccFlagNm, bracketIdx, fn:length(detail.ccFlagNm))}" />
+            </c:when>
+            <c:otherwise>
+                <c:out value="${detail.ccFlagNm}" />
+            </c:otherwise>
+        </c:choose>
+
+        <c:out value="${detail.ccUk}" />
+    </div>
 
     <c:if test="${not empty detail.signList}">
         <div class="approval-sign-wrap">

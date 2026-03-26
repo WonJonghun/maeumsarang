@@ -162,4 +162,8 @@ public class CommonCodeService {
             }
         }
     }
+
+    public String executeProcedure(String procNm, String param) {
+        return commonCodeMapper.executeProcedure(procNm, param);
+    }
 }

@@ -20,20 +20,35 @@
                 </tbody>
             </table>
         </div>
-        <c:forEach var="item" items="${detail.items}">
+        <c:forEach var="detail" items="${fcDetail}" varStatus="status">
             <div class="approval-detail-section">
-                <div class="approval-detail-subtitle">
-                    <c:out value="${item.title}" />
-                </div>
                 <c:choose>
-                    <c:when test="${empty fn:trim(item.value)}">
+                    <c:when test="${empty fn:trim(detail.ccTitle)}">
+                        <div class="approval-detail-subtitle">내용</div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="approval-detail-subtitle"><c:out value="${detail.ccTitle}" /></div>
+                    </c:otherwise>
+                </c:choose>
+
+                <c:choose>
+                    <c:when test="${empty fn:trim(detail.ccRmk)}">
                         <div class="approval-detail-body is-empty">-</div>
                     </c:when>
                     <c:otherwise>
-                        <div class="approval-detail-body"><c:out value="${item.value}" /></div>
+                        <div class="approval-detail-body"><c:out value="${detail.ccRmk}" /></div>
                     </c:otherwise>
                 </c:choose>
             </div>
+
+            <c:if test="${status.last}">
+                <div class="approval-detail-section">
+                    <div class="approval-detail-body no-wrap font-size-12">협조자 <c:out value="${detail.ccHubJo}" /><br />
+                        <c:out value="${detail.ccNum}" /> <c:out value="${detail.ccDate}" /><br />
+                        <c:out value="${detail.ccAddr}" /><br />
+                        <c:out value="${detail.ccPhone}" /><br /></div>
+                </div>
+            </c:if>
         </c:forEach>
     </div>
 </div>

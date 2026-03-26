@@ -7,12 +7,303 @@
         { call dbo.Intranet_ElecApproval_Count(#{searchFromDate}, #{searchToDate}, #{searchId}) }
     </select>
 
-    <select id="selectApprovalList" resultType="com.example.mshintra.approval.dto.ApprovalDto" statementType="CALLABLE">
-        { call dbo.Intranet_ElecApproval_Sign(#{searchFromDate}, #{searchToDate}, #{searchId}, #{ccFlag}) }
+    <select id="selectApprovalList" resultType="com.example.mshintra.approval.dto.ApprovalDto">
+        <![CDATA[
+            DECLARE @sDt   DATETIME
+        DECLARE @eDt   DATETIME
+        DECLARE @SaCD  VARCHAR(10)
+        DECLARE @Flag  INT
+        DECLARE @Buser VARCHAR(10)
+
+        SET @sDt = #{searchFromDate}
+            SET @eDt = #{searchToDate}
+            SET @SaCD = #{searchId}
+            SET @Flag = #{ccFlag}
+            SET @Buser = dbo.GetSaBuser(@SaCD, @eDt)
+
+            SELECT cc_Code ,
+                   cc_Flag ,
+                   cc_FgNm ,
+                   cc_Date ,
+                   cc_Day  ,
+                   cc_Title  ,
+                   cc_SignCnt ,
+                   cc_Sign1  ,
+                   cc_SignTt1 ,
+                   cc_SignOK1 ,
+                   cc_Sign2   ,
+                   cc_SignTt2 ,
+                   cc_SignOK2 ,
+                   cc_Sign3 ,
+                   cc_SignTt3 ,
+                   cc_SignOK3 ,
+                   cc_Sign4 ,
+                   cc_SignTt4 ,
+                   cc_SignOK4 ,
+                   cc_Sign5 ,
+                   cc_SignTt5 ,
+                   cc_SignOK5 ,
+                   cc_Sign6  ,
+                   cc_SignTt6 ,
+                   cc_SignOK6 ,
+                   cc_Sign7  ,
+                   cc_SignTt7 ,
+                   cc_SignOK7 ,
+                   cc_Sign8 ,
+                   cc_SignTt8 ,
+                   cc_SignOK8 ,
+                   cc_ReSign ,
+                   cc_RMK ,
+                   cc_Seq = CASE
+                                WHEN cc_Flag = 'PL' THEN (
+                                    SELECT MAX(Pi_Seq)
+                                    FROM I_PaperInout
+                                    WHERE Pi_Date = cc_Date
+                                      AND Pi_SignUK = cc_Code
+                                )
+                                WHEN cc_Flag = 'FC' THEN (
+                                    SELECT MAX(Fc_Flag)
+                                    FROM I_FirstCopy
+                                    WHERE Fc_ElecUK = cc_Code
+                                )
+                                ELSE 0
+                       END ,
+                   cc_ReRMK ,
+                   cc_ReSignDt ,
+                   cc_ImgNO ,
+                   cc_Buser ,
+                   cc_SRDFg ,
+                   cc_Level ,
+                   cc_Fg ,
+                   cc_Plseq  ,
+                   cc_RMK1 ,
+                   fcNum ,
+                   cc_OK  = CASE WHEN cc_SignCnt = cc_OK THEN
+                                     CASE WHEN cc_Flag = 'OF' THEN
+                                              CASE WHEN (SELECT COUNT(*)
+                                                         FROM P_Offday
+                                                         WHERE Od_Code = CASE WHEN LEN(ISNULL(cc_Sign1,'')) > 6 THEN SUBSTRING(cc_Sign1,9,10) ELSE ISNULL(cc_Sign1,'') END
+                                                           AND Od_UK = cc_Code) > 0 THEN cc_OK ELSE 0 END
+                                          WHEN cc_Flag = 'OR' THEN
+                                              CASE WHEN (SELECT COUNT(*)
+                                                         FROM O_OSOrderList
+                                                         WHERE Or_ElecUK = cc_Code
+                                                           AND ISNULL(Or_Cancel,0) = 0) > 0 THEN cc_OK ELSE 0 END
+                                          ELSE cc_OK
+                                         END
+                                 ELSE cc_OK END ,
+                   cc_OK1 = CASE WHEN cc_SignCnt = cc_OK THEN 1 ELSE 0 END,
+                   cc_Use = ISNULL(Ea_Use,'Y'),
+                   cc_OK,
+                   cc_Form = Hc_Code1,
+                   cc_ImgNO2,
+                   cc_SeFg ,
+                   cc_SignOR = CASE WHEN cc_So = 1 THEN ISNULL((SELECT COUNT(*) FROM I_ElecsignOrder WHERE Eo_Code = cc_Code),0) ELSE 0 END,
+                   cc_So1
+            FROM (
+                     SELECT cc_Code = Es_Code ,
+                            cc_Flag = Es_Flag ,
+                            cc_FgNm = Hc_Name ,
+                            cc_Date = Es_Date ,
+                            cc_Day  = DATENAME(WEEKDAY,Es_Date),
+                            cc_Title = Es_Title ,
+                            cc_SignCnt = ISNULL(Es_SignCnt,CASE WHEN Es_Flag = 'OR' THEN 3 ELSE 4 END) ,
+                            cc_Sign1 = Es_Sign1,
+                            cc_SignTt1 = CASE WHEN ISNULL(Es_Sign1,'') = '' THEN ''
+                                              ELSE CASE WHEN ISNULL(Es_SignDt1,'') = '' THEN '□ ' ELSE '▣ ' END
+                                                  + dbo.GetSaJikGub(CASE WHEN LEN(ISNULL(Es_Sign1,'')) > 6 THEN SUBSTRING(Es_Sign1,9,10) ELSE ISNULL(Es_Sign1,'') END,Es_Date,ISNULL(hc_ratio,3))
+                                                  + '(' + Ic_Name + ')' END,
+                            cc_SignOK1 = CASE WHEN ISNULL(Es_SignDt1,'') = '' THEN 0 ELSE 1 END,
+                            cc_Sign2 = Es_Sign2,
+                            cc_SignTt2 = CASE WHEN ISNULL(Es_Sign2,'') = '' THEN ''
+                                              ELSE CASE WHEN ISNULL(Es_SignDt2,'') = '' THEN '□ ' ELSE '▣ ' END
+                                                  + dbo.GetSaJikGub(CASE WHEN LEN(ISNULL(Es_Sign2,'')) > 6 THEN SUBSTRING(Es_Sign2,9,10) ELSE ISNULL(Es_Sign2,'') END,Es_Date,ISNULL(hc_ratio,3)) END,
+                            cc_SignOK2 = CASE WHEN ISNULL(Es_SignDt2,'') = '' THEN 0 ELSE 1 END,
+                            cc_Sign3 = Es_Sign3,
+                            cc_SignTt3 = CASE WHEN ISNULL(Es_Sign3,'') = '' THEN ''
+                                              ELSE CASE WHEN ISNULL(Es_SignDt3,'') = '' THEN '□ ' ELSE '▣ ' END
+                                                  + dbo.GetSaJikGub(CASE WHEN LEN(ISNULL(Es_Sign3,'')) > 6 THEN SUBSTRING(Es_Sign3,9,10) ELSE ISNULL(Es_Sign3,'') END,Es_Date,ISNULL(hc_ratio,3)) END,
+                            cc_SignOK3 = CASE WHEN ISNULL(Es_SignDt3,'') = '' THEN 0 ELSE 1 END,
+                            cc_Sign4 = Es_Sign4,
+                            cc_SignTt4 = CASE WHEN ISNULL(Es_Sign4,'') = '' THEN ''
+                                              ELSE CASE WHEN ISNULL(Es_SignDt4,'') = '' THEN '□ ' ELSE '▣ ' END
+                                                  + dbo.GetSaJikGub(CASE WHEN LEN(ISNULL(Es_Sign4,'')) > 6 THEN SUBSTRING(Es_Sign4,9,10) ELSE ISNULL(Es_Sign4,'') END,Es_Date,ISNULL(hc_ratio,3)) END,
+                            cc_SignOK4 = CASE WHEN ISNULL(Es_SignDt4,'') = '' THEN 0 ELSE 1 END,
+                            cc_Sign5 = Es_Sign5,
+                            cc_SignTt5 = CASE WHEN ISNULL(Es_Sign5,'') = '' THEN ''
+                                              ELSE CASE WHEN ISNULL(Es_SignDt5,'') = '' THEN '□ ' ELSE '▣ ' END
+                                                  + dbo.GetSaJikGub(CASE WHEN LEN(ISNULL(Es_Sign5,'')) > 6 THEN SUBSTRING(Es_Sign5,9,10) ELSE ISNULL(Es_Sign5,'') END,Es_Date,ISNULL(hc_ratio,3)) END,
+                            cc_SignOK5 = CASE WHEN ISNULL(Es_SignDt5,'') = '' THEN 0 ELSE 1 END,
+                            cc_Sign6 = Es_Sign6,
+                            cc_SignTt6 = CASE WHEN ISNULL(Es_Sign6,'') = '' THEN ''
+                                              ELSE CASE WHEN ISNULL(Es_SignDt6,'') = '' THEN '□ ' ELSE '▣ ' END
+                                                  + dbo.GetSaJikGub(CASE WHEN LEN(ISNULL(Es_Sign6,'')) > 6 THEN SUBSTRING(Es_Sign6,9,10) ELSE ISNULL(Es_Sign6,'') END,Es_Date,ISNULL(hc_ratio,3)) END,
+                            cc_SignOK6 = CASE WHEN ISNULL(Es_SignDt6,'') = '' THEN 0 ELSE 1 END,
+                            cc_Sign7 = Es_Sign7,
+                            cc_SignTt7 = CASE WHEN ISNULL(Es_Sign7,'') = '' THEN ''
+                                              ELSE CASE WHEN ISNULL(Es_SignDt7,'') = '' THEN '□ ' ELSE '▣ ' END
+                                                  + dbo.GetSaJikGub(CASE WHEN LEN(ISNULL(Es_Sign7,'')) > 6 THEN SUBSTRING(Es_Sign7,9,10) ELSE ISNULL(Es_Sign7,'') END,Es_Date,ISNULL(hc_ratio,3)) END,
+                            cc_SignOK7 = CASE WHEN ISNULL(Es_SignDt7,'') = '' THEN 0 ELSE 1 END,
+                            cc_Sign8 = Es_Sign8,
+                            cc_SignTt8 = CASE WHEN ISNULL(Es_Sign8,'') = '' THEN ''
+                                              ELSE CASE WHEN ISNULL(Es_SignDt8,'') = '' THEN '□ ' ELSE '▣ ' END
+                                                  + dbo.GetSaJikGub(CASE WHEN LEN(ISNULL(Es_Sign8,'')) > 6 THEN SUBSTRING(Es_Sign8,9,10) ELSE ISNULL(Es_Sign8,'') END,Es_Date,ISNULL(hc_ratio,3)) END,
+                            cc_SignOK8 = CASE WHEN ISNULL(Es_SignDt8,'') = '' THEN 0 ELSE 1 END,
+                            cc_ReSign = ISNULL(Es_ReSign,''),
+                            cc_RMK = ISNULL(Es_RMK,''),
+                            cc_ReRMK = ISNULL(Es_ReRMK,''),
+                            cc_ReSignDt = ISNULL(Es_ReSignDt,''),
+                            cc_ImgNO = Es_ImgNO,
+                            cc_ImgNO2 = Es_ImgNO2,
+                            cc_Buser = ISNULL(Id_Job,Ic_Buser),
+                            cc_SRDFg = CONVERT(INT,Hc_Code1),
+                            cc_Level = CASE
+                                           WHEN CASE WHEN LEN(ISNULL(Es_Sign1,'')) > 6 THEN SUBSTRING(Es_Sign1,9,10) ELSE ISNULL(Es_Sign1,'') END = @SaCD THEN 1
+                                           WHEN CASE WHEN LEN(ISNULL(Es_Sign2,'')) > 6 THEN SUBSTRING(Es_Sign2,9,10) ELSE ISNULL(Es_Sign2,'') END = @SaCD THEN 2
+                                           WHEN CASE WHEN LEN(ISNULL(Es_Sign3,'')) > 6 THEN SUBSTRING(Es_Sign3,9,10) ELSE ISNULL(Es_Sign3,'') END = @SaCD THEN 3
+                                           WHEN CASE WHEN LEN(ISNULL(Es_Sign4,'')) > 6 THEN SUBSTRING(Es_Sign4,9,10) ELSE ISNULL(Es_Sign4,'') END = @SaCD THEN 4
+                                           WHEN CASE WHEN LEN(ISNULL(Es_Sign5,'')) > 6 THEN SUBSTRING(Es_Sign5,9,10) ELSE ISNULL(Es_Sign5,'') END = @SaCD THEN 5
+                                           WHEN CASE WHEN LEN(ISNULL(Es_Sign6,'')) > 6 THEN SUBSTRING(Es_Sign6,9,10) ELSE ISNULL(Es_Sign6,'') END = @SaCD THEN 6
+                                           WHEN CASE WHEN LEN(ISNULL(Es_Sign7,'')) > 6 THEN SUBSTRING(Es_Sign7,9,10) ELSE ISNULL(Es_Sign7,'') END = @SaCD THEN 7
+                                           ELSE 8
+                                END,
+                            cc_Fg = CASE WHEN CASE WHEN LEN(ISNULL(Es_Sign1,'')) > 6 THEN SUBSTRING(Es_Sign1,9,10) ELSE ISNULL(Es_Sign1,'') END = @SaCD THEN 1 ELSE 2 END,
+                            cc_Plseq = CASE WHEN Es_Flag = 'PL' THEN (SELECT Pi_Seq FROM I_PaperInout WHERE Pi_Date = Es_Date AND Pi_SignUK = Es_Code) ELSE 0 END,
+                            cc_RMK1 = CASE
+                                          WHEN Es_Flag = 'OF' THEN
+                                              (SELECT SUBSTRING(Ea_RMK,CHARINDEX(';',Ea_RMK) + 1,CHARINDEX('@2',Ea_RMK,10) - CHARINDEX(';',Ea_RMK) - 1)
+                                               FROM I_ElecApproval
+                                               WHERE Ea_Code = Es_Code)
+                                          WHEN Es_Flag = 'FC' THEN
+                                              (SELECT MAX(CONVERT(VARCHAR(10),Fc_Date,120) + Fc_Flag + Fc_Num)
+                                               FROM I_FirstCopy
+                                               WHERE Fc_ElecUK = Es_Code)
+                                          ELSE ''
+                                END,
+                            fcNum = CASE
+                                        WHEN Es_Flag = 'FC' THEN
+                                            (SELECT MAX(Fc_Num)
+                                             FROM I_FirstCopy
+                                             WHERE Fc_ElecUK = Es_Code)
+                                        ELSE ''
+                                END,
+                            cc_OK = CASE WHEN ISNULL(Es_SignDt1,'') = '' THEN 0 ELSE 1 END +
+                                    CASE WHEN ISNULL(Es_SignDt2,'') = '' THEN 0 ELSE 1 END +
+                                    CASE WHEN ISNULL(Es_SignDt3,'') = '' THEN 0 ELSE 1 END +
+                                    CASE WHEN ISNULL(Es_SignDt4,'') = '' THEN 0 ELSE 1 END +
+                                    CASE WHEN ISNULL(Es_SignDt5,'') = '' THEN 0 ELSE 1 END +
+                                    CASE WHEN ISNULL(Es_SignDt6,'') = '' THEN 0 ELSE 1 END +
+                                    CASE WHEN ISNULL(Es_SignDt7,'') = '' THEN 0 ELSE 1 END +
+                                    CASE WHEN ISNULL(Es_SignDt8,'') = '' THEN 0 ELSE 1 END,
+                            cc_SeFg = CASE WHEN @SaCD IN (Es_HubJo1,Es_HubJo2,Es_HubJo3,Es_HubJo4,Es_HubJo5)
+                                OR @Buser IN (Es_HubJo1,Es_HubJo2,Es_HubJo3,Es_HubJo4,Es_HubJo5) THEN 2
+                                           ELSE 1
+                                END,
+                            cc_So = CASE WHEN ISNULL(Hc_Ratio,'') = '10' THEN 1 ELSE 0 END,
+                            cc_So1 = CASE WHEN Eo_SaCD = @SaCD AND ISNULL(Eo_Sign,'') = '' THEN 1 ELSE 0 END
+                     FROM I_ElecSign
+                              LEFT JOIN I_HelpCD ON Hc_Code = 'Elec00' AND Hc_ColumNm = Es_Flag
+                              LEFT JOIN P_InSaCode ON Ic_Code = CASE WHEN LEN(ISNULL(Es_Sign1,'')) > 6 THEN SUBSTRING(Es_Sign1,9,10) ELSE ISNULL(Es_Sign1,'') END
+                              LEFT JOIN I_ElecsignOrder ON Eo_Code = Es_Code AND Eo_SaCD = @SaCD
+                              LEFT JOIN P_InsaDetail ON Id_code = Ic_code
+                         AND Id_DtFlag = 4
+                         AND Id_Saflag = Ic_Saflag
+                         AND Id_Date1 = (
+                             SELECT MAX(Id_Date1)
+                             FROM P_InsaDetail
+                             WHERE Id_code = Ic_code
+                               AND Id_DtFlag = 4
+                               AND Id_Date1 <= Es_Date
+                         )
+                     WHERE Es_Date BETWEEN @sDt AND @eDt
+                       AND (
+                         @Flag = CASE
+                                     WHEN CASE WHEN LEN(ISNULL(Es_Sign1,'')) > 6 THEN SUBSTRING(Es_Sign1,9,10) ELSE ISNULL(Es_Sign1,'') END = @SaCD THEN 1
+                                     WHEN CASE WHEN LEN(ISNULL(Es_Sign2,'')) > 6 THEN SUBSTRING(Es_Sign2,9,10) ELSE ISNULL(Es_Sign2,'') END = @SaCD AND ISNULL(Es_SignDt1,'') <> '' THEN 1
+                                     WHEN CASE WHEN LEN(ISNULL(Es_Sign3,'')) > 6 THEN SUBSTRING(Es_Sign3,9,10) ELSE ISNULL(Es_Sign3,'') END = @SaCD AND ISNULL(Es_SignDt2,'') <> '' THEN 1
+                                     WHEN CASE WHEN LEN(ISNULL(Es_Sign4,'')) > 6 THEN SUBSTRING(Es_Sign4,9,10) ELSE ISNULL(Es_Sign4,'') END = @SaCD AND ISNULL(Es_SignDt3,'') <> '' THEN 1
+                                     WHEN CASE WHEN LEN(ISNULL(Es_Sign5,'')) > 6 THEN SUBSTRING(Es_Sign5,9,10) ELSE ISNULL(Es_Sign5,'') END = @SaCD AND ISNULL(Es_SignDt4,'') <> '' THEN 1
+                                     WHEN CASE WHEN LEN(ISNULL(Es_Sign6,'')) > 6 THEN SUBSTRING(Es_Sign6,9,10) ELSE ISNULL(Es_Sign6,'') END = @SaCD AND ISNULL(Es_SignDt5,'') <> '' THEN 1
+                                     WHEN CASE WHEN LEN(ISNULL(Es_Sign7,'')) > 6 THEN SUBSTRING(Es_Sign7,9,10) ELSE ISNULL(Es_Sign7,'') END = @SaCD AND ISNULL(Es_SignDt6,'') <> '' THEN 1
+                                     WHEN CASE WHEN LEN(ISNULL(Es_Sign8,'')) > 6 THEN SUBSTRING(Es_Sign8,9,10) ELSE ISNULL(Es_Sign8,'') END = @SaCD AND ISNULL(Es_SignDt7,'') <> '' THEN 1
+                                     WHEN @SaCD IN (Es_HubJo1,Es_HubJo2,Es_HubJo3,Es_HubJo4,Es_HubJo5)
+                                         OR @Buser IN (Es_HubJo1,Es_HubJo2,Es_HubJo3,Es_HubJo4,Es_HubJo5) THEN 1
+                                     ELSE 0
+                             END
+                             OR @Flag = CASE
+                                            WHEN CASE WHEN LEN(ISNULL(Es_Sign2,'')) > 6 THEN SUBSTRING(Es_Sign2,9,10) ELSE ISNULL(Es_Sign2,'') END = @SaCD
+                                                AND ISNULL(Es_SignDt2,'') = ''
+                                                AND ISNULL(Es_SignDt1,'') <> ''
+                                                AND ISNULL(Es_ReSignDt,'') = '' THEN 2
+                                            WHEN CASE WHEN LEN(ISNULL(Es_Sign3,'')) > 6 THEN SUBSTRING(Es_Sign3,9,10) ELSE ISNULL(Es_Sign3,'') END = @SaCD
+                                                AND ISNULL(Es_SignDt3,'') = ''
+                                                AND ISNULL(Es_SignDt2,'') <> ''
+                                                AND ISNULL(Es_ReSignDt,'') = '' THEN 2
+                                            WHEN CASE WHEN LEN(ISNULL(Es_Sign4,'')) > 6 THEN SUBSTRING(Es_Sign4,9,10) ELSE ISNULL(Es_Sign4,'') END = @SaCD
+                                                AND ISNULL(Es_SignDt4,'') = ''
+                                                AND ISNULL(Es_SignDt3,'') <> ''
+                                                AND ISNULL(Es_ReSignDt,'') = '' THEN 2
+                                            WHEN CASE WHEN LEN(ISNULL(Es_Sign5,'')) > 6 THEN SUBSTRING(Es_Sign5,9,10) ELSE ISNULL(Es_Sign5,'') END = @SaCD
+                                                AND ISNULL(Es_SignDt5,'') = ''
+                                                AND ISNULL(Es_SignDt4,'') <> ''
+                                                AND ISNULL(Es_ReSignDt,'') = '' THEN 2
+                                            WHEN CASE WHEN LEN(ISNULL(Es_Sign6,'')) > 6 THEN SUBSTRING(Es_Sign6,9,10) ELSE ISNULL(Es_Sign6,'') END = @SaCD
+                                                AND ISNULL(Es_SignDt6,'') = ''
+                                                AND ISNULL(Es_SignDt5,'') <> ''
+                                                AND ISNULL(Es_ReSignDt,'') = '' THEN 2
+                                            WHEN CASE WHEN LEN(ISNULL(Es_Sign7,'')) > 6 THEN SUBSTRING(Es_Sign7,9,10) ELSE ISNULL(Es_Sign7,'') END = @SaCD
+                                                AND ISNULL(Es_SignDt7,'') = ''
+                                                AND ISNULL(Es_SignDt6,'') <> ''
+                                                AND ISNULL(Es_ReSignDt,'') = '' THEN 2
+                                            WHEN CASE WHEN LEN(ISNULL(Es_Sign8,'')) > 6 THEN SUBSTRING(Es_Sign8,9,10) ELSE ISNULL(Es_Sign8,'') END = @SaCD
+                                                AND ISNULL(Es_SignDt8,'') = ''
+                                                AND ISNULL(Es_SignDt7,'') <> ''
+                                                AND ISNULL(Es_ReSignDt,'') = '' THEN 2
+                                            ELSE 0
+                             END
+                             OR @Flag = CASE WHEN @SaCD IN (ISNULL(Es_ReSign,''), ISNULL(Es_Sign1,'')) AND ISNULL(Es_ReSignDt,'') <> '' THEN 3 ELSE 0 END
+                             OR @Flag = CASE
+                                            WHEN CASE WHEN LEN(ISNULL(Es_Sign2,'')) > 6 THEN SUBSTRING(Es_Sign2,9,10) ELSE ISNULL(Es_Sign2,'') END = @SaCD
+                                                AND ISNULL(Es_SignDt2,'') <> ''
+                                                AND ISNULL(Es_SignDt1,'') <> '' THEN 4
+                                            WHEN CASE WHEN LEN(ISNULL(Es_Sign3,'')) > 6 THEN SUBSTRING(Es_Sign3,9,10) ELSE ISNULL(Es_Sign3,'') END = @SaCD
+                                                AND ISNULL(Es_SignDt3,'') <> ''
+                                                AND ISNULL(Es_SignDt2,'') <> '' THEN 4
+                                            WHEN CASE WHEN LEN(ISNULL(Es_Sign4,'')) > 6 THEN SUBSTRING(Es_Sign4,9,10) ELSE ISNULL(Es_Sign4,'') END = @SaCD
+                                                AND ISNULL(Es_SignDt4,'') <> ''
+                                                AND ISNULL(Es_SignDt3,'') <> '' THEN 4
+                                            WHEN CASE WHEN LEN(ISNULL(Es_Sign5,'')) > 6 THEN SUBSTRING(Es_Sign5,9,10) ELSE ISNULL(Es_Sign5,'') END = @SaCD
+                                                AND ISNULL(Es_SignDt5,'') <> ''
+                                                AND ISNULL(Es_SignDt4,'') <> '' THEN 4
+                                            WHEN CASE WHEN LEN(ISNULL(Es_Sign6,'')) > 6 THEN SUBSTRING(Es_Sign6,9,10) ELSE ISNULL(Es_Sign6,'') END = @SaCD
+                                                AND ISNULL(Es_SignDt6,'') <> ''
+                                                AND ISNULL(Es_SignDt5,'') <> '' THEN 4
+                                            WHEN CASE WHEN LEN(ISNULL(Es_Sign7,'')) > 6 THEN SUBSTRING(Es_Sign7,9,10) ELSE ISNULL(Es_Sign7,'') END = @SaCD
+                                                AND ISNULL(Es_SignDt7,'') <> ''
+                                                AND ISNULL(Es_SignDt6,'') <> '' THEN 4
+                                            WHEN CASE WHEN LEN(ISNULL(Es_Sign8,'')) > 6 THEN SUBSTRING(Es_Sign8,9,10) ELSE ISNULL(Es_Sign8,'') END = @SaCD
+                                                AND ISNULL(Es_SignDt8,'') <> ''
+                                                AND ISNULL(Es_SignDt7,'') <> '' THEN 4
+                                            ELSE 0
+                             END
+                             OR @Flag = CASE WHEN @SaCD IN (Es_HubJo1,Es_HubJo2,Es_HubJo3,Es_HubJo4,Es_HubJo5)
+                             OR @Buser IN (Es_HubJo1,Es_HubJo2,Es_HubJo3,Es_HubJo4,Es_HubJo5) THEN 5 ELSE 0 END
+                             OR @Flag = CASE WHEN CASE WHEN LEN(ISNULL(Es_Sign1,'')) > 6 THEN SUBSTRING(Es_Sign1,9,10) ELSE ISNULL(Es_Sign1,'') END = @SaCD THEN 6 ELSE 0 END
+                             OR @Flag = CASE WHEN Eo_SaCD = @SaCD THEN 10 ELSE 0 END
+                         )
+                 ) TMP
+                     LEFT JOIN I_ElecApproval ON Ea_Code = cc_Code AND Ea_Seq = 10
+                     LEFT JOIN I_HelpCD ON Hc_Code = 'Elec00' AND Hc_ColumNm = cc_Flag
+            ORDER BY cc_Date DESC, cc_Code DESC
+            ]]>
     </select>
 
     <select id="selectApprovalDetail" resultType="hashmap" statementType="CALLABLE">
         { call dbo.Intranet_ElecApproval_Form(#{ccCode}, #{ccFlag}) }
+    </select>
+
+    <select id="selectApprovalFcDetail" resultType="com.example.mshintra.approval.dto.ApprovalDetailFCDto" statementType="CALLABLE">
+        { call dbo.Intranet_Cross_DisPlay('Int000200', #{ymd}, #{fcNum}, #{ccSeq}, 'ELEC', '') }
     </select>
 
     <select id="selectApprovalSignNum" resultType="hashmap">

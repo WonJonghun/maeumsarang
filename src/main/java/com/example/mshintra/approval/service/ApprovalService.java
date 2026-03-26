@@ -1,9 +1,6 @@
 package com.example.mshintra.approval.service;
 
-import com.example.mshintra.approval.dto.ApprovalDetailDto;
-import com.example.mshintra.approval.dto.ApprovalDetailItemDto;
-import com.example.mshintra.approval.dto.ApprovalDto;
-import com.example.mshintra.approval.dto.ApprovalSignDto;
+import com.example.mshintra.approval.dto.*;
 import com.example.mshintra.approval.mapper.ApprovalMapper;
 import com.example.mshintra.common.service.CommonCodeService;
 import com.example.mshintra.common.util.CmUtil;
@@ -65,13 +62,24 @@ public class ApprovalService {
         dto.setCcFlag(CmUtil.str(CmUtil.getIgnoreCase(row, "cc_Flag")));
         dto.setCcSeFg(CmUtil.str(CmUtil.getIgnoreCase(row, "cc_SeFg")));
         dto.setCcFlagNm(getApprovalTitle(dto.getCcFlag(), dto.getCcSeFg()));
-        dto.setCcDate(CmUtil.str(CmUtil.getIgnoreCase(row, "cc_Date")));
+        dto.setCcDate(CmUtil.str(CmUtil.getIgnoreCase(row, "cc_Date")).split(" ")[0]);
         dto.setCcBuser(CmUtil.str(CmUtil.getIgnoreCase(row, "cc_Buser")));
+        dto.setCcBuserNm(commonCodeService.executeProcedure("GetBuserNm", dto.getCcBuser()));
         dto.setCcSignCnt(CmUtil.toInt(CmUtil.getIgnoreCase(row, "cc_SignCnt")));
 
         dto.setCcSign1(CmUtil.str(CmUtil.getIgnoreCase(row, "cc_Sign1")));
         dto.setCcSignDt1(CmUtil.str(CmUtil.getIgnoreCase(row, "cc_SignDt1")));
         dto.setCcSignTt1(CmUtil.str(CmUtil.getIgnoreCase(row, "cc_SignTt1")));
+
+        String ccSignDt1 = dto.getCcSignDt1();
+        if (ccSignDt1 != null) {
+            for (String line : ccSignDt1.split("\\r?\\n")) {
+                if (!line.trim().isEmpty()) {
+                    dto.setUserNm(line.trim());
+                    break;
+                }
+            }
+        }
 
         dto.setCcSign2(CmUtil.str(CmUtil.getIgnoreCase(row, "cc_Sign2")));
         dto.setCcSignDt2(CmUtil.str(CmUtil.getIgnoreCase(row, "cc_SignDt2")));
@@ -155,6 +163,11 @@ public class ApprovalService {
         dto.setSignList(buildSignList(dto));
 
         return dto;
+    }
+
+    @Transactional(readOnly = true)
+    public List<ApprovalDetailFCDto> getApprovalFcDetail(String ccCode, String ccFlag, String ymd, String fcNum, Integer ccSeq) {
+        return approvalMapper.selectApprovalFcDetail(ccCode, ccFlag, ymd, fcNum, ccSeq);
     }
 
     private List<ApprovalSignDto> buildSignList(ApprovalDetailDto dto) {

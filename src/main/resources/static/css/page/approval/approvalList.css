@@ -88,3 +88,38 @@
     white-space: nowrap;
 }
 
+.approval-meta-table {
+    width: 100%;
+}
+
+.meta-table-th, .meta-table-td {
+    text-align: left;
+    width: 37%;
+    padding: 0 !important;
+}
+
+.td-right {
+    width: 26%;
+}
+
+.no-wrap {
+    white-space: normal !important;
+}
+
+.approval-part-font {
+    display: inline-block;
+    min-width: 48px;
+    text-align: center;
+}
+
+.approval-part-arrow {
+    display: inline-block;
+    min-width: 12px;
+    text-align: center;
+}
+
+.approval-part-value {
+    display: inline-block;
+    min-width: 48px;
+    text-align: center;
+}

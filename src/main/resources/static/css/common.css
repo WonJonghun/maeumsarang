@@ -1230,7 +1230,7 @@ body.drawer-open {
     left: 0;
     right: 0;
     height: 0;
-    z-index: 10;
+    z-index: 1000;
     pointer-events: none;
 }
 
@@ -1536,6 +1536,10 @@ body.drawer-open {
     font-size: 12px !important;
 }
 
+.font-size-10 {
+    font-size: 10px !important;
+}
+
 .margin-bottom-2 {
     margin-bottom: 7px !important;
 }
@@ -1610,3 +1614,58 @@ body.drawer-open {
 }
 /* ================== 근태 현황 카드 영역 ↑================== */
 
+/* ================== 이미지 전체화면 영역 ↓================== */
+.detail-image-viewer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10000;
+    background: black;
+    display: none;
+    cursor: zoom-out;
+}
+
+.detail-image-viewer-img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    max-width: 95vw;
+    max-height: 95vh;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    cursor: default;
+}
+
+.detail-image-viewer-close {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    margin: 0;
+    background: transparent;
+    color: #fff;
+    font-size: 32px;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 1004;
+    box-shadow: none;
+}
+
+body.image-viewer-open {
+    overflow: hidden;
+}
+
+body.image-viewer-open #detailDrawer,
+body.image-viewer-open #detailDrawerBackdrop {
+    pointer-events: none;
+}
+
+body.image-viewer-open #detailImageViewer,
+body.image-viewer-open #detailImageViewer * {
+    pointer-events: auto;
+}
+/* ================== 이미지 전체화면 영역 ↑================== */
