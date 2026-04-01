@@ -20,33 +20,33 @@
                 </tbody>
             </table>
         </div>
-        <c:forEach var="detail" items="${fcDetail}" varStatus="status">
+        <c:forEach var="fcDetailList" items="${fcDetail}" varStatus="status">
             <div class="approval-detail-section">
                 <c:choose>
-                    <c:when test="${empty fn:trim(detail.ccTitle)}">
+                    <c:when test="${empty fn:trim(fcDetailList.ccTitle)}">
                         <div class="approval-detail-subtitle">내용</div>
                     </c:when>
                     <c:otherwise>
-                        <div class="approval-detail-subtitle"><c:out value="${detail.ccTitle}" /></div>
+                        <div class="approval-detail-subtitle"><c:out value="${fcDetailList.ccTitle}" /></div>
                     </c:otherwise>
                 </c:choose>
 
                 <c:choose>
-                    <c:when test="${empty fn:trim(detail.ccRmk)}">
+                    <c:when test="${empty fn:trim(fcDetailList.ccRmk)}">
                         <div class="approval-detail-body is-empty">-</div>
                     </c:when>
                     <c:otherwise>
-                        <div class="approval-detail-body"><c:out value="${detail.ccRmk}" /></div>
+                        <div class="approval-detail-body"><c:out value="${fcDetailList.ccRmk}" /></div>
                     </c:otherwise>
                 </c:choose>
             </div>
 
             <c:if test="${status.last}">
                 <div class="approval-detail-section">
-                    <div class="approval-detail-body no-wrap font-size-12">협조자 <c:out value="${detail.ccHubJo}" /><br />
-                        <c:out value="${detail.ccNum}" /> <c:out value="${detail.ccDate}" /><br />
-                        <c:out value="${detail.ccAddr}" /><br />
-                        <c:out value="${detail.ccPhone}" /><br /></div>
+                    <div class="approval-detail-body no-wrap font-size-12">협조자 <c:out value="${fcDetailList.ccHubJo}" /><br />
+                        <c:out value="${fcDetailList.ccNum}" /> <c:out value="${fcDetailList.ccDate}" /><br />
+                        <c:out value="${fcDetailList.ccAddr}" /><br />
+                        <c:out value="${fcDetailList.ccPhone}" /><br /></div>
                 </div>
             </c:if>
         </c:forEach>

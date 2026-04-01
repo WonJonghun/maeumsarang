@@ -2,6 +2,7 @@ package com.example.mshintra.approval.controller;
 
 import com.example.mshintra.approval.dto.ApprovalDetailDto;
 import com.example.mshintra.approval.dto.ApprovalDetailFCDto;
+import com.example.mshintra.approval.dto.ApprovalDetailORDto;
 import com.example.mshintra.approval.dto.ApprovalDto;
 import com.example.mshintra.approval.service.ApprovalService;
 import lombok.RequiredArgsConstructor;
@@ -61,6 +62,9 @@ public class ApprovalController {
         if ("FC".equals(flag)) {
             List<ApprovalDetailFCDto> fcDetail = approvalService.getApprovalFcDetail(ccCode, flag, ymd, fcNum, ccSeq);
             model.addAttribute("fcDetail", fcDetail);
+        } else if ("OR".equals(flag)) {
+            List<ApprovalDetailORDto> orDetail = approvalService.getApprovalOrDetail(ccCode, ccFlag);
+            model.addAttribute("orDetail", orDetail);
         }
 
         String bodyPage = "/WEB-INF/views/jsp/approval/detail/approvalDetail.jsp";
@@ -68,6 +72,7 @@ public class ApprovalController {
         //전자결재 분기처리
         if ("OF".equals(flag)
                 || "IO".equals(flag)
+                || "OR".equals(flag)
                 || "FC".equals(flag)) {
             bodyPage = "/WEB-INF/views/jsp/approval/detail/approval" + flag + ".jsp";
         }

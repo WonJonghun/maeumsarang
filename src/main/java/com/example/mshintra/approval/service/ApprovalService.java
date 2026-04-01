@@ -170,6 +170,11 @@ public class ApprovalService {
         return approvalMapper.selectApprovalFcDetail(ccCode, ccFlag, ymd, fcNum, ccSeq);
     }
 
+    @Transactional(readOnly = true)
+    public List<ApprovalDetailORDto> getApprovalOrDetail(String ccCode, String ccFlag) {
+        return approvalMapper.selectApprovalOrDetail(ccCode, ccFlag);
+    }
+
     private List<ApprovalSignDto> buildSignList(ApprovalDetailDto dto) {
 
         List<ApprovalSignDto> signList = new ArrayList<>();

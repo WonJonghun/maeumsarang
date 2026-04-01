@@ -306,6 +306,10 @@
         { call dbo.Intranet_Cross_DisPlay('Int000200', #{ymd}, #{fcNum}, #{ccSeq}, 'ELEC', '') }
     </select>
 
+    <select id="selectApprovalOrDetail" resultType="com.example.mshintra.approval.dto.ApprovalDetailORDto" statementType="CALLABLE">
+        { call dbo.Intranet_ElecApproval_Form_Order(#{ccCode}, #{ccFlag}) }
+    </select>
+
     <select id="selectApprovalSignNum" resultType="hashmap">
         SELECT
             CASE WHEN LEN(ISNULL(Es_Sign1, '')) > 6 THEN Es_Sign1 ELSE '' END AS esSign1,

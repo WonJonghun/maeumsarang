@@ -1,6 +1,7 @@
 package com.example.mshintra.approval.mapper;
 
 import com.example.mshintra.approval.dto.ApprovalDetailFCDto;
+import com.example.mshintra.approval.dto.ApprovalDetailORDto;
 import com.example.mshintra.approval.dto.ApprovalDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -19,6 +20,8 @@ public interface ApprovalMapper {
 
     List<ApprovalDetailFCDto> selectApprovalFcDetail(@Param("ccCode") String ccCode, @Param("ccFlag") String ccFlag,
                                                @Param("ymd") String ymd, @Param("fcNum") String fcNum,  @Param("ccSeq") Integer ccSeq);
+
+    List<ApprovalDetailORDto> selectApprovalOrDetail(@Param("ccCode") String ccCode, @Param("ccFlag") String ccFlag);
 
     Map<String, Object> selectApprovalSignNum(@Param("ccCode") String ccCode, @Param("ccFlag") String ccFlag);
 }

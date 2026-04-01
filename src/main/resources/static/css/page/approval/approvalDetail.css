@@ -442,3 +442,62 @@
     }
 }
 /* ================== 모바일 영역 ↑================== */
+
+/* ================== 물품신청 상세 영역 ↓================== */
+.approval-or-card {
+    margin-top: 8px;
+    border: 1px solid var(--gray-cccccc);
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.approval-or-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.approval-or-th {
+    padding: 7px 9px;
+    background: #f8fafc;
+    border-right: 1px solid var(--gray-cccccc);
+    border-bottom: 1px solid var(--gray-cccccc);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gray-4b5563);
+    text-align: left;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.approval-or-td {
+    padding: 7px 9px;
+    background: #dfeee0;
+    border-right: 1px solid var(--gray-cccccc);
+    border-bottom: 1px solid var(--gray-cccccc);
+    font-size: 12px;
+    color: var(--black);
+    vertical-align: middle;
+    word-break: break-word;
+}
+
+.approval-or-table tr:last-child .approval-or-th,
+.approval-or-table tr:last-child .approval-or-td {
+    border-bottom: 0;
+}
+
+.approval-or-table th:last-child,
+.approval-or-table td:last-child {
+    border-right: 0;
+}
+
+/*.approval-or-remark {*/
+/*    white-space: pre-wrap;*/
+/*}*/
+
+.approval-or-empty {
+    color: #999;
+    text-align: center;
+}
+/* ================== 물품신청 상세 영역 ↑================== */
