@@ -15,8 +15,10 @@ const storageKeys = {
 
 let searchEnabled = false;
 let dateEnabled = false;
+let optionEnabled = false;
 let searchOpen = false;
 let searchCloseTimer = null;
+let backBtnLocked = false;
 
 //초기화
 function initHeader() {
@@ -37,9 +39,11 @@ function initHeader() {
     const title = $.trim(topbar.attr('data-title') || '');
     const searchYn = $.trim(topbar.attr('data-search-yn') || '').toUpperCase();
     const dateYn = $.trim(topbar.attr('data-date-yn') || '').toUpperCase();
+    const selectBoxCount = Number($.trim(topbar.attr('data-select-box') || '0'));
 
     searchEnabled = (searchYn === 'Y');
     dateEnabled = (dateYn === 'Y');
+    optionEnabled = (dateEnabled || selectBoxCount > 0);
 
     //스크롤 효과
     $(window).off('scroll.topbar').on('scroll.topbar', function () {
@@ -85,30 +89,20 @@ function initHeader() {
         return;
     }
 
-    //저장값 복원
     const savedOpen = ssGet(storageKeys.searchOpen);
     const savedOpenUrl = ssGet(storageKeys.searchOpenUrl);
     const savedKeyword = ssGet(storageKeys.searchKeyword);
-    const savedFrom = ssGet(storageKeys.searchFromDate);
-    const savedTo = ssGet(storageKeys.searchToDate);
 
     if (savedKeyword !== null) searchInput.val(savedKeyword);
 
     if (dateEnabled && dateFrom.length && dateTo.length) {
-        if (savedFrom) dateFrom.val(savedFrom);
-        if (savedTo) dateTo.val(savedTo);
-
-        if (!$.trim(dateFrom.val() || '') || !$.trim(dateTo.val() || '')) {
-            applyDefaultDates(dateFrom, dateTo);
-        }
+        applyDefaultDates(dateFrom, dateTo);
 
         if (filterPanel.length) filterPanel.removeClass('is-open');
         if (filterBtn.length) filterBtn.removeClass('is-active');
     }
 
-    const shouldRestore = (navType === 'back_forward' && savedOpen === 'Y' && savedOpenUrl === curUrlKey);
-
-    if (location.hash === '#search' || shouldRestore) {
+    if (location.hash === '#search' && savedOpen === 'Y' && savedOpenUrl === curUrlKey) {
         openSearch(topbar, searchWrap, searchInput, filterPanel, filterBtn, false);
     } else {
         closeSearchView(topbar, searchWrap, filterPanel, filterBtn);
@@ -120,6 +114,7 @@ function headerEvents() {
     const topbar = $('.topbar').first();
     if (!topbar.length) return;
 
+    const selectBoxCount = Number($.trim(topbar.attr('data-select-box') || '0'));
     const searchWrap = $('#topbarSearch');
     const searchForm = $('#topbarSearchForm');
     const searchInput = $('#searchKeyword');
@@ -138,6 +133,19 @@ function headerEvents() {
     if (backBtn.length) {
         backBtn.off('click.topbarBack').on('click.topbarBack', function (e) {
             e.preventDefault();
+
+            if (backBtnLocked) {
+                return false;
+            }
+
+            backBtnLocked = true;
+            backBtn.prop('disabled', true);
+
+            setTimeout(function () {
+                backBtnLocked = false;
+                backBtn.prop('disabled', false);
+            }, 800);
+
             history.back();
             return false;
         });
@@ -177,7 +185,7 @@ function headerEvents() {
     });
 
     //상세조건(톱니)
-    if (dateEnabled && filterBtn.length && filterPanel.length) {
+    if (optionEnabled && filterBtn.length && filterPanel.length) {
         filterBtn.off('click.topbarFilter').on('click.topbarFilter', function (e) {
             e.preventDefault();
             e.stopPropagation();
@@ -235,6 +243,12 @@ function headerEvents() {
 
             if (dateEnabled && dateFrom.length && dateTo.length) {
                 applyDefaultDates(dateFrom, dateTo);
+            }
+
+            if (selectBoxCount > 0) {
+                for (let i = 1; i <= selectBoxCount; i++) {
+                    $('#selectBox' + i).prop('selectedIndex', 0);
+                }
             }
 
             return false;
@@ -367,12 +381,15 @@ function getNavType() {
 }
 
 function applyDefaultDates(fromEl, toEl) {
-    const today = new Date();
-    const start = new Date(today);
-    start.setFullYear(start.getFullYear() - 1);
+    const topbar = $('.topbar').first();
+    let rangeDays = Number($.trim(topbar.attr('data-default-range-days') || '365'));
 
-    const from = cmFormatYmd(start);
-    const to = cmFormatYmd(today);
+    if (!rangeDays || rangeDays < 0) {
+        rangeDays = 365;
+    }
+
+    const to = cmGetToday('-');
+    const from = cmSubDays(to, rangeDays, '-');
 
     fromEl.val(from);
     toEl.val(to);

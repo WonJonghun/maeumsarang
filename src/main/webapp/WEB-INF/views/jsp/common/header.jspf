@@ -3,18 +3,23 @@
 
 <%--
   페이지별 헤더 설정
-    headerMainYn   : Y/N (N이면 타이틀 표시)
-    headerSearchYn : Y/N (Y이면 검색 상단바 활성)
-    headerDateYn   : Y/N (Y이면 달력 활성)
+    headerMainYn    : Y/N (N이면 타이틀 표시)
+    headerSearchYn  : Y/N (Y이면 검색 상단바 활성)
+    headerDateYn    : Y/N (Y이면 달력 활성)
+    headerSelectBox : 숫자 (0이면 미사용, 1 이상이면 해당 개수만큼 select 생성)
 --%>
 <c:set var="headerMainYn" value="${empty headerMainYn ? 'Y' : headerMainYn}"/>
 <c:set var="headerSearchYn" value="${empty headerSearchYn ? 'N' : headerSearchYn}"/>
 <c:set var="headerDateYn" value="${empty headerDateYn ? 'N' : headerDateYn}"/>
+<c:set var="headerSelectBox" value="${empty headerSelectBox ? 0 : headerSelectBox}"/>
+<c:set var="headerDefaultRangeDays" value="${empty headerDefaultRangeDays ? 365 : headerDefaultRangeDays}"/>
 
 <header class="topbar"
         data-main-yn="<c:out value='${headerMainYn}'/>"
         data-search-yn="<c:out value='${headerSearchYn}'/>"
         data-date-yn="<c:out value='${headerDateYn}'/>"
+        data-select-box="<c:out value='${headerSelectBox}'/>"
+        data-default-range-days="<c:out value='${headerDefaultRangeDays}'/>"
         data-title="<c:out value='${menuAuth.menuName}'/>">
 
     <div class="topbar-left">
@@ -52,21 +57,37 @@
                     </div>
 
                     <%--옵션중 하나라도 켜져있으면--%>
-                    <c:if test="${headerDateYn eq 'Y'}">
+                    <c:if test="${headerDateYn eq 'Y' or headerSelectBox gt 0}">
                         <button type="button" id="topbarFilterBtn" class="icon-button topbar-filter-btn" aria-label="검색조건">
                             <i class="bi bi-gear"></i>
                         </button>
                     </c:if>
                 </div>
 
-                <%--날짜옵션--%>
-                <c:if test="${headerDateYn eq 'Y'}">
+                <%--옵션중 하나라도 켜져있으면--%>
+                <c:if test="${headerDateYn eq 'Y' or headerSelectBox gt 0}">
                     <div id="topbarFilterPanel" class="topbar-filter-panel">
-                        <div class="topbar-filter-row">
-                            <input type="date" id="searchFromDate" class="topbar-filter-date"/>
-                            <span class="topbar-filter-tilde">~</span>
-                            <input type="date" id="searchToDate" class="topbar-filter-date"/>
-                        </div>
+
+                        <%--날짜옵션--%>
+                        <c:if test="${headerDateYn eq 'Y'}">
+                            <div class="topbar-filter-row">
+                                <input type="date" id="searchFromDate" class="topbar-filter-date"/>
+                                <span class="topbar-filter-tilde">~</span>
+                                <input type="date" id="searchToDate" class="topbar-filter-date"/>
+                            </div>
+                        </c:if>
+
+                        <%--셀렉트박스옵션--%>
+                        <c:if test="${headerSelectBox gt 0}">
+                            <c:forEach var="i" begin="1" end="${headerSelectBox}">
+                                <div class="topbar-filter-row topbar-filter-select-row" style="margin-top:8px;">
+                                    <span id="selectBoxTitle${i}" class="topbar-filter-label"></span>
+                                    <select id="selectBox${i}" name="selectBox${i}" class="topbar-filter-date">
+                                        <option value="">선택해주세요</option>
+                                    </select>
+                                </div>
+                            </c:forEach>
+                        </c:if>
 
                         <div class="topbar-filter-actions">
                             <button type="button" id="topbarFilterReset" class="topbar-filter-reset">초기화</button>

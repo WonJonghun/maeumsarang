@@ -5,7 +5,7 @@ $(function () {
         const ccFlag = $.trim($(this).attr('data-cc-flag') || '');
         if (!ccFlag) return;
 
-        cmMovePage('/approval/approvalList.do', { ccFlag: ccFlag });
+        cmMovePage('/approval/approvalList.do', { ccHomeFlag: ccFlag });
     });
 });
 

@@ -13,6 +13,7 @@ public class ApprovalDto extends SearchDto {
     private String ccCode;        // 문서코드
     private String ccName;        // 문서명
     private String ccFlag;        // 문서구분
+    private String ccHomeFlag;    // 문서구분2
     private String ccFgNm;        // 구분명
     private String ccDate;        // 작성일
     private String ccDay;         // 요일

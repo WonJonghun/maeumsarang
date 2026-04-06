@@ -1,4 +1,8 @@
 $(function () {
+    cmSetSelectOptions($('#selectBox1'),'문서종류',
+        JSON.parse($('#approvalDocTypeJson').val())
+    );
+
     loadApprovalList()
 
     // 상세 보기
@@ -8,6 +12,12 @@ $(function () {
         if (!detailDrawerShow) return;
 
         approvalDetail(this);
+    });
+
+    //검색
+    $('#topbarFilterSearch').on('click', function (e) {
+        e.preventDefault();
+        loadApprovalList();
     });
 });
 
@@ -19,10 +29,11 @@ function loadApprovalList() {
         searchFromDate: $('#searchFromDate').val(),
         searchToDate: $('#searchToDate').val(),
         searchId: $('#loginIcCode').val(),
-        ccFlag: $('#ccFlag').val()
+        ccHomeFlag: $('#ccHomeFlag').val(),
+        ccFlag: $('#selectBox1').val() || $('#ccFlag').val()
     };
 
-    cmAjax('/approval/list.do', 'GET', data, true).done(function (list) {
+    cmAjax('/approval/selectApprovalList.do', 'GET', data, true).done(function (list) {
         approvalListAll = list || [];
 
         const approvalListEl = $('#approvalList');

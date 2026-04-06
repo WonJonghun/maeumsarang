@@ -17,6 +17,7 @@
     <c:set var="headerMainYn" value="N"/>
     <c:set var="headerSearchYn" value="Y"/>
     <c:set var="headerDateYn" value="Y"/>
+    <c:set var="headerDefaultRangeDays" value="365"/>
     <%@ include file="../common/header.jspf" %>
 
     <main class="notice-list-wrap">

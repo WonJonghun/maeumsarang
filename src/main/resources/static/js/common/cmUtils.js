@@ -128,3 +128,24 @@ function cmFormatKb(kb) {
     let s = val.toFixed(1).replace(/\.0$/, '');
     return s + ' ' + units[idx];
 }
+
+// 셀렉트박스 옵션넣기 (id, 제목, {키:네임,키:네임})
+function cmSetSelectOptions(selectBox, title, optionMap) {
+    const selectId = selectBox.attr('id');
+    const titleBox = $('#selectBoxTitle' + selectId.replace('selectBox', ''));
+
+    titleBox.text(title);
+    selectBox.empty();
+
+    selectBox.append($('<option/>', {
+        value: '',
+        text: '전체'
+    }));
+
+    $.each(optionMap, function (key, name) {
+        selectBox.append($('<option/>', {
+            value: key,
+            text: name
+        }));
+    });
+}

@@ -32,15 +32,23 @@
             <div class="approval-detail-subtitle">
                 휴가목적
             </div>
-            <div class="approval-detail-body no-wrap">
-                <c:out value="${detail.items[2].title}" />
-            </div>
+            <c:choose>
+                <c:when test="${empty fn:trim(detail.items[2].title)}">
+                    <div class="approval-detail-body is-empty">-</div>
+                </c:when>
+                <c:otherwise>
+                    <div class="approval-detail-body"><c:out value="${detail.items[2].title}" /></div>
+                </c:otherwise>
+            </c:choose>
         </div>
         <div class="approval-detail-section">
             <div class="approval-detail-subtitle">
                 휴가기간
             </div>
             <div class="approval-detail-body"><c:out value="${detail.items[0].value}" />
+
+<c:out value="${detail.items[3].title}" />
+<c:out value="${detail.items[3].value}" />
 
 상기와 같이 휴가를 신청합니다.</div>
         </div>

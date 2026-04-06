@@ -62,7 +62,10 @@ public class ApprovalService {
         dto.setCcFlag(CmUtil.str(CmUtil.getIgnoreCase(row, "cc_Flag")));
         dto.setCcSeFg(CmUtil.str(CmUtil.getIgnoreCase(row, "cc_SeFg")));
         dto.setCcFlagNm(getApprovalTitle(dto.getCcFlag(), dto.getCcSeFg()));
-        dto.setCcDate(CmUtil.str(CmUtil.getIgnoreCase(row, "cc_Date")).split(" ")[0]);
+
+        String ccDate = CmUtil.str(CmUtil.getIgnoreCase(row, "cc_Date"));
+        dto.setCcDate(ccDate.contains(" ") ? ccDate.split(" ")[0] : ccDate);
+
         dto.setCcBuser(CmUtil.str(CmUtil.getIgnoreCase(row, "cc_Buser")));
         dto.setCcBuserNm(commonCodeService.executeProcedure("GetBuserNm", dto.getCcBuser()));
         dto.setCcSignCnt(CmUtil.toInt(CmUtil.getIgnoreCase(row, "cc_SignCnt")));
@@ -113,14 +116,14 @@ public class ApprovalService {
         dto.setCcImgNo(CmUtil.str(CmUtil.getIgnoreCase(row, "cc_ImgNO")));
         dto.setCcRmk(CmUtil.str(CmUtil.getIgnoreCase(row, "cc_RMK")));
 
-        dto.setEsSign1(CmUtil.str(signRow.get("esSign1")));
-        dto.setEsSign2(CmUtil.str(signRow.get("esSign2")));
-        dto.setEsSign3(CmUtil.str(signRow.get("esSign3")));
-        dto.setEsSign4(CmUtil.str(signRow.get("esSign4")));
-        dto.setEsSign5(CmUtil.str(signRow.get("esSign5")));
-        dto.setEsSign6(CmUtil.str(signRow.get("esSign6")));
-        dto.setEsSign7(CmUtil.str(signRow.get("esSign7")));
-        dto.setEsSign8(CmUtil.str(signRow.get("esSign8")));
+        dto.setEsSign1(CmUtil.str(CmUtil.getIgnoreCase(signRow, "esSign1")));
+        dto.setEsSign2(CmUtil.str(CmUtil.getIgnoreCase(signRow, "esSign2")));
+        dto.setEsSign3(CmUtil.str(CmUtil.getIgnoreCase(signRow, "esSign3")));
+        dto.setEsSign4(CmUtil.str(CmUtil.getIgnoreCase(signRow, "esSign4")));
+        dto.setEsSign5(CmUtil.str(CmUtil.getIgnoreCase(signRow, "esSign5")));
+        dto.setEsSign6(CmUtil.str(CmUtil.getIgnoreCase(signRow, "esSign6")));
+        dto.setEsSign7(CmUtil.str(CmUtil.getIgnoreCase(signRow, "esSign7")));
+        dto.setEsSign8(CmUtil.str(CmUtil.getIgnoreCase(signRow, "esSign8")));
 
         Set<Integer> seqSet = new TreeSet<>();
         for (String key : row.keySet()) {
@@ -142,8 +145,8 @@ public class ApprovalService {
                 value = fontColor;
             }
 
-            if (CmUtil.isBlank(title) && CmUtil.isBlank(value)) {
-                continue;
+            if (value.contains("일부터") && value.contains("일까지")) {
+                value = extractLeavePeriod(value);
             }
 
             ApprovalDetailItemDto item = new ApprovalDetailItemDto();
@@ -163,6 +166,20 @@ public class ApprovalService {
         dto.setSignList(buildSignList(dto));
 
         return dto;
+    }
+
+    private String extractLeavePeriod(String value) {
+        if (CmUtil.isBlank(value)) {
+            return value;
+        }
+
+        String result = value.replace("\r\n", "\n");
+
+        if (result.contains("@0")) {
+            result = result.substring(result.indexOf("@0") + 2);
+        }
+
+        return result.trim();
     }
 
     @Transactional(readOnly = true)

@@ -15,7 +15,7 @@ public class GlobalModelAdvice {
 
     @ModelAttribute("menuAuth")
     public MenuAuthDto menuAuth(HttpSession session) {
-        Object o = (session == null ? null : session.getAttribute("MENU_AUTH"));
+        Object o = (session == null ? null : session.getAttribute("menuAuth"));
         return (o instanceof MenuAuthDto) ? (MenuAuthDto) o : null;
     }
 }

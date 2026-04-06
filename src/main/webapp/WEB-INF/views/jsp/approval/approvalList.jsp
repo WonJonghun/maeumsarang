@@ -17,6 +17,8 @@
     <c:set var="headerMainYn" value="N"/>
     <c:set var="headerSearchYn" value="Y"/>
     <c:set var="headerDateYn" value="Y"/>
+    <c:set var="headerDefaultRangeDays" value="90"/>
+    <c:set var="headerSelectBox" value="1"/>
     <%@ include file="../common/header.jspf" %>
 
     <main class="approval-list-wrap">
@@ -24,7 +26,8 @@
     </main>
 
     <input type="hidden" id="ccFlag" value="<c:out value='${ccFlag}'/>"/>
-
+    <input type="hidden" id="ccHomeFlag" value="<c:out value='${ccHomeFlag}'/>"/>
+    <textarea id="approvalDocTypeJson" style="display:none;"><c:out value="${approvalDocTypeJson}" /></textarea>
 </div>
 
 <%@ include file="../common/detailDrawer.jspf" %>
