@@ -1,0 +1,262 @@
+.item-request-list-wrap {
+    padding: 0 16px 24px;
+}
+
+.item-request-row {
+    padding: 10px 6px 10px 6px;
+    border-bottom: 1px solid var(--gray-e3e3e3);
+    cursor: pointer;
+}
+
+.item-request-title {
+    margin: 0 0 4px 0;
+    padding: 0 10px 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-width: 0;
+}
+
+.item-request-title-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.item-request-flag,
+.item-request-buser,
+.item-request-amt,
+.item-request-cnt {
+    font-size: 15px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.item-request-amt {
+    flex-shrink: 0;
+    text-align: right;
+}
+
+.item-request-sub {
+    margin: 0;
+    padding: 0 10px 0 10px;
+    color: var(--gray-6b7280);
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.item-request-sub-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+    flex: 1;
+}
+
+.item-request-empty {
+    padding: 16px 4px;
+    text-align: center;
+    color: var(--gray-6b7280);
+    font-weight: 600;
+}
+
+.item-request-status {
+    margin-left: 0;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    border: 1px solid var(--gray-cccccc);
+    background: var(--gray-f9fafb);
+    text-align: center;
+    width: 58px;
+}
+
+.item-request-status.text-green {
+    background: rgba(22, 163, 74, 0.10);
+    border-color: rgba(22, 163, 74, 0.25);
+}
+
+/* ================== 상세 헤더 영역 ↓================== */
+.approval-detail-sub-line {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.approval-detail-sub-left {
+    min-width: 0;
+    font-size: 14px;
+    color: var(--gray-6b7280);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.approval-status {
+    margin-left: 0;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    border: 1px solid var(--gray-cccccc);
+    background: var(--gray-f9fafb);
+    text-align: center;
+    width: 58px;
+}
+
+.approval-status.text-green {
+    background: rgba(22, 163, 74, 0.10);
+    border-color: rgba(22, 163, 74, 0.25);
+}
+/* ================== 상세 헤더 영역 ↑================== */
+
+/* ================== 품목신청 상세 헤더 영역 ↓================== */
+.item-request-detail-sub-line {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.item-request-detail-sub-left {
+    min-width: 0;
+    font-size: 14px;
+    color: var(--gray-6b7280);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.item-request-detail-status {
+    margin-left: 0;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    border: 1px solid var(--gray-cccccc);
+    background: var(--gray-f9fafb);
+    text-align: center;
+    width: 58px;
+}
+
+.item-request-detail-status.text-green {
+    background: rgba(22, 163, 74, 0.10);
+    border-color: rgba(22, 163, 74, 0.25);
+}
+/* ================== 품목신청 상세 헤더 영역 ↑================== */
+
+/* ================== 품목신청 상세 본문 영역 ↓================== */
+.item-request-detail-wrap {
+    padding: 0 10px 10px 10px;
+}
+
+.item-request-detail-list {
+}
+
+.item-request-detail-section {
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--gray-cccccc);
+}
+
+.item-request-detail-section:last-child {
+    border-bottom: 0;
+}
+
+.item-request-detail-subtitle {
+    font-size: 14px;
+    margin: 0 0 6px 0;
+    font-weight: 700;
+    color: var(--blue-003399);
+    line-height: 1.5;
+}
+/* ================== 품목신청 상세 본문 영역 ↑================== */
+
+/* ================== 품목신청 상세 물품 테이블 영역 ↓================== */
+.item-request-or-card {
+    margin-top: 8px;
+    border: 1px solid var(--gray-cccccc);
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.item-request-or-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.item-request-or-th {
+    padding: 7px 9px;
+    background: #f8fafc;
+    border-right: 1px solid var(--gray-cccccc);
+    border-bottom: 1px solid var(--gray-cccccc);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gray-4b5563);
+    text-align: left;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.item-request-or-td {
+    padding: 7px 9px;
+    background: #dfeee0;
+    border-right: 1px solid var(--gray-cccccc);
+    border-bottom: 1px solid var(--gray-cccccc);
+    font-size: 12px;
+    color: var(--black);
+    vertical-align: middle;
+    word-break: break-word;
+    min-height: 32px;
+}
+
+.item-request-or-table tr:last-child .item-request-or-th,
+.item-request-or-table tr:last-child .item-request-or-td {
+    border-bottom: 0;
+}
+
+.item-request-or-table th:last-child,
+.item-request-or-table td:last-child {
+    border-right: 0;
+}
+
+.item-request-or-empty {
+    color: #999;
+    text-align: center;
+}
+/* ================== 품목신청 상세 물품 테이블 영역 ↑================== */
+
+.topbar {
+    padding-bottom: 28px;
+}
+
+.item-request-top {
+    position: absolute;
+    right: 10px;
+    bottom: 7px;
+    display: flex;
+    align-items: center;
+}
+
+.item-request-all-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--black);
+    cursor: pointer;
+}

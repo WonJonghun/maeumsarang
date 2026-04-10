@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.mshintra.itemrequest.mapper.ItemRequestMapper">
+
+    <select id="selectItemRequestList" resultType="com.example.mshintra.itemrequest.dto.ItemRequestDto">
+        SELECT
+            Or_ComCD,
+            Or_Date,
+            Or_Number,
+            Or_Flag,
+            OrFlagNm = CASE WHEN Or_Flag = 1 THEN '정기' ELSE '수시' END,
+            Or_Buser,
+            dbo.GetBuserNm(Or_Buser) AS orBuserNm,
+            Or_ReSaCD   = MAX(ISNULL(Or_ReSaCD, '')),
+            Or_ReDt     = MAX(Or_ReDt),
+            Or_EmFlag   = MAX(ISNULL(Or_EmFlag, 'N')),
+            Cnt         = COUNT(*),
+            Amt         = SUM(Or_qty * Or_Price),
+            Or_RegDate  = MAX(Or_RegDate),
+            Or_UserID   = MAX(Or_UserID),
+            Or_ElecUK   = MAX(Or_ElecUK),
+            Or_ChtNO    = MAX(Or_ChtNO),
+            Or_ChtNM    = dbo.GetPatNM(MAX(Or_ChtNO)),
+            Or_InNumber = MAX(Or_InNumber),
+            cc_Code     = MAX(Es_Code),
+            cc_Flag     = MAX(Es_Flag),
+            cc_Date     = MAX(Es_Date),
+            cc_Title    = MAX(Es_Title),
+            cc_SignCnt  = CONVERT(INT, ISNULL(MAX(Es_SignCnt), '4')),
+            cc_Sign1    = CASE
+                              WHEN LEN(MAX(Es_Sign1)) > 8 THEN SUBSTRING(MAX(Es_Sign1), 9, 10)
+                              ELSE MAX(Es_Sign1)
+                END,
+            cc_MyOK     = CASE
+                              WHEN ISNULL(MAX(Es_SignDt1), '') = '' THEN 0
+                              ELSE 1
+                END,
+            cc_ImgNO    = MAX(Or_ImgNum),
+            cc_Buser    = ISNULL(MAX(Id_Job), MAX(Ic_Buser)),
+            cc_SignOK   = CONVERT(INT, ISNULL(MAX(Es_SignCnt), '0')),
+            cc_Chk      = CASE
+                              WHEN ISNULL(MAX(Es_SignDt2), '') = '' THEN 0
+                              ELSE 1
+                END,
+            cc_OK = CASE WHEN ISNULL(MAX(Es_SignDt1),'') = '' THEN 0 ELSE 1 END
+                  + CASE WHEN ISNULL(MAX(Es_SignDt2),'') = '' THEN 0 ELSE 1 END
+                  + CASE WHEN ISNULL(MAX(Es_SignDt3),'') = '' THEN 0 ELSE 1 END
+                  + CASE WHEN ISNULL(MAX(Es_SignDt4),'') = '' THEN 0 ELSE 1 END
+                  + CASE WHEN ISNULL(MAX(Es_SignDt5),'') = '' THEN 0 ELSE 1 END
+                  + CASE WHEN ISNULL(MAX(Es_SignDt6),'') = '' THEN 0 ELSE 1 END
+                  + CASE WHEN ISNULL(MAX(Es_SignDt7),'') = '' THEN 0 ELSE 1 END
+                  + CASE WHEN ISNULL(MAX(Es_SignDt8),'') = '' THEN 0 ELSE 1 END,
+            cc_SignTt1 = CASE WHEN ISNULL(MAX(Es_Sign1),'') = '' THEN '' ELSE CASE WHEN ISNULL(MAX(Es_SignDt1),'') = '' THEN '□ ' ELSE '▣ ' END + dbo.GetSaJikGub(CASE WHEN LEN(ISNULL(MAX(Es_Sign1),'')) > 6 THEN SUBSTRING(MAX(Es_Sign1),9,10) ELSE ISNULL(MAX(Es_Sign1),'') END,MAX(Es_Date),3) END + '(' + MAX(Ic_Name) + ')',
+            cc_SignTt2 = CASE WHEN ISNULL(MAX(Es_Sign2),'') = '' THEN '' ELSE CASE WHEN ISNULL(MAX(Es_SignDt2),'') = '' THEN '□ ' ELSE '▣ ' END + dbo.GetSaJikGub(CASE WHEN LEN(ISNULL(MAX(Es_Sign2),'')) > 6 THEN SUBSTRING(MAX(Es_Sign2),9,10) ELSE ISNULL(MAX(Es_Sign2),'') END,MAX(Es_Date),3) END,
+            cc_SignTt3 = CASE WHEN ISNULL(MAX(Es_Sign3),'') = '' THEN '' ELSE CASE WHEN ISNULL(MAX(Es_SignDt3),'') = '' THEN '□ ' ELSE '▣ ' END + dbo.GetSaJikGub(CASE WHEN LEN(ISNULL(MAX(Es_Sign3),'')) > 6 THEN SUBSTRING(MAX(Es_Sign3),9,10) ELSE ISNULL(MAX(Es_Sign3),'') END,MAX(Es_Date),3) END,
+            cc_SignTt4 = CASE WHEN ISNULL(MAX(Es_Sign4),'') = '' THEN '' ELSE CASE WHEN ISNULL(MAX(Es_SignDt4),'') = '' THEN '□ ' ELSE '▣ ' END + dbo.GetSaJikGub(CASE WHEN LEN(ISNULL(MAX(Es_Sign4),'')) > 6 THEN SUBSTRING(MAX(Es_Sign4),9,10) ELSE ISNULL(MAX(Es_Sign4),'') END,MAX(Es_Date),3) END,
+            cc_SignTt5 = CASE WHEN ISNULL(MAX(Es_Sign5),'') = '' THEN '' ELSE CASE WHEN ISNULL(MAX(Es_SignDt5),'') = '' THEN '□ ' ELSE '▣ ' END + dbo.GetSaJikGub(CASE WHEN LEN(ISNULL(MAX(Es_Sign5),'')) > 6 THEN SUBSTRING(MAX(Es_Sign5),9,10) ELSE ISNULL(MAX(Es_Sign5),'') END,MAX(Es_Date),3) END,
+            cc_SignTt6 = CASE WHEN ISNULL(MAX(Es_Sign6),'') = '' THEN '' ELSE CASE WHEN ISNULL(MAX(Es_SignDt6),'') = '' THEN '□ ' ELSE '▣ ' END + dbo.GetSaJikGub(CASE WHEN LEN(ISNULL(MAX(Es_Sign6),'')) > 6 THEN SUBSTRING(MAX(Es_Sign6),9,10) ELSE ISNULL(MAX(Es_Sign6),'') END,MAX(Es_Date),3) END,
+            cc_SignTt7 = CASE WHEN ISNULL(MAX(Es_Sign7),'') = '' THEN '' ELSE CASE WHEN ISNULL(MAX(Es_SignDt7),'') = '' THEN '□ ' ELSE '▣ ' END + dbo.GetSaJikGub(CASE WHEN LEN(ISNULL(MAX(Es_Sign7),'')) > 6 THEN SUBSTRING(MAX(Es_Sign7),9,10) ELSE ISNULL(MAX(Es_Sign7),'') END,MAX(Es_Date),3) END,
+            cc_SignTt8 = CASE WHEN ISNULL(MAX(Es_Sign8),'') = '' THEN '' ELSE CASE WHEN ISNULL(MAX(Es_SignDt8),'') = '' THEN '□ ' ELSE '▣ ' END + dbo.GetSaJikGub(CASE WHEN LEN(ISNULL(MAX(Es_Sign8),'')) > 6 THEN SUBSTRING(MAX(Es_Sign8),9,10) ELSE ISNULL(MAX(Es_Sign8),'') END,MAX(Es_Date),3) END,
+            chk = 0
+        FROM O_OSOrderList
+             LEFT JOIN I_ElecSign
+                    ON Es_Code = Or_ElecUK
+                   AND Es_Flag = 'OR'
+             LEFT JOIN P_InSaCode
+                    ON Ic_Code = CASE
+                                     WHEN LEN(Es_Sign1) > 8 THEN SUBSTRING(Es_Sign1, 9, 10)
+                                     ELSE Es_Sign1
+                                 END
+             LEFT JOIN P_InsaDetail
+                    ON Id_code   = Ic_code
+                   AND Id_DtFlag = 4
+                   AND Id_Saflag = Ic_Saflag
+                   AND Id_Date1 = (
+                        SELECT MAX(Id_Date1)
+                        FROM P_InsaDetail
+                        WHERE Id_code   = Ic_code
+                          AND Id_DtFlag = 4
+                          AND Id_Saflag = Ic_Saflag
+                          AND Id_Date1 <![CDATA[<=]]> Es_Date
+                   )
+        WHERE Or_ComCD = '001'
+          AND Or_Date BETWEEN #{searchFromDate} AND #{searchToDate}
+          AND Or_Flag <![CDATA[<]]> '90'
+        <if test="searchBuserCd != null and searchBuserCd != ''">
+          AND Or_Buser = #{searchBuserCd}
+        </if>
+        GROUP BY
+            Or_ComCD,
+            Or_Date,
+            Or_Number,
+            Or_Flag,
+            Or_Buser
+        ORDER BY Or_Date DESC
+    </select>
+
+    <select id="selectItemRequestDetail" resultType="com.example.mshintra.itemrequest.dto.ItemRequestDetailDto">
+        <![CDATA[
+            SELECT
+                Or_ComCD ,
+                Or_Date ,
+                Or_Number ,
+                Or_Seq ,
+                Or_Flag ,
+                Or_Buser ,
+                Or_Prcode ,
+                Or_Occode = CASE
+                                WHEN ISNULL(Oc_Name, '') = '' THEN ''
+                                ELSE Or_Occode
+                    END ,
+                Or_ReSaCD = ISNULL(Or_ReSaCD, ''),
+                Or_ReDt ,
+                Or_EmFlag ,
+                Or_Direct = ISNULL(Or_Direct, 'N') ,
+                Or_Prevqty ,
+                Or_PrevPrice ,
+                Or_Qty ,
+                Or_Price ,
+                Or_Remark ,
+                Or_OrderDate ,
+                Or_Cancel ,
+                Or_InDate ,
+                Or_InNumber ,
+                Or_Inqty ,
+                Or_InPrice ,
+                Or_OutDate ,
+                Or_Outqty ,
+                Or_OutPrice ,
+                Or_DeptCD ,
+                Or_ChtNo ,
+                Or_IoRemark ,
+                Or_UK ,
+                Or_ElecUK ,
+                Or_ImgNum ,
+                Or_UserID ,
+                Or_RegDate ,
+                Or_ModUID ,
+                Or_ModDt ,
+                Oc_Name = ISNULL(Oc_Name, Or_Occode),
+                Oc_StanSize,
+                Oc_Unit,
+                Oc_ComPany,
+                Oc_Inscode,
+                cc_Prcode = Or_Prcode,
+                cc_PaNM = dbo.GetPatNM (Or_ChtNo)
+            FROM
+                O_OSOrderList
+                    LEFT JOIN O_OSCode ON
+                    Oc_Code = Or_Occode
+            WHERE
+                Or_ComCD = #{orComCD}
+              AND Or_Date = #{orDate}
+              AND Or_number = #{orNumber}
+        ]]>
+    </select>
+</mapper>

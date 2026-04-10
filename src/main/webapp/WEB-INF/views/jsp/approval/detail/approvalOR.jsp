@@ -34,9 +34,9 @@
                 <div class="approval-or-card">
                     <table class="approval-or-table">
                         <colgroup>
-                            <col style="width: 84px;" />
+                            <col style="width: 64px;" />
                             <col />
-                            <col style="width: 84px;" />
+                            <col style="width: 64px;" />
                             <col />
                         </colgroup>
                         <tbody>

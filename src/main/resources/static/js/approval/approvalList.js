@@ -1,9 +1,9 @@
 $(function () {
-    cmSetSelectOptions($('#selectBox1'),'문서종류',
+    cmSetSelectOptions($('#selectBox1'), '문서종류',
         JSON.parse($('#approvalDocTypeJson').val())
     );
 
-    loadApprovalList()
+    loadApprovalList();
 
     // 상세 보기
     $(document).on('click', '#approvalList .approval-row', function (e) {
@@ -14,10 +14,15 @@ $(function () {
         approvalDetail(this);
     });
 
-    //검색
+    // 검색 버튼
     $('#topbarFilterSearch').on('click', function (e) {
         e.preventDefault();
         loadApprovalList();
+    });
+
+    // 텍스트 실시간 검색
+    $('#searchKeyword').on('input', function () {
+        filterApprovalList();
     });
 });
 
@@ -35,52 +40,70 @@ function loadApprovalList() {
 
     cmAjax('/approval/selectApprovalList.do', 'GET', data, true).done(function (list) {
         approvalListAll = list || [];
-
-        const approvalListEl = $('#approvalList');
-        approvalListEl.empty();
-
-        if (approvalListAll.length === 0) {
-            approvalListEl.append($('<div/>', { class: 'approval-empty', text: '문서가 없습니다.' }));
-            return;
-        }
-
-        for (let i = 0; i < approvalListAll.length; i++) {
-            const row = approvalListAll[i] || {};
-
-            const title = $.trim(row.ccTitle || '');
-            const ymd = String(row.ccDate).substring(0, 10);
-            const day = String(row.ccDay).substring(0, 1);
-            const team = $.trim(row.ccBuserNm || '');
-            const fgNm = $.trim(row.ccFgNm || '');
-            const fcNum = $.trim(row.fcNum || '');
-
-            const subText = [[ymd, day].filter(Boolean).join(' '), team, fgNm]
-                .filter(Boolean)
-                .join(' · ');
-
-            const isDone = Number(row.ccOK1 || 0) === 1;
-            const statusText = isDone ? '결재완료' : '진행중';
-            const statusCls = isDone ? 'text-green' : 'text-yellow';
-
-            const rowEl = $('<div/>', {
-                class: 'approval-row',
-                'data-cc-code': row.ccCode || '',
-                'data-fc-num': fcNum
-            });
-
-            // 제목 단독
-            rowEl.append($('<div/>', { class: 'approval-title', text: title }));
-
-            // 서브타이틀 오른쪽에 딱지
-            rowEl.append(
-                $('<div/>', { class: 'approval-sub' })
-                    .append($('<span/>', { class: 'approval-sub-text', text: subText }))
-                    .append($('<span/>', { class: 'approval-status ' + statusCls, text: statusText }))
-            );
-
-            approvalListEl.append(rowEl);
-        }
+        filterApprovalList();
     });
+}
+
+// 텍스트 검색
+function filterApprovalList() {
+    const keyword = $('#searchKeyword').val().toLowerCase();
+    const filteredList = approvalListAll.filter(function (row) {
+        return String(row.ccTitle || '').toLowerCase().indexOf(keyword) > -1;
+    });
+
+    renderApprovalList(filteredList, keyword ? '검색 결과가 없습니다.' : '문서가 없습니다.');
+}
+
+// 목록 그리기
+function renderApprovalList(list, emptyText) {
+    const approvalListEl = $('#approvalList');
+    approvalListEl.empty();
+
+    if (!list || list.length === 0) {
+        approvalListEl.append($('<div/>', {
+            class: 'approval-empty',
+            text: emptyText || '문서가 없습니다.'
+        }));
+        return;
+    }
+
+    for (let i = 0; i < list.length; i++) {
+        const row = list[i] || {};
+
+        const title = $.trim(row.ccTitle || '');
+        const ymd = String(row.ccDate || '').substring(0, 10);
+        const day = String(row.ccDay || '').substring(0, 1);
+        const team = $.trim(row.ccBuserNm || '');
+        const fgNm = $.trim(row.ccFgNm || '');
+        const fcNum = $.trim(row.fcNum || '');
+
+        const subText = [[ymd, day].filter(Boolean).join(' '), team, fgNm]
+            .filter(Boolean)
+            .join(' · ');
+
+        const isDone = Number(row.ccOK1 || 0) === 1;
+        const statusText = isDone ? '결재완료' : '진행중';
+        const statusCls = isDone ? 'text-green' : 'text-yellow';
+
+        const rowEl = $('<div/>', {
+            class: 'approval-row',
+            'data-cc-code': row.ccCode || '',
+            'data-fc-num': fcNum
+        });
+
+        rowEl.append($('<div/>', {
+            class: 'approval-title',
+            text: title
+        }));
+
+        rowEl.append(
+            $('<div/>', { class: 'approval-sub' })
+                .append($('<span/>', { class: 'approval-sub-text', text: subText }))
+                .append($('<span/>', { class: 'approval-status ' + statusCls, text: statusText }))
+        );
+
+        approvalListEl.append(rowEl);
+    }
 }
 
 // 상세 조회
@@ -118,8 +141,6 @@ function approvalDetail(rowEl) {
     headHtml += '    <span class="approval-status ' + cmEscapeHtml(statusCls) + '">' + cmEscapeHtml(statusText) + '</span>';
     headHtml += '  </div>';
     headHtml += '</div>';
-
-    detailDrawerShow(headHtml, true);
 
     const data = {
         ccCode: ccCode,

@@ -8,28 +8,26 @@
     <title><c:out value='${menuAuth.menuName}'/></title>
     <%@ include file="../common/common-inc.jspf" %>
 
-    <link rel="stylesheet" href="<c:url value='/css/page/approval/approvalList.css'/>">
+    <link rel="stylesheet" href="<c:url value='/css/page/itemRequestList.css'/>">
 </head>
 
-<body class="approval-list-page">
+<body class="item-request-list-page">
 <div class="page-root">
     <c:set var="headerMainYn" value="N"/>
     <c:set var="headerSearchYn" value="Y"/>
     <c:set var="headerDateYn" value="Y"/>
     <c:set var="headerDefaultRangeDays" value="90"/>
-    <c:set var="headerSelectBox" value="1"/>
+    <c:set var="headerSelectBox" value="0"/>
     <%@ include file="../common/header.jspf" %>
 
-    <main class="approval-list-wrap">
-        <div id="approvalList"></div>
+    <main class="item-request-list-wrap">
+        <div id="item-request-list"></div>
     </main>
 
-    <input type="hidden" id="ccFlag" value="<c:out value='${ccFlag}'/>"/>
-    <input type="hidden" id="ccHomeFlag" value="<c:out value='${ccHomeFlag}'/>"/>
-    <textarea id="approvalDocTypeJson" style="display:none;"><c:out value="${approvalDocTypeJson}" /></textarea>
+<%--    <input type="hidden" id="ccFlag" value="<c:out value='${ccFlag}'/>"/>--%>
 </div>
 
 <%@ include file="../common/detailDrawer.jspf" %>
-<script src="<c:url value='/js/approval/approvalList.js'/>"></script>
+<script src="<c:url value='/js/itemrequest/itemRequestList.js'/>"></script>
 </body>
 </html>
