@@ -11,6 +11,14 @@
         <maxValueLength>50</maxValueLength>
     </appender>
 
+<!-- 로그 끄기 -->
+<!--    <logger name="jdbc.sqltiming" level="OFF" additivity="false"/>-->
+<!--    <logger name="jdbc.sqltiming"      level="OFF" additivity="false"/>-->
+<!--    <logger name="jdbc.sqlonly"        level="OFF" additivity="false"/>-->
+<!--    <logger name="jdbc.resultsettable" level="OFF" additivity="false"/>-->
+<!--    <logger name="jdbc.resultset"      level="OFF" additivity="false"/>-->
+<!--    <logger name="jdbc.audit"          level="OFF" additivity="false"/>-->
+<!--    <logger name="jdbc.connection"     level="OFF" additivity="false"/>-->
     <logger name="jdbc.sqltiming"      level="INFO" additivity="false">
         <appender-ref ref="SQL_PRETTY"/>
     </logger>

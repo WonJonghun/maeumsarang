@@ -141,7 +141,7 @@
                 Ic_Jikchek = e.Ic_Jikchek,
                 Flag  = 7,
                 tDate = CAST(#{searchFromDate} AS DATE),
-                icHpPhone = ISNULL(dbo.GetPWChange_2('KGH2010','InsaCode',e.Ic_Code,'PhoneHp'),''),
+                icHpPhone = ISNULL(dbo.GetPWChange_2(#{securityDecryptKey},'InsaCode',e.Ic_Code,'PhoneHp'),''),
                 icSaPhone = CASE
                                 WHEN ISNULL(e.Ic_SaPhone,'') = '' THEN ''
                                 WHEN LEN(e.Ic_SaPhone) < 5 THEN '☏ ' + e.Ic_SaPhone

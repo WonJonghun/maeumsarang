@@ -15,4 +15,5 @@ public class SearchDto {
     private String searchId;        // 유저Id
     private String searchFromDate;  // 시작일
     private String searchToDate;    // 종료일
+    private String securityDecryptKey;
 }

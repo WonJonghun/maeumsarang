@@ -36,7 +36,13 @@ public class MainController {
     public String mainPage(@AuthenticationPrincipal LoginUserDto loginUser, Model model) {
 
         //일주일 업무만 보여주던것
-        ScheduleMenuDto scheduleMenuDto = new ScheduleMenuDto(DateUtil.getTodayYmd("-"), loginUser.getFlag(), null, loginUser.getIcCode());
+        ScheduleMenuDto scheduleMenuDto = new ScheduleMenuDto(
+                DateUtil.getTodayYmd("-"),
+                loginUser.getFlag(),
+                null,
+                loginUser.getIcCode(),
+                null
+        );
         List<ScheduleDto> scheduleList = scheduleService.selectScheduleList(scheduleMenuDto);
 
         List<Map<String, Object>> weekDays = DateUtil.getThisWeek();

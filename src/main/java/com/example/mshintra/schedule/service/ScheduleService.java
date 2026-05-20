@@ -12,6 +12,7 @@ import com.example.mshintra.schedule.mapper.ScheduleMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -23,9 +24,13 @@ public class ScheduleService {
     private final ScheduleMapper scheduleMapper;
     private final CommonCodeService commonCodeService;
 
+    @Value("${security.decrypt.key}")
+    private String securityDecryptKey;
+
     @Transactional(readOnly = true)
     public List<ScheduleDto> selectScheduleList(ScheduleMenuDto searchDto) {
 
+        searchDto.setSecurityDecryptKey(securityDecryptKey);
         List<ScheduleDto> list = scheduleMapper.selectScheduleList(searchDto);
         List<MonthDutyDto> monthDutyList = scheduleMapper.selectMonthDutyList(searchDto);
 
@@ -41,6 +46,7 @@ public class ScheduleService {
 
     @Transactional(readOnly = true)
     public List<ScheduleDto> selectScheduleWeekList(SearchDto searchDto) {
+        searchDto.setSecurityDecryptKey(securityDecryptKey);
         List<ScheduleDto> list = scheduleMapper.selectScheduleWeekList(searchDto);
 
         commonCodeService.mapGunmuCode(list);

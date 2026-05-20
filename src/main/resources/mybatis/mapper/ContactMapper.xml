@@ -4,7 +4,7 @@
 <mapper namespace="com.example.mshintra.contact.mapper.ContactMapper">
 
     <select id="selectContactList" resultType="com.example.mshintra.contact.dto.ContactDto" statementType="CALLABLE">
-        { call dbo.Insa_Sawon_List(#{baseDt}, '1', 'KGH2010') }
+        { call dbo.Insa_Sawon_List(#{baseDt}, '1', #{securityDecryptKey}) }
     </select>
 
 </mapper>
