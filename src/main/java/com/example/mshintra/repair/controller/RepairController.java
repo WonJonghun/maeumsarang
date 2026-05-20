@@ -17,7 +17,7 @@ public class RepairController {
     private final RepairService repairService;
 
     @GetMapping("/repairList.do")
-    public String dataBoard() {
+    public String repairList() {
         return "jsp/repair/repairList";
     }
 

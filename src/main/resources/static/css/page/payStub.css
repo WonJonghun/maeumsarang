@@ -1,0 +1,262 @@
+:root{
+    --topbar-h:60px;
+}
+
+body.paystub-list-page{
+    min-height:100vh;
+    background:#fff;
+}
+
+body.paystub-list-page .page-root{
+    min-height:100vh;
+    background:#fff;
+}
+
+.paystub-wrap{
+    min-height:calc(100vh - var(--topbar-h, 0px));
+    padding-bottom:24px;
+    display:flex;
+    flex-direction:column;
+    background:#fff;
+}
+
+.paystub-monthbar{
+    flex:0 0 auto;
+    height:40px;
+    padding:0 12px;
+    background:#fff;
+    border-bottom:1px solid rgba(0,0,0,.08);
+    position:sticky;
+    top:0;
+    z-index:9;
+    box-sizing:border-box;
+    display:flex;
+    align-items:center;
+}
+
+.month-row{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.month-nav{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:4px;
+}
+
+.month-btn{
+    flex:0 0 32px;
+    width:32px;
+    height:32px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border:0;
+    background:transparent;
+    color:#111;
+    padding:0;
+    cursor:pointer;
+}
+
+.month-btn i{
+    font-size:16px;
+    line-height:1;
+}
+
+.month-range{
+    flex:0 0 auto;
+    min-width:92px;
+    height:32px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border:0;
+    cursor:pointer;
+    padding:0 6px;
+    background:transparent;
+    color:#111;
+    font-family:inherit;
+    font-size:14px;
+    font-weight:800;
+    letter-spacing:0.02em;
+}
+
+.month-range-text{
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    text-align:center;
+    line-height:1;
+    font-weight:700;
+    font-size:16px;
+}
+
+.paystub-table-wrap{
+    width:100%;
+    background:#fff;
+}
+
+.paystub-detail-table{
+    width:100%;
+    border-collapse:collapse;
+    table-layout:auto;
+}
+
+.paystub-detail-table col.section-col{
+    width:30px;
+}
+
+.paystub-detail-table col.item-col{
+    width:1%;
+}
+
+.paystub-detail-table col.amount-col{
+    width:auto;
+}
+
+.paystub-detail-table thead th{
+    padding:12px 8px;
+    border-bottom:1px solid #dfe6ef;
+    border-right:1px solid #dfe6ef;
+    background:#eef4fb;
+    font-size:13px;
+    font-weight:700;
+    color:#334155;
+    text-align:center;
+}
+
+.paystub-detail-table thead tr > *:last-child{
+    border-right:none;
+}
+
+.paystub-detail-table tbody th,
+.paystub-detail-table tbody td{
+    padding:10px 8px;
+    border-bottom:1px solid #edf2f7;
+    border-right:1px solid #edf2f7;
+    font-size:13px;
+    box-sizing:border-box;
+}
+
+.paystub-detail-table tbody tr > *:last-child{
+    border-right:none;
+}
+
+.section-cell{
+    padding:6px 2px !important;
+    background:#eaf3ff;
+    color:#24507a;
+    font-weight:700;
+    text-align:center;
+    vertical-align:middle;
+    word-break:keep-all;
+    writing-mode:vertical-rl;
+    text-orientation:upright;
+    letter-spacing:2px;
+    line-height:1;
+}
+
+.section-cell-deduction{
+    background:#fff1f2;
+    color:#b42318;
+}
+
+.section-cell-nontax{
+    background:#eefbf3;
+    color:#1f7a4d;
+}
+
+.item-cell{
+    width:1%;
+    white-space:nowrap;
+    color:#111827;
+    background:#fff;
+}
+
+.amount-cell{
+    width:auto;
+    white-space:nowrap;
+    text-align:right;
+    font-weight:600;
+    color:#0f172a;
+    background:#fcfdff;
+}
+
+.amount-cell-final{
+    color:#d92d20;
+    font-weight:800;
+}
+
+.empty-cell{
+    background:#fafbfd;
+}
+
+.sum-row th,
+.sum-row td,
+.final-row th,
+.final-row td{
+    background:#f8fafc;
+    font-weight:700;
+}
+
+.sum-label{
+    text-align:center;
+    color:#334155;
+}
+
+@media (max-width:768px){
+    .paystub-monthbar{
+        height:38px;
+        padding:0 8px;
+    }
+
+    .month-nav{
+        gap:2px;
+    }
+
+    .month-btn{
+        flex:0 0 30px;
+        width:30px;
+        height:30px;
+    }
+
+    .month-btn i{
+        font-size:15px;
+    }
+
+    .month-range{
+        min-width:86px;
+        height:30px;
+        font-size:13px;
+    }
+
+    .month-range-text{
+        font-size:15px;
+    }
+
+    .paystub-detail-table col.section-col{
+        width:26px;
+    }
+
+    .paystub-detail-table col.amount-col{
+        width:72px;
+    }
+
+    .paystub-detail-table thead th,
+    .paystub-detail-table tbody th,
+    .paystub-detail-table tbody td{
+        padding:4px 4px;
+        font-size:12px;
+    }
+
+    .section-cell{
+        padding:4px 1px !important;
+        letter-spacing:1px;
+        font-size:11px;
+    }
+}

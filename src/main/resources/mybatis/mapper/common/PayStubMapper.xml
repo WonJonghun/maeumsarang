@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.mshintra.paystub.mapper.PayStubMapper">
+
+    <select id="selectPayStubDetail" resultType="com.example.mshintra.paystub.dto.PayStubDto">
+        SELECT flag = 0,
+               Pd_Code, Pd_YYmm, Pd_Saflag,
+               Pd_Flag, Pd_Date,
+               Pd_Buser, Pd_DD,
+               Pd_Opay = isnull(Pd_Opay,0), Pd_Obouns = isnull(Pd_Obouns,0), Pd_Ofoodamt = isnull(Pd_Ofoodamt,0), Pd_Ocaramt = isnull(Pd_Ocaramt,0), Pd_Ogita01 = isnull(Pd_Ogita01,0), Pd_Ogita02 = isnull(Pd_Ogita02,0), Pd_Ogita03 = isnull(Pd_Ogita03,0), Pd_Ogita04 = isnull(Pd_Ogita04,0), Pd_Ogita05 = isnull(Pd_Ogita05,0), Pd_Ogita06 = isnull(Pd_Ogita06,0), Pd_Ogita07 = isnull(Pd_Ogita07,0), Pd_Ogita08 = isnull(Pd_Ogita08,0), Pd_Ogita09 = isnull(Pd_Ogita09,0), Pd_Ogita09_1 = isnull(Pd_Ogita09_1,0), Pd_Ogita10 = isnull(Pd_Ogita10,0), Pd_Ogita11 = isnull(Pd_Ogita11,0), Pd_Ogita12 = isnull(Pd_Ogita12,0),
+               Pd_Ogita13 = isnull(Pd_Ogita13,0), Pd_Ogita14 = isnull(Pd_Ogita14,0), Pd_Ogita15 = isnull(Pd_Ogita15,0), Pd_Itax = isnull(Pd_Itax,0), Pd_Ijumintax = isnull(Pd_Ijumintax,0), Pd_Ibohum = isnull(Pd_Ibohum,0), Pd_Igukmin = isnull(Pd_Igukmin,0),
+               Pd_Igoyong = isnull(Pd_Igoyong,0), Pd_Isangjo = isnull(Pd_Isangjo,0), Pd_Ifoodamt = isnull(Pd_Ifoodamt,0), Pd_Igong01 = isnull(Pd_Igong01,0), Pd_Igong02 = isnull(Pd_Igong02,0), Pd_Igong03 = isnull(Pd_Igong03,0), Pd_remark,
+               Pd_RegUID ,
+               Pd_RegDt ,
+               Pd_RegIP ,
+               Pd_ModUID ,
+               Pd_ModDt ,
+               Pd_ModIP ,
+               cc_hh = CASE WHEN pd_flag = 1 THEN CONVERT(VARCHAR,(SELECT MTime FROM dbo.[GetPayAmt]('2026-03' + '-25',1,'251101',''))) ELSE '0' END,
+               cc_Ogita01 = CASE WHEN pd_flag = 1 THEN dbo.GetPaySudangDD('Pd_Ogita01',Pd_Code,Pd_yymm,1) ELSE '0' END,
+               cc_Ogita02 = CASE WHEN pd_flag = 1 THEN dbo.GetPaySudangDD('Pd_Ogita02',Pd_Code,Pd_yymm,1) ELSE '0' END,
+               cc_Ogita03 = CASE WHEN pd_flag = 1 THEN dbo.GetPaySudangDD('Pd_Ogita03',Pd_Code,Pd_yymm,1) ELSE '0' END,
+               cc_Ogita04 = CASE WHEN pd_flag = 1 THEN dbo.GetPaySudangDD('Pd_Ogita04',Pd_Code,Pd_yymm,1) ELSE '0' END,
+               cc_Ogita05 = CASE WHEN pd_flag = 1 THEN dbo.GetPaySudangDD('Pd_Ogita05',Pd_Code,Pd_yymm,1) ELSE '0' END,
+               cc_Ogita06 = CASE WHEN pd_flag = 1 THEN dbo.GetPaySudangDD('Pd_Ogita06',Pd_Code,Pd_yymm,1) ELSE '0' END,
+               cc_Ogita07 = CASE WHEN pd_flag = 1 THEN dbo.GetPaySudangDD('Pd_Ogita07',Pd_Code,Pd_yymm,1) ELSE '0' END,
+               cc_Ogita08 = CASE WHEN pd_flag = 1 THEN dbo.GetPaySudangDD('Pd_Ogita08',Pd_Code,Pd_yymm,1) ELSE '0' END,
+               cc_Ogita09 = CASE WHEN pd_flag = 1 THEN dbo.GetPaySudangDD('Pd_Ogita09',Pd_Code,Pd_yymm,1) ELSE '0' END,
+               cc_Ogita10 = CASE WHEN pd_flag = 1 THEN '0' ELSE '0' END,
+               cc_Ogita11 = CASE WHEN pd_flag = 1 THEN dbo.GetPaySudangDD('Pd_Ogita11',Pd_Code,Pd_yymm,1) ELSE '0' END,
+               cc_Ogita12 = CASE WHEN pd_flag = 1 THEN dbo.GetPaySudangDD('Pd_Ogita12',Pd_Code,Pd_yymm,1) ELSE '0' END,
+               cc_Ogita13 = CASE WHEN pd_flag = 1 THEN dbo.GetPaySudangDD('Pd_Ogita13',Pd_Code,Pd_yymm,1) ELSE '0' END,
+               cc_Ogita14 = CASE WHEN pd_flag = 1 THEN dbo.GetPaySudangDD('Pd_Ogita14',Pd_Code,Pd_yymm,1) ELSE '0' END,
+               cc_Ogita15 = CASE WHEN pd_flag = 1 THEN dbo.GetPaySudangDD('Pd_Ogita15',Pd_Code,Pd_yymm,1) ELSE '0' END,
+               Ar_sDt ,
+               Ar_eDt ,
+               Ar_TotAmt ,
+               Ar_ARAmt = ISNULL(ISNULL(Ai_ArAmt,Ar_ARAmt),0) ,
+               Ar_Rmk = Ar_ARNM + CHAR(13) + CHAR(10) + CASE WHEN ISNULL(Ar_RMK,'') = '' THEN '' ELSE '(' + Ar_RMK + ')' END,
+            cc_ldate = dbo.GetLastDate (Pd_Date),
+            cc_Formula = dbo.GetPayFormula('2026-03','251101',1)
+        FROM
+            P_PayData
+            LEFT JOIN P_AbRu ON
+            Ar_SaCD = Pd_Code
+            AND Pd_date BETWEEN Ar_sDt AND ISNULL(Ar_eDt, '2099-12-31')
+            LEFT JOIN P_AbRuInAmt ON
+            Ai_SaCD = Pd_Code
+            AND Ai_PayDt = Pd_date
+            AND Ai_Flag = pd_flag
+        WHERE
+            pd_code = #{searchId}
+          AND pd_yymm = #{searchDate}
+          AND pd_flag = 1
+    </select>
+
+</mapper>

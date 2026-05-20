@@ -20,7 +20,7 @@ public class ItemRequestController {
     private final ItemRequestService itemRequestService;
 
     @GetMapping("/itemRequestList.do")
-    public String dataBoard() {
+    public String itemRequestList() {
         return "jsp/itemrequest/itemRequestList";
     }
 

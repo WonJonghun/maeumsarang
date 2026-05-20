@@ -149,3 +149,13 @@ function cmSetSelectOptions(selectBox, title, optionMap) {
         }));
     });
 }
+
+//숫자변환
+function cmToNumber(value) {
+    return Number(String(value == null ? '' : value).replace(/,/g, '')) || 0;
+}
+
+//금액포맷
+function cmFormatAmount(value) {
+    return cmToNumber(value).toLocaleString('ko-KR');
+}

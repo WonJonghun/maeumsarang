@@ -15,5 +15,6 @@ public class HolidayDto {
     private String year;        //년도
     private String month;       //달
     private String saCd;        //사번
+    @Builder.Default
     private int ccWeekendCd=1;  //주말포함 여부 0=포함, 1=미포함
 }
