@@ -40,4 +40,23 @@
             )
     </select>
 
+    <select id="selectPassChk" resultType="string">
+        SELECT dbo.GetPwChk(#{icCode}, #{oldPassword})
+    </select>
+
+    <update id="updatePassChange">
+        EXEC [Intranet_Security]
+        '',
+        'InsaCode',
+        #{icCode},
+        'PassWD',
+        #{newPassword}
+
+        EXEC [Intranet_Log]
+        #{icCode},
+        'PWChange',
+        '',
+        '비밀번호가 변경되었습니다'
+    </update>
+
 </mapper>

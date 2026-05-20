@@ -4,6 +4,7 @@ import com.example.mshintra.common.dto.SearchDto;
 import com.example.mshintra.profile.dto.CommuteDto;
 import com.example.mshintra.profile.dto.ProfileDto;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -15,4 +16,11 @@ public interface ProfileMapper {
     int selectCoopCnt(SearchDto searchDto);
 
     List<CommuteDto> selectCommuteStat(SearchDto searchDto);
+
+    String selectPassChk(@Param("icCode") String icCode,
+                         @Param("oldPassword") String oldPassword);
+
+    void updatePassChange(@Param("icCode") String icCode,
+                          @Param("newPassword") String newPassword);
+
 }
