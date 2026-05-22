@@ -17,7 +17,7 @@
                Pd_ModUID ,
                Pd_ModDt ,
                Pd_ModIP ,
-               cc_hh = CASE WHEN pd_flag = 1 THEN CONVERT(VARCHAR,(SELECT MTime FROM dbo.[GetPayAmt]('2026-03' + '-25',1,'251101',''))) ELSE '0' END,
+               cc_hh = CASE WHEN pd_flag = 1 THEN CONVERT(VARCHAR,(SELECT MTime FROM dbo.[GetPayAmt](#{searchDate} + '-25',1,#{searchId},''))) ELSE '0' END,
                cc_Ogita01 = CASE WHEN pd_flag = 1 THEN dbo.GetPaySudangDD('Pd_Ogita01',Pd_Code,Pd_yymm,1) ELSE '0' END,
                cc_Ogita02 = CASE WHEN pd_flag = 1 THEN dbo.GetPaySudangDD('Pd_Ogita02',Pd_Code,Pd_yymm,1) ELSE '0' END,
                cc_Ogita03 = CASE WHEN pd_flag = 1 THEN dbo.GetPaySudangDD('Pd_Ogita03',Pd_Code,Pd_yymm,1) ELSE '0' END,
@@ -39,7 +39,7 @@
                Ar_ARAmt = ISNULL(ISNULL(Ai_ArAmt,Ar_ARAmt),0) ,
                Ar_Rmk = Ar_ARNM + CHAR(13) + CHAR(10) + CASE WHEN ISNULL(Ar_RMK,'') = '' THEN '' ELSE '(' + Ar_RMK + ')' END,
             cc_ldate = dbo.GetLastDate (Pd_Date),
-            cc_Formula = dbo.GetPayFormula('2026-03','251101',1)
+            cc_Formula = dbo.GetPayFormula(#{searchDate},#{searchId},1)
         FROM
             P_PayData
             LEFT JOIN P_AbRu ON
@@ -53,6 +53,19 @@
             pd_code = #{searchId}
           AND pd_yymm = #{searchDate}
           AND pd_flag = 1
+    </select>
+
+    <select id="selectPayStubRemark" resultType="String">
+        SELECT Pr_RMK
+        FROM P_PayMonthRMK
+        WHERE Pr_YYMM = REPLACE(#{searchDate}, '-', '')
+    </select>
+
+    <select id="selectPayStubBankName" resultType="String">
+        SELECT Ic_bankname = dbo.GetPWChange_2(#{securityDecryptKey}, 'InsaCode', Ic_Code, 'BankNO') + '(' + bc_name + ')'
+        FROM P_InsaCode
+                 LEFT JOIN P_Bankcode ON bc_code = Ic_Pbank
+        WHERE Ic_Code = #{searchId}
     </select>
 
 </mapper>

@@ -209,6 +209,69 @@ body.paystub-list-page .page-root{
     color:#334155;
 }
 
+.paystub-note{
+    padding:10px 4px 0;
+    color:#111827;
+    font-size:12px;
+    line-height:1.35;
+    background:#fff;
+}
+
+.paystub-note p{
+    margin:0;
+    word-break:keep-all;
+}
+
+.paystub-summary-box{
+    padding:10px 4px 14px;
+    background:#fff;
+    font-size:12px;
+    line-height:1.35;
+    color:#111;
+}
+
+.paystub-summary-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-weight:700;
+}
+
+.paystub-summary-period{
+    margin-top:2px;
+    color:#ff0000;
+    font-weight:700;
+}
+
+.paystub-summary-formula{
+    margin-top:16px;
+    color:#008000;
+    font-weight:700;
+}
+
+.paystub-summary-formula p{
+    margin:0;
+}
+
+.summary-label{
+    font-weight:700;
+}
+
+#payFormulaText{
+    white-space:pre-line;
+}
+
+#btnMonthNext:disabled,
+#btnMonthPrev:disabled {
+    opacity: 0.35;
+    cursor: default;
+    filter: grayscale(100%);
+}
+
+#paystubNote {
+    white-space: pre-line;
+}
+
 @media (max-width:768px){
     .paystub-monthbar{
         height:38px;
@@ -260,3 +323,4 @@ body.paystub-list-page .page-root{
         font-size:11px;
     }
 }
+

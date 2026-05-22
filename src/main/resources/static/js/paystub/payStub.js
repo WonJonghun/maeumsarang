@@ -1,8 +1,9 @@
 let currentSearchDate = '';
+let limitSearchDate = '';
 
 $(function () {
     currentSearchDate = getDefaultSearchDate();
-    loadPayStub();
+    loadPayStub(true);
 
     $('#btnMonthPrev').on('click', function () {
         currentSearchDate = moveMonth(currentSearchDate, -1);
@@ -10,13 +11,21 @@ $(function () {
     });
 
     $('#btnMonthNext').on('click', function () {
+        if ($(this).prop('disabled')) {
+            return;
+        }
+
+        if (moveMonth(currentSearchDate, 1) > limitSearchDate) {
+            return;
+        }
+
         currentSearchDate = moveMonth(currentSearchDate, 1);
         loadPayStub();
     });
 });
 
 //조회
-function loadPayStub() {
+function loadPayStub(isFirstLoad) {
     $('.month-range-text').text(currentSearchDate.replace('-', '.'));
 
     const data = {
@@ -27,10 +36,30 @@ function loadPayStub() {
     cmAjax('/payStub/selectPayStubDetail.do', 'GET', data, true).done(function (item) {
         item = Array.isArray(item) ? item[0] : item;
 
+        if (isFirstLoad && (!item || isFuturePayDate(item.pdDate))) {
+            currentSearchDate = moveMonth(currentSearchDate, -1);
+            limitSearchDate = currentSearchDate;
+            loadPayStub();
+            return;
+        }
+
+        if (isFirstLoad) {
+            limitSearchDate = currentSearchDate;
+        }
+
+        setMonthNextButton();
+
         if (!item) {
             clearPayStubAmount();
             return;
         }
+
+        $('#payDateText').text(formatPayDate(item.pdDate));
+        $('#payPeriodText').text(getPayPeriodText(item.pdDate));
+        $('#payFormulaText').text(item.ccFormula);
+        $('#payAccountText').text(item.icBankname);
+
+        $('#paystubNote').text(item.prRmk);
 
         $('#pdOpay').text(cmFormatAmount(item.pdOpay));
         $('#pdObouns').text(cmFormatAmount(item.pdObouns));
@@ -109,6 +138,7 @@ function loadPayStub() {
         $('#realPayAmount').text(cmFormatAmount(realPayAmount));
     }).fail(function () {
         clearPayStubAmount();
+        setMonthNextButton();
     });
 }
 
@@ -150,17 +180,39 @@ function clearPayStubAmount() {
     $('#deductionTotal').text(cmFormatAmount(0));
     $('#grossTotal').text(cmFormatAmount(0));
     $('#realPayAmount').text(cmFormatAmount(0));
+
+    $('#payDateText').text('');
+    $('#payPeriodText').text('');
+    $('#payFormulaText').text('');
+    $('#payAccountText').text('');
+
+    $('#paystubNote').html('');
 }
 
 function getDefaultSearchDate() {
     const now = new Date();
-    const date = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    if (now.getDate() < 25) {
-        date.setMonth(date.getMonth() - 1);
+    return now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+}
+
+function setMonthNextButton() {
+    $('#btnMonthNext').prop('disabled', currentSearchDate >= limitSearchDate);
+}
+
+function isFuturePayDate(pdDate) {
+    if (!pdDate) {
+        return true;
     }
 
-    return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0');
+    return String(pdDate).substring(0, 10) > getTodayText();
+}
+
+function getTodayText() {
+    const now = new Date();
+
+    return now.getFullYear() + '-' +
+        String(now.getMonth() + 1).padStart(2, '0') + '-' +
+        String(now.getDate()).padStart(2, '0');
 }
 
 function moveMonth(searchDate, diffMonth) {
@@ -170,4 +222,31 @@ function moveMonth(searchDate, diffMonth) {
     date.setMonth(date.getMonth() + diffMonth);
 
     return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0');
+}
+
+function formatPayDate(dateText) {
+    if (!dateText) {
+        return '';
+    }
+
+    return String(dateText).substring(0, 10);
+}
+
+function getPayPeriodText(dateText) {
+    if (!dateText) {
+        return '';
+    }
+
+    const splitDate = String(dateText).substring(0, 10).split('-');
+    const date = new Date(Number(splitDate[0]), Number(splitDate[1]) - 1, Number(splitDate[2]));
+    const firstDate = new Date(date.getFullYear(), date.getMonth(), 1);
+    const lastDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+    return formatDateText(firstDate) + ' ~ ' + formatDateText(lastDate);
+}
+
+function formatDateText(date) {
+    return date.getFullYear() + '-' +
+        String(date.getMonth() + 1).padStart(2, '0') + '-' +
+        String(date.getDate()).padStart(2, '0');
 }

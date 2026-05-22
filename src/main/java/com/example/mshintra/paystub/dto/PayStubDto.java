@@ -86,4 +86,7 @@ public class PayStubDto {
 
     private String ccLdate;           // 말일
     private String ccFormula;         // 계산식
+
+    private String prRmk;             // 수당산정 기간
+    private String icBankname;        // 계좌번호
 }

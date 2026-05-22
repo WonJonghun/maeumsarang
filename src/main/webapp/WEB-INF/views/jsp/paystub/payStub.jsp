@@ -185,6 +185,30 @@
                 </tr>
             </tbody>
         </table>
+
+        <div class="paystub-summary-box">
+            <div class="paystub-summary-top">
+                <div>
+                    <span class="summary-label">지급일자 : </span>
+                    <span id="payDateText"></span>
+                </div>
+                <div id="payAccountText"></div>
+            </div>
+
+            <div class="paystub-summary-period">
+                <span class="summary-label">산정기간 : </span>
+                <span id="payPeriodText"></span>
+            </div>
+
+            <div class="paystub-summary-formula">
+                <p>급여산출식 :</p>
+                <p id="payFormulaText"></p>
+            </div>
+        </div>
+
+        <div class="paystub-note">
+            <p id="paystubNote"></p>
+        </div>
     </div>
 </main>
 
