@@ -1,12 +1,6 @@
 $(function () {
     loadCheckApproList();
     bindEvents();
-
-    $(document).off('click.logout').on('click.logout', '#btnLogout', function (e) {
-        e.preventDefault();
-        $('#logoutForm').submit();
-        return false;
-    });
 });
 
 //이벤트 바인딩
@@ -30,14 +24,21 @@ function bindEvents() {
             return false;
         });
 
-    //프로필 메뉴(6개) 클릭 -> 임시로 메인 이동
-    // $(document)
-    //     .off('click.profileMenuGoMain', '.profile-check-item')
-    //     .on('click.profileMenuGoMain', '.profile-check-item', function (e) {
-    //         e.preventDefault();
-    //         location.href = '/main.do';
-    //         return false;
-    //     });
+    //내 정보 관리 준비중 알림
+    $(document)
+        .off('click.profileMyInfo', '.profile-myinfo-link')
+        .on('click.profileMyInfo', '.profile-myinfo-link', function (e) {
+            e.preventDefault();
+            customAlert('경고', '준비중입니다.', 'WARN');
+            return false;
+        });
+
+    //로그아웃
+    $(document).off('click.logout').on('click.logout', '#btnLogout', function (e) {
+        e.preventDefault();
+        $('#logoutForm').submit();
+        return false;
+    });
 }
 
 //전자결재 및 우편 등 확인할 내용 불러오기

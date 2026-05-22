@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.mshintra.mail.mapper.MailMapper">
+
+    <select id="selectMailList" resultType="com.example.mshintra.mail.dto.MailListDto">
+        SELECT
+            delflag = 0,
+            flag = CASE
+                WHEN ma_UserID = #{searchId} THEN 2
+                ELSE 1
+            END,
+            flag1 = CASE
+                WHEN dbo.GetDateDD(Ma_Date, GETDATE(), '2') > 12 THEN 1
+                ELSE 0
+            END,
+            chk = CASE
+                WHEN ma_View = 'Y' THEN 1
+                ELSE 0
+            END,
+            ccFlag = CASE
+                WHEN ISNULL(ma_delflag, '1') = '1' AND ma_receiveID = #{searchId} THEN 1
+                WHEN ISNULL(ma_delflag, '1') = '2' AND ma_receiveID = #{searchId} THEN 3
+                ELSE 2
+            END,
+            maDate = ma_Date,
+            maSeq = ma_seq,
+            icName = ic_name,
+            maReceiveId = ma_receiveID,
+            maTime = ma_time,
+            maTitle = ma_title,
+            maRemark = ma_remark,
+            maUk = ma_UK,
+            maDelFlag = ma_DelFlag,
+            maView = ma_View,
+            maFileFlag = CASE
+                WHEN ISNULL(ma_ImgNum, '') = '' THEN 'N'
+                ELSE 'Y'
+            END,
+            maImgNum = ISNULL(ma_ImgNum, ''),
+            maRegDate = ma_RegDate,
+            maUserId = ma_UserID,
+            maDelFlag1 = ma_DelFlag1
+        FROM I_Mail
+        LEFT JOIN P_insacode
+            ON ic_code = ma_receiveID
+        WHERE
+            (
+                ma_receiveID = #{searchId}
+                AND ma_delflag <![CDATA[<]]> '3'
+            )
+            OR
+            (
+                ma_UserID = #{searchId}
+                AND ISNULL(ma_delflag1, '1') = '1'
+            )
+            <if test='searchFromDate != null and searchFromDate != ""'>
+                AND ma_Date <![CDATA[>=]]> #{searchFromDate}
+            </if>
+            <if test='searchToDate != null and searchToDate != ""'>
+                AND ma_Date <![CDATA[<=]]> #{searchToDate}
+            </if>
+            <if test='searchKeyword != null and searchKeyword != ""'>
+                AND UPPER(ma_title) LIKE '%' + UPPER(#{searchKeyword}) + '%'
+            </if>
+        ORDER BY ma_RegDate DESC
+    </select>
+
+    <update id="updateMailView">
+        EXEC [Intranet_mail_view_update]
+            #{maDate},
+            #{maSeq},
+            #{searchId}
+    </update>
+
+</mapper>
