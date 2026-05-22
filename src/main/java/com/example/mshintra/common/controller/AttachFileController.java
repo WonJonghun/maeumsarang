@@ -69,5 +69,12 @@ public class AttachFileController {
                 .body(dto.getAfContent());
     }
 
+    @GetMapping("/thumbnailImageRequest.do")
+    public ResponseEntity<byte[]> thumbnailImageRequest(
+            @RequestParam String afNum,
+            @RequestParam(defaultValue = "80") int size
+    ) throws IOException {
+        return attachFileService.thumbnailImage(afNum, 1, size);
+    }
 
 }

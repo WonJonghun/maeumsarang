@@ -80,13 +80,25 @@ function bindEvents() {
         const expand = item.find('.contact-expand');
 
         $('.contact-card-item').not(item).removeClass('is-open').find('.contact-expand').slideUp(120);
+        $('.contact-card-item').not(item).find('.contact-profile-img').each(function () {
+            const thumb = $(this).data('thumb');
+            if (thumb) $(this).attr('src', thumb);
+        });
 
         if (item.hasClass('is-open')) {
             item.removeClass('is-open');
             expand.slideUp(120);
+
+            const img = item.find('.contact-profile-img');
+            const thumb = img.data('thumb');
+            if (thumb) img.attr('src', thumb);
         } else {
             item.addClass('is-open');
             expand.slideDown(120);
+
+            const img = item.find('.contact-profile-img');
+            const origin = img.data('origin');
+            if (origin) img.attr('src', origin);
         }
     });
 
@@ -359,7 +371,8 @@ function contactList(list, keyword) {
 
         const afNum = $.trim(row.icCode || ''); // 사번
         const photoUrl = afNum ? ('/attach/blobImageRequest.do?afNum=' + encodeURIComponent(afNum)) : '';
-        const imgUrl = photoUrl ? photoUrl : defaultAvatarUrl;
+        const thumbUrl = afNum ? ('/attach/thumbnailImageRequest.do?size=90&afNum=' + encodeURIComponent(afNum)) : '';
+        const imgUrl = thumbUrl ? thumbUrl : defaultAvatarUrl;
 
         const name = kwHighlight(nameRaw, keyword);
         const rank = kwHighlight(rankRaw, keyword);
@@ -376,6 +389,8 @@ function contactList(list, keyword) {
             + '      <div class="contact-row">'
             + '        <img class="contact-profile-img" alt="" loading="lazy" decoding="async"'
             + '             src="' + imgUrl + '"'
+            + '             data-thumb="' + imgUrl + '"'
+            + '             data-origin="' + photoUrl + '"'
             + '             data-default="' + defaultAvatarUrl + '" />'
             + '        <div class="contact-body">'
             + '          <div class="contact-card">'

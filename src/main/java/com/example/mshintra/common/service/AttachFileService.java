@@ -5,18 +5,32 @@ import com.example.mshintra.common.dto.AttachFileDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import org.springframework.web.util.UriUtils;
 
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -128,5 +142,74 @@ public class AttachFileService {
     public AttachFileDto selectImageBlob(String afNum, int afSeq) {
         if (afNum == null || afNum.isBlank()) return null;
         return attachFileMapper.selectAttachOne(afNum, afSeq);
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<byte[]> thumbnailImage(String afNum, int afSeq, int size) throws IOException {
+        AttachFileDto dto = selectImageBlob(afNum, afSeq);
+
+        if (dto == null || dto.getAfContent() == null || dto.getAfContent().length == 0) {
+            ClassPathResource res = new ClassPathResource("static/images/emptyUser.png");
+            byte[] fallback = res.getInputStream().readAllBytes();
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_PNG)
+                    .cacheControl(CacheControl.maxAge(30, TimeUnit.DAYS).cachePublic())
+                    .body(fallback);
+        }
+
+        BufferedImage src = ImageIO.read(new ByteArrayInputStream(dto.getAfContent()));
+        if (src == null) {
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .cacheControl(CacheControl.maxAge(30, TimeUnit.DAYS).cachePublic())
+                    .body(dto.getAfContent());
+        }
+
+        int thumbSize = Math.max(40, Math.min(size, 300));
+        byte[] thumbnail = makeSquareThumbnail(src, thumbSize);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .cacheControl(CacheControl.maxAge(30, TimeUnit.DAYS).cachePublic())
+                .body(thumbnail);
+    }
+
+    private byte[] makeSquareThumbnail(BufferedImage src, int size) throws IOException {
+        int srcW = src.getWidth();
+        int srcH = src.getHeight();
+        int cropSize = Math.min(srcW, srcH);
+
+        int x = (srcW - cropSize) / 2;
+        int y = (srcH - cropSize) / 2;
+
+        BufferedImage cropped = src.getSubimage(x, y, cropSize, cropSize);
+        BufferedImage resized = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
+
+        Graphics2D g = resized.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, size, size);
+        g.drawImage(cropped, 0, 0, size, size, null);
+        g.dispose();
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpg");
+        ImageWriter writer = writers.next();
+
+        ImageWriteParam param = writer.getDefaultWriteParam();
+        param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+        param.setCompressionQuality(0.6f);
+
+        ImageOutputStream ios = ImageIO.createImageOutputStream(out);
+        writer.setOutput(ios);
+        writer.write(null, new IIOImage(resized, null, null), param);
+
+        ios.close();
+        writer.dispose();
+
+        return out.toByteArray();
     }
 }

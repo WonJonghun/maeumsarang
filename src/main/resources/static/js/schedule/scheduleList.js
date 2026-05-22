@@ -272,8 +272,7 @@ function renderScheduleList(list, keyword) {
         const rawCode = String(row.icCode == null ? '' : row.icCode);
         const afNum = $.trim(rawCode.replace(/\D/g, '')); // "96-20" -> "9620"
 
-        const imgUrl = afNum ? ('/attach/blobImageRequest.do?afNum=' + encodeURIComponent(afNum)) : defaultAvatarUrl;
-
+        const imgUrl = afNum ? ('/attach/thumbnailImageRequest.do?size=100&afNum=' + encodeURIComponent(afNum)) : defaultAvatarUrl;
         const imgEl = $('<img/>', {
             class: 'schedule-profile-img',
             alt: '',
@@ -531,8 +530,12 @@ function focusMyRowAndHighlight(viewList) {
     const cellEl = trEl.find('.td-days .day-cell').eq(colIdx < 0 ? 0 : colIdx);
     if (cellEl.length) cellEl.trigger('click');
 
-    const trDom = trEl[0];
-    if (trDom && trDom.scrollIntoView) trDom.scrollIntoView({ block: 'center', inline: 'nearest' });
+    const wrapEl = $('.schedule-list-wrap');
+    const trTop = trEl.position().top;
+    const wrapHeight = wrapEl.height();
+    const trHeight = trEl.outerHeight();
+
+    wrapEl.scrollTop(wrapEl.scrollTop() + trTop - (wrapHeight / 2) + (trHeight / 2));
 
     const leftEl = trEl.find('.td-left');
     if (!leftEl.length) return;

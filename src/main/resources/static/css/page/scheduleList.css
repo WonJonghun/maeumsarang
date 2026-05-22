@@ -537,3 +537,15 @@ body.notice-page .page-root{
     color:#1f6feb;
     font-weight:800;
 }
+
+.topbar{
+    z-index:100;
+}
+
+.schedule-weekbar{
+    z-index:20;
+}
+
+.schedule-thead{
+    z-index:19;
+}
