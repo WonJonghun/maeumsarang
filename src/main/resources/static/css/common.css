@@ -1080,13 +1080,18 @@ body.drawer-open {
     margin-top: 8px;
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 8px 12px;
     font-size: 14px;
+    line-height: 1.4;
     color: #666;
 }
 
-.post-detail-meta span {
+.post-detail-meta > span {
+    display: inline-flex;
+    align-items: center;
     white-space: nowrap;
+    line-height: 1.4;
 }
 
 .post-detail-body {

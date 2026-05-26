@@ -7,4 +7,21 @@
         { call dbo.Intranet_Main_BirthDay(#{searchDate}, '', '') }
     </select>
 
+    <select id="selectMainMealList" resultType="com.example.mshintra.main.dto.MainMealDto">
+        SELECT Fm_Date,
+               Fm_Flag,
+               Fm_type,
+               Fm_Code,
+               Fm_GuFlag,
+               Re_name,
+               Fm_Cnt1,
+               Fm_Cnt2,
+               Fm_Cnt3,
+               Fm_Kal,
+               Fm_pro,
+               Sflag,
+               Flag
+        FROM dbo.GetRecipeList(#{searchDate}, 'A')
+        ORDER BY Fm_Flag, Sflag
+    </select>
 </mapper>

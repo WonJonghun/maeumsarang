@@ -125,10 +125,20 @@
         </section>
 
         <section class="card dashboard-card">
+            <%--선택일 고정 표시--%>
+            <div class="floating-selected-date">
+                <span class="floating-date-title">선택일</span>
+                <span class="js-dashboard-date"></span>
+            </div>
+
             <%--달력--%>
             <div class="dashboard-block">
                 <div class="card-body">
                     <div id="calendarContainer"></div>
+
+                    <div class="calendar-selected-date">
+                        선택일 <span class="js-dashboard-date"></span>
+                    </div>
                 </div>
             </div>
 
@@ -143,15 +153,22 @@
                             <div class="duty-section-title">당직자</div>
                             <ul class="duty-list">
                                 <c:forEach var="item" items="${dayDutyList}">
-                                    <li class="duty-row"><span class="duty-role"><c:out value="${item.hcName}"/></span><span class="duty-name"><c:out value="${item.duName}"/></span></li>
+                                    <li class="duty-row">
+                                        <span class="duty-role"><c:out value="${item.hcName}"/></span>
+                                        <span class="duty-name"><c:out value="${item.duName}"/></span>
+                                    </li>
                                 </c:forEach>
                             </ul>
                         </div>
+
                         <div class="outduty-column">
                             <div class="duty-section-title">외래진료</div>
                             <ul class="duty-list">
                                 <c:forEach var="item" items="${outDayDutyList}">
-                                    <li class="duty-row"><span class="outduty-role"><c:out value="${item.hcName}"/></span><span class="duty-name"><c:out value="${item.duName}"/></span></li>
+                                    <li class="duty-row">
+                                        <span class="outduty-role"><c:out value="${item.hcName}"/></span>
+                                        <span class="duty-name"><c:out value="${item.duName}"/></span>
+                                    </li>
                                 </c:forEach>
                             </ul>
                         </div>
@@ -162,9 +179,7 @@
             <%--일정--%>
             <div class="dashboard-block">
                 <div class="card-header">
-                    <h3 class="card-title">일정
-<%--                        <span class="card-subtitle"> / <c:out value="${todayYmdDot}" /></span>--%>
-                    </h3>
+                    <h3 class="card-title">일정</h3>
                 </div>
 
                 <div class="schedule-list" id="todayScheduleList">
@@ -196,65 +211,74 @@
                 </div>
 
                 <div class="patient-status-wrap">
-                <c:set var="inHosPercent" value="0"/>
-                <c:if test="${not empty customerDailyStats.cnt1}">
-                    <fmt:formatNumber value="${customerDailyStats.cnt1 * 100 / 560}" type="number" maxFractionDigits="0" var="inHosPercent"/>
-                </c:if>
-                <div class="patient-chart">
-                    <p class="patient-chart-label">재원</p>
-                    <div class="circle-chart" style="--value:<c:out value='${inHosPercent}'/>; --chart-color:#1976d2;">
-                        <div class="circle-chart-inner">
-                            <span class="circle-chart-value"><c:out value="${customerDailyStats.cnt1}"/>명</span>
-                            <span class="circle-chart-caption">(<c:out value="${inHosPercent}"/>%)</span>
-                        </div>
-                    </div>
-                    <div class="patient-tooltip"><div class="patient-tooltip-inner">
-                        <p><c:out value="${customerDailyStats.cnt1}"/>명 / 560명</p>
-                        <p>(재원환자 / 허가병상)</p>
-                    </div></div>
-                </div>
+                    <c:set var="inHosPercent" value="0"/>
+                    <c:if test="${not empty customerDailyStats.cnt1}">
+                        <fmt:formatNumber value="${customerDailyStats.cnt1 * 100 / 560}" type="number" maxFractionDigits="0" var="inHosPercent"/>
+                    </c:if>
 
-                <c:set var="inoutPercent" value="0"/>
-                <c:if test="${(not empty customerDailyStats.cnt4 or not empty customerDailyStats.cnt5)
-                             and (customerDailyStats.cnt4 + customerDailyStats.cnt5) != 0}">
-                    <fmt:formatNumber value="${customerDailyStats.cnt5 * 100 / (customerDailyStats.cnt4 + customerDailyStats.cnt5)}" type="number" maxFractionDigits="0" var="inoutPercent"/>
-                </c:if>
-                <div class="patient-chart">
-                    <p class="patient-chart-label">입/퇴원</p>
-                    <div class="circle-chart inout_chart" style="--value:<c:out value='${inoutPercent}'/>; --chart-color:#fda433;">
-                        <div class="circle-chart-inner">
-                            <span class="circle-chart-value"><c:out value="${customerDailyStats.cnt4}"/> / <c:out value="${customerDailyStats.cnt5}"/></span>
-                            <span class="circle-chart-caption">(당일)</span>
+                    <div class="patient-chart">
+                        <p class="patient-chart-label">재원</p>
+                        <div class="circle-chart" style="--value:<c:out value='${inHosPercent}'/>; --chart-color:#1976d2;">
+                            <div class="circle-chart-inner">
+                                <span class="circle-chart-value"><c:out value="${customerDailyStats.cnt1}"/>명</span>
+                                <span class="circle-chart-caption">(<c:out value="${inHosPercent}"/>%)</span>
+                            </div>
+                        </div>
+                        <div class="patient-tooltip">
+                            <div class="patient-tooltip-inner">
+                                <p><c:out value="${customerDailyStats.cnt1}"/>명 / 560명</p>
+                                <p>(재원환자 / 허가병상)</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="patient-tooltip"><div class="patient-tooltip-inner">
-                        <p><c:out value="${customerDailyStats.cnt2}"/>명 / <c:out value="${customerDailyStats.cnt3}"/>명</p>
-                        <p>(월 누계)</p>
-                    </div></div>
-                </div>
 
-                <c:set var="outPercent" value="0"/>
-                <c:if test="${not empty customerDailyStats.cnt8 and customerDailyStats.cnt8 != '0'}">
-                    <fmt:formatNumber value="${customerDailyStats.cnt9 * 100 / customerDailyStats.cnt8}" type="number" maxFractionDigits="0" var="outPercent"/>
-                </c:if>
-                <div class="patient-chart patient-chart-right">
-                            <p class="patient-chart-label">외래</p>
-                            <div class="circle-chart" style="--value:<c:out value='${outPercent}'/>; --chart-color:#43a047;">
-                                <div class="circle-chart-inner">
-                                    <span class="circle-chart-value"><c:out value="${customerDailyStats.cnt9}"/>명</span>
-                                    <span class="circle-chart-caption">(<c:out value="${outPercent}"/>%)</span>
+                    <c:set var="inoutPercent" value="0"/>
+                    <c:if test="${(not empty customerDailyStats.cnt4 or not empty customerDailyStats.cnt5)
+                                 and (customerDailyStats.cnt4 + customerDailyStats.cnt5) != 0}">
+                        <fmt:formatNumber value="${customerDailyStats.cnt5 * 100 / (customerDailyStats.cnt4 + customerDailyStats.cnt5)}" type="number" maxFractionDigits="0" var="inoutPercent"/>
+                    </c:if>
+
+                    <div class="patient-chart">
+                        <p class="patient-chart-label">입/퇴원</p>
+                        <div class="circle-chart inout_chart" style="--value:<c:out value='${inoutPercent}'/>; --chart-color:#fda433;">
+                            <div class="circle-chart-inner">
+                                <span class="circle-chart-value"><c:out value="${customerDailyStats.cnt4}"/> / <c:out value="${customerDailyStats.cnt5}"/></span>
+                                <span class="circle-chart-caption">(당일)</span>
+                            </div>
+                        </div>
+                        <div class="patient-tooltip">
+                            <div class="patient-tooltip-inner">
+                                <p><c:out value="${customerDailyStats.cnt2}"/>명 / <c:out value="${customerDailyStats.cnt3}"/>명</p>
+                                <p>(월 누계)</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="patient-tooltip"><div class="patient-tooltip-inner">
-                        <p><c:out value="${customerDailyStats.cnt9}"/>명 / <c:out value="${customerDailyStats.cnt8}"/>명</p>
-                        <p>(진료완료 / 외래접수)</p>
-                    </div></div>
-                </div>
+
+                    <c:set var="outPercent" value="0"/>
+                    <c:if test="${not empty customerDailyStats.cnt8 and customerDailyStats.cnt8 != '0'}">
+                        <fmt:formatNumber value="${customerDailyStats.cnt9 * 100 / customerDailyStats.cnt8}" type="number" maxFractionDigits="0" var="outPercent"/>
+                    </c:if>
+
+                    <div class="patient-chart patient-chart-right">
+                        <p class="patient-chart-label">외래</p>
+                        <div class="circle-chart" style="--value:<c:out value='${outPercent}'/>; --chart-color:#43a047;">
+                            <div class="circle-chart-inner">
+                                <span class="circle-chart-value"><c:out value="${customerDailyStats.cnt9}"/>명</span>
+                                <span class="circle-chart-caption">(<c:out value="${outPercent}"/>%)</span>
+                            </div>
+                        </div>
+                        <div class="patient-tooltip">
+                            <div class="patient-tooltip-inner">
+                                <p><c:out value="${customerDailyStats.cnt9}"/>명 / <c:out value="${customerDailyStats.cnt8}"/>명</p>
+                                <p>(진료완료 / 외래접수)</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <%--생일자 / 휴가자--%>
-            <div class="dashboard-block">
+            <div class="dashboard-block birth-vacation-block">
                 <div class="card-header">
                     <div class="card-header-left"><h3 class="card-title">생일자 / 휴가자</h3></div>
                 </div>
@@ -263,7 +287,7 @@
                     <div class="birth-vacation-layout">
                         <div class="birth-column ${not empty birthdayList ? 'has-data' : ''}">
                             <div class="duty-section-title">생일자</div>
-                            <ul class="birth-vacation-list">
+                            <ul class="birth-vacation-list ${fn:length(birthdayList) > 7 ? 'is-collapsed' : ''}">
                                 <c:if test="${empty birthdayList}">
                                     <li class="birth-vacation-empty">생일자가 없습니다.</li>
                                 </c:if>
@@ -284,7 +308,7 @@
 
                         <div class="vacation-column ${not empty vacationUserList ? 'has-data' : ''}">
                             <div class="duty-section-title">휴가자</div>
-                            <ul class="birth-vacation-list">
+                            <ul class="birth-vacation-list ${fn:length(vacationUserList) > 7 ? 'is-collapsed' : ''}">
                                 <c:if test="${empty vacationUserList}">
                                     <li class="birth-vacation-empty">휴가자가 없습니다.</li>
                                 </c:if>
@@ -297,56 +321,71 @@
                             </ul>
                         </div>
                     </div>
+
+                    <c:if test="${fn:length(birthdayList) > 7 or fn:length(vacationUserList) > 7}">
+                        <button type="button" class="birth-vacation-more" data-open="false">더보기</button>
+                    </c:if>
+                </div>
+            </div>
+
+            <%--오늘의 식단--%>
+            <div class="dashboard-block">
+                <div class="card-header">
+                    <div class="card-header-left"><h3 class="card-title">식단</h3></div>
+                </div>
+
+                <div class="card-body">
+                    <div class="meal-row">
+                        <div class="meal-col">
+                            <p class="meal-type">아침</p>
+                            <div class="meal-menu-list" data-meal-flag="1">
+                                <c:set var="breakfastKcal" value="0"/>
+                                <c:if test="${empty breakfastList}">
+                                    <p class="meal-menu">등록된 식단이 없습니다.</p>
+                                </c:if>
+                                <c:forEach var="item" items="${breakfastList}">
+                                    <p class="meal-menu"><c:out value="${item.reName}"/></p>
+                                    <c:set var="breakfastKcal" value="${breakfastKcal + item.fmKal}"/>
+                                </c:forEach>
+                            </div>
+                            <p class="meal-kcal" data-meal-kcal="1"><c:out value="${breakfastKcal}"/> kcal</p>
+                        </div>
+
+                        <div class="meal-col">
+                            <p class="meal-type">점심</p>
+                            <div class="meal-menu-list" data-meal-flag="2">
+                                <c:set var="lunchKcal" value="0"/>
+                                <c:if test="${empty lunchList}">
+                                    <p class="meal-menu">등록된 식단이 없습니다.</p>
+                                </c:if>
+                                <c:forEach var="item" items="${lunchList}">
+                                    <p class="meal-menu"><c:out value="${item.reName}"/></p>
+                                    <c:set var="lunchKcal" value="${lunchKcal + item.fmKal}"/>
+                                </c:forEach>
+                            </div>
+                            <p class="meal-kcal" data-meal-kcal="2"><c:out value="${lunchKcal}"/> kcal</p>
+                        </div>
+
+                        <div class="meal-col">
+                            <p class="meal-type">저녁</p>
+                            <div class="meal-menu-list" data-meal-flag="3">
+                                <c:set var="dinnerKcal" value="0"/>
+                                <c:if test="${empty dinnerList}">
+                                    <p class="meal-menu">등록된 식단이 없습니다.</p>
+                                </c:if>
+                                <c:forEach var="item" items="${dinnerList}">
+                                    <p class="meal-menu"><c:out value="${item.reName}"/></p>
+                                    <c:set var="dinnerKcal" value="${dinnerKcal + item.fmKal}"/>
+                                </c:forEach>
+                            </div>
+                            <p class="meal-kcal" data-meal-kcal="3"><c:out value="${dinnerKcal}"/> kcal</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
-
-    <%--        <section class="card">--%>
-<%--            <div class="card-header">--%>
-<%--                <h3 class="card-title">오늘의 식단</h3>--%>
-<%--            </div>--%>
-<%--            <div class="meal-row">--%>
-<%--                <div class="meal-col">--%>
-<%--                    <p class="meal-type">아침</p>--%>
-<%--                    <p class="meal-menu">쌀밥</p>--%>
-<%--                    <p class="meal-menu">누룽지탕</p>--%>
-<%--                    <p class="meal-menu">닭살고추장볶음</p>--%>
-<%--                    <p class="meal-menu">민물새우시래기지</p>--%>
-<%--                    <p class="meal-menu">배추김치</p>--%>
-<%--                    <p class="meal-kcal">350 kcal</p>--%>
-<%--                </div>--%>
-
-<%--                <div class="meal-col">--%>
-<%--                    <p class="meal-type">점심</p>--%>
-<%--                    <p class="meal-menu">찰밥</p>--%>
-<%--                    <p class="meal-menu">새송이버섯탕수육</p>--%>
-<%--                    <p class="meal-menu">갈치감자조림(세네갈/모로코)</p>--%>
-<%--                    <p class="meal-menu">오징어사과초무침</p>--%>
-<%--                    <p class="meal-menu">배추김치</p>--%>
-<%--                    <p class="meal-kcal">750 kcal</p>--%>
-<%--                </div>--%>
-
-<%--                <div class="meal-col">--%>
-<%--                    <p class="meal-type">저녁</p>--%>
-<%--                    <p class="meal-menu">쌀밥</p>--%>
-<%--                    <p class="meal-menu">김치만두국</p>--%>
-<%--                    <p class="meal-menu">소고기불고기(호주산)</p>--%>
-<%--                    <p class="meal-menu">콩나물겨자채</p>--%>
-<%--                    <p class="meal-menu">동그랑땡</p>--%>
-<%--                    <p class="meal-menu">배추김치</p>--%>
-<%--                    <p class="meal-kcal">620 kcal</p>--%>
-<%--                </div>--%>
-<%--            </div>--%>
-<%--        </section>--%>
     </main>
 </div>
-
-<ul id="holidayListData" style="display:none;">
-    <c:forEach var="h" items="${holidayList}">
-        <li data-date="<c:out value='${fn:substring(h.ccDt, 0, 10)}'/>"
-            data-name="<c:out value='${h.ccOffNm}'/>"></li>
-    </c:forEach>
-</ul>
 
 <%@ include file="../common/detailDrawer.jspf" %>
 <script src="<c:url value='/js/common/calendar.js'/>"></script>
