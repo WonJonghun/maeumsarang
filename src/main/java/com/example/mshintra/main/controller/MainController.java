@@ -4,6 +4,8 @@ import com.example.mshintra.common.util.DateUtil;
 import com.example.mshintra.customer.dto.CustomerDto;
 import com.example.mshintra.customer.service.CustomerService;
 import com.example.mshintra.login.dto.LoginUserDto;
+import com.example.mshintra.main.dto.MainBirthDayDto;
+import com.example.mshintra.main.service.MainService;
 import com.example.mshintra.notice.dto.NoticeDto;
 import com.example.mshintra.notice.service.NoticeService;
 import com.example.mshintra.schedule.dto.CalendarDto;
@@ -18,6 +20,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 import java.util.Map;
@@ -30,6 +34,7 @@ public class MainController {
     private final NoticeService noticeService;
     private final VacationService vacationService;
     private final CustomerService customerService;
+    private final MainService mainService;
 
     //달력은 calendar.js 및 main.js ajax 확인
     @GetMapping("/main.do")
@@ -119,6 +124,15 @@ public class MainController {
         outDayDutyDto.setSearchDate(DateUtil.getTodayYmd("-"));
         List<DayDutyDto> outDayDutyList = scheduleService.selectOutDayDutyList(outDayDutyDto);
 
+        //생일자 / 휴가자
+        List<MainBirthDayDto> mainBirthDayList = mainService.selectMainBirthDayList(DateUtil.getTodayYmd("-"));
+        List<MainBirthDayDto> birthdayList = mainBirthDayList.stream()
+                .filter(item -> item.getSort() != null && item.getSort() == 2)
+                .toList();
+        List<MainBirthDayDto> vacationUserList = mainBirthDayList.stream()
+                .filter(item -> item.getSort() != null && item.getSort() == 4)
+                .toList();
+
         model.addAttribute("welcomeDate", DateUtil.getTodayKorMd());
         model.addAttribute("workWeek", DateUtil.getTodayKorMw());
         model.addAttribute("weekDays", weekDays);
@@ -130,7 +144,15 @@ public class MainController {
         model.addAttribute("customerDailyStats", customerDailyStats);
         model.addAttribute("dayDutyList", dayDutyList);
         model.addAttribute("outDayDutyList", outDayDutyList);
+        model.addAttribute("birthdayList", birthdayList);
+        model.addAttribute("vacationUserList", vacationUserList);
 
         return "jsp/main/main";
+    }
+
+    @ResponseBody
+    @GetMapping("/main/birthDayList.do")
+    public List<MainBirthDayDto> selectMainBirthDayList(@RequestParam String searchDate) {
+        return mainService.selectMainBirthDayList(searchDate);
     }
 }

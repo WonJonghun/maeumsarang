@@ -69,6 +69,7 @@ $(function () {
             loadScheduleByDate(dateStr);
             loadPatientStatusByDate(dateStr);
             loadDayDutyByDate(dateStr);
+            loadBirthVacationByDate(dateStr);
 
             $('.card-subtitle').text(' / ' + dateDotStr);
         });
@@ -397,4 +398,62 @@ function loadDayDutyByDate(dateStr) {
         .fail(function (xhr) {
             console.log('outDayDuty error', xhr);
         });
+}
+
+//생일자 / 휴가자
+function loadBirthVacationByDate(dateStr) {
+    cmAjax('/main/birthDayList.do', 'GET', {searchDate: dateStr}, false)
+        .done(function (list) {
+            let birthdayList = [];
+            let vacationUserList = [];
+
+            $.each(list || [], function (_, item) {
+                if (Number(item.sort) === 2) {
+                    birthdayList.push(item);
+                } else if (Number(item.sort) === 4) {
+                    vacationUserList.push(item);
+                }
+            });
+
+            renderBirthVacationList($('.birth-column'), birthdayList, '생일자가 없습니다.', true);
+            renderBirthVacationList($('.vacation-column'), vacationUserList, '휴가자가 없습니다.', false);
+        })
+        .fail(function (xhr) {
+            console.log('birthDayList error', xhr);
+        });
+}
+
+//생일자 / 휴가자 렌더
+function renderBirthVacationList(column, list, emptyText, isBirthday) {
+    let ul = column.find('.birth-vacation-list');
+    if (!ul.length) return;
+
+    column.toggleClass('has-data', !!list.length);
+    ul.empty();
+
+    if (!list || !list.length) {
+        ul.append('<li class="birth-vacation-empty">' + emptyText + '</li>');
+        return;
+    }
+
+    $.each(list, function (_, item) {
+        let name = item.ccName || '';
+        let remark = item.ccRemark || '';
+        let type = remark;
+
+        if (isBirthday) {
+            if (remark.indexOf('+') > -1) {
+                type = '양력';
+            } else if (remark.indexOf('-') > -1) {
+                type = '음력';
+            }
+        }
+
+        ul.append(`
+            <li class="birth-vacation-row">
+                <span class="birth-vacation-name">${cmEscapeHtml(name)}</span>
+                <span class="birth-vacation-type">${cmEscapeHtml(type)}</span>
+            </li>
+        `);
+    });
 }

@@ -252,6 +252,53 @@
                 </div>
                 </div>
             </div>
+
+            <%--생일자 / 휴가자--%>
+            <div class="dashboard-block">
+                <div class="card-header">
+                    <div class="card-header-left"><h3 class="card-title">생일자 / 휴가자</h3></div>
+                </div>
+
+                <div class="card-body">
+                    <div class="birth-vacation-layout">
+                        <div class="birth-column ${not empty birthdayList ? 'has-data' : ''}">
+                            <div class="duty-section-title">생일자</div>
+                            <ul class="birth-vacation-list">
+                                <c:if test="${empty birthdayList}">
+                                    <li class="birth-vacation-empty">생일자가 없습니다.</li>
+                                </c:if>
+                                <c:forEach var="item" items="${birthdayList}">
+                                    <li class="birth-vacation-row">
+                                        <span class="birth-vacation-name"><c:out value="${item.ccName}"/></span>
+                                        <span class="birth-vacation-type">
+                                            <c:choose>
+                                                <c:when test="${fn:contains(item.ccRemark, '+')}">양력</c:when>
+                                                <c:when test="${fn:contains(item.ccRemark, '-')}">음력</c:when>
+                                                <c:otherwise><c:out value="${item.ccRemark}"/></c:otherwise>
+                                            </c:choose>
+                                        </span>
+                                    </li>
+                                </c:forEach>
+                            </ul>
+                        </div>
+
+                        <div class="vacation-column ${not empty vacationUserList ? 'has-data' : ''}">
+                            <div class="duty-section-title">휴가자</div>
+                            <ul class="birth-vacation-list">
+                                <c:if test="${empty vacationUserList}">
+                                    <li class="birth-vacation-empty">휴가자가 없습니다.</li>
+                                </c:if>
+                                <c:forEach var="item" items="${vacationUserList}">
+                                    <li class="birth-vacation-row">
+                                        <span class="birth-vacation-name"><c:out value="${item.ccName}"/></span>
+                                        <span class="birth-vacation-type"><c:out value="${item.ccRemark}"/></span>
+                                    </li>
+                                </c:forEach>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
     <%--        <section class="card">--%>

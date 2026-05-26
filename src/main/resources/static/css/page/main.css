@@ -676,3 +676,67 @@
 .dashboard-card .card-header {
     margin-bottom: 12px;
 }
+
+/* ================== 생일자/휴가자 영역 ↓================== */
+.birth-vacation-layout {
+    display: flex;
+    gap: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.birth-column,
+.vacation-column {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+}
+
+.birth-column.has-data::before,
+.vacation-column.has-data::before {
+    content: '';
+    position: absolute;
+    top: 26px;
+    bottom: 4px;
+    left: 54px;
+    border-left: 1px solid #e5e7eb;
+}
+
+.birth-vacation-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.birth-vacation-row {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 3px;
+}
+
+.birth-vacation-name {
+    min-width: 54px;
+    padding-right: 10px;
+    margin-right: 10px;
+    color: var(--gray-4b5563);
+    font-weight: 500;
+}
+
+.birth-vacation-type {
+    flex: 1;
+    white-space: normal;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+}
+
+.birth-vacation-empty {
+    color: var(--gray-6b7280);
+}
+
+.birth-vacation-memo {
+    margin: -1px 0 4px 64px;
+    color: var(--gray-6b7280);
+    font-size: 12px;
+    word-break: keep-all;
+}
+/* ================== 생일자/휴가자 영역 ↑================== */
