@@ -5,7 +5,10 @@ $(function () {
         const ccFlag = $.trim($(this).attr('data-cc-flag') || '');
         if (!ccFlag) return;
 
-        cmMovePage('/approval/approvalList.do', { ccHomeFlag: ccFlag });
+        cmMovePage('/approval/approvalList.do', {
+            ccHomeFlag: ccFlag,
+            title: $.trim($(this).find('.approval-branch-title').text() || '')
+        });
     });
 });
 

@@ -108,13 +108,13 @@
 
         <div class="profile-check-wrap">
             <div class="profile-check-grid" id="profileCheckGrid">
-                <a href="<c:url value='/approval/approvalHome.do?ccBaseKey=AA&ccWinCode=w_elecsign_apply'/>" class="profile-check-item is-color bg-1" data-target="main">
+                <a href="<c:url value='/approval/approvalList.do?ccHomeFlag=2&title=결재대기문서'/>" class="profile-check-item is-color bg-1" data-target="main">
                     <span class="profile-check-badge" data-key="approval" style="display:none;">0</span>
                     <i class="bi bi-pencil-square profile-check-ico"></i>
                     <div class="profile-check-txt">결재</div>
                 </a>
 
-                <a href="<c:url value='/mail/mailList.do'/>" class="profile-check-item is-color bg-2" data-target="main">
+                <a href="<c:url value='/mail/mailList.do?title=E-Mail'/>" class="profile-check-item is-color bg-2" data-target="main">
                     <span class="profile-check-badge" data-key="mail" style="display:none;">0</span>
                     <i class="bi bi-envelope profile-check-ico"></i>
                     <div class="profile-check-txt">전자메일</div>
