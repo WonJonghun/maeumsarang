@@ -337,4 +337,23 @@
         WHERE Es_Code = #{ccCode}
           AND Es_Flag = #{ccFlag}
     </select>
+
+    <update id="signApproval" statementType="CALLABLE">
+        { call dbo.Intranet_ElecApproval_SignUp(#{code}, #{saCd}, #{flag}, #{rmk}) }
+    </update>
+
+    <select id="selectApprovalSignLock" parameterType="string" resultType="map">
+        SELECT
+            Es_Code,
+            Es_Sign1, Es_SignDt1,
+            Es_Sign2, Es_SignDt2,
+            Es_Sign3, Es_SignDt3,
+            Es_Sign4, Es_SignDt4,
+            Es_Sign5, Es_SignDt5,
+            Es_Sign6, Es_SignDt6,
+            Es_Sign7, Es_SignDt7,
+            Es_Sign8, Es_SignDt8
+        FROM I_ElecSign WITH (UPDLOCK, HOLDLOCK)
+        WHERE Es_Code = #{code}
+    </select>
 </mapper>

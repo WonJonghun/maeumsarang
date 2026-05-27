@@ -19,9 +19,13 @@ public interface ApprovalMapper {
     Map<String, Object> selectApprovalDetail(@Param("ccCode") String ccCode, @Param("ccFlag") String ccFlag);
 
     List<ApprovalDetailFCDto> selectApprovalFcDetail(@Param("ccCode") String ccCode, @Param("ccFlag") String ccFlag,
-                                               @Param("ymd") String ymd, @Param("fcNum") String fcNum,  @Param("ccSeq") Integer ccSeq);
+                                                     @Param("ymd") String ymd, @Param("fcNum") String fcNum, @Param("ccSeq") Integer ccSeq);
 
     List<ApprovalDetailORDto> selectApprovalOrDetail(@Param("ccCode") String ccCode, @Param("ccFlag") String ccFlag);
 
     Map<String, Object> selectApprovalSignNum(@Param("ccCode") String ccCode, @Param("ccFlag") String ccFlag);
+
+    void signApproval(@Param("code") String code, @Param("saCd") String saCd, @Param("flag") String flag, @Param("rmk") String rmk);
+
+    Map<String, Object> selectApprovalSignLock(@Param("code") String code);
 }

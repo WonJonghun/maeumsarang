@@ -24,9 +24,20 @@ $(function () {
     $('#searchKeyword').on('input', function () {
         filterApprovalList();
     });
+
+    // 결재완료
+    $(document).on('click', '#approvalSignBtn', function () {
+        signApproval('11');
+    });
+
+    // 결재취소
+    $(document).on('click', '#approvalCancelBtn', function () {
+        signApproval('12');
+    });
 });
 
 let approvalListAll = [];
+let approvalDetailRow = null;
 
 // 전자결재 목록 호출
 function loadApprovalList() {
@@ -38,7 +49,7 @@ function loadApprovalList() {
         ccFlag: $('#selectBox1').val() || $('#ccFlag').val()
     };
 
-    cmAjax('/approval/selectApprovalList.do', 'GET', data, true).done(function (list) {
+    return cmAjax('/approval/selectApprovalList.do', 'GET', data, true).done(function (list) {
         approvalListAll = list || [];
         filterApprovalList();
     });
@@ -152,9 +163,144 @@ function approvalDetail(rowEl) {
 
     cmAjaxHtml('/approval/approvalDetail.do', 'GET', data, true).done(function (bodyHtml) {
         if (!bodyHtml) return;
-        detailDrawerShow(headHtml + bodyHtml, true, row.ccImgNO);
+
+        approvalDetailRow = row;
+        detailDrawerShow(headHtml + bodyHtml + getApprovalActionHtml(row), true, row.ccImgNO);
     }).fail(function (xhr) {
         console.log('detail fail:', xhr);
         detailDrawerShow(headHtml + '<div style="padding:16px;">상세 조회 실패</div>', true);
+    });
+}
+
+// 결재 버튼 HTML
+function getApprovalActionHtml(row) {
+    if (isMyApprovalTurn(row)) {
+        return `
+            <div class="approval-action-wrap">
+                <button type="button" id="approvalSignBtn" class="approval-action-btn approval-sign-btn">결재완료</button>
+            </div>
+        `;
+    }
+
+    if (canCancelMyApproval(row)) {
+        return `
+            <div class="approval-action-wrap">
+                <button type="button" id="approvalCancelBtn" class="approval-action-btn approval-cancel-btn">결재취소</button>
+            </div>
+        `;
+    }
+
+    return '';
+}
+
+// 내 결재 차례 여부
+function isMyApprovalTurn(row) {
+    const seq = getMySignSeq(row);
+
+    if (seq < 1) return false;
+    if (String(row.ccReSignDt || '') !== '') return false;
+    if (Number(row['ccSignOK' + seq] || 0) === 1) return false;
+
+    for (let i = 1; i < seq; i++) {
+        if (Number(row['ccSignOK' + i] || 0) !== 1) return false;
+    }
+
+    return true;
+}
+
+// 내 결재취소 가능 여부
+function canCancelMyApproval(row) {
+    const seq = getMySignSeq(row);
+    const signCnt = Number(row.ccSignCnt || 0);
+
+    if (seq < 1) return false;
+    if (Number(row['ccSignOK' + seq] || 0) !== 1) return false;
+
+    if (seq < signCnt && Number(row['ccSignOK' + (seq + 1)] || 0) === 1) {
+        return false;
+    }
+
+    return true;
+}
+
+// 내 결재 순번 찾기
+function getMySignSeq(row) {
+    const loginId = $.trim($('#loginIcCode').val() || '');
+
+    for (let i = 1; i <= 8; i++) {
+        if (getSignSaCd(row['ccSign' + i]) === loginId) {
+            return i;
+        }
+    }
+
+    return 0;
+}
+
+// 이미지번호 또는 사번에서 사번 추출
+function getSignSaCd(value) {
+    const signValue = $.trim(value || '');
+
+    if (signValue.length > 6) {
+        return signValue.substr(8, 10);
+    }
+
+    return signValue;
+}
+
+// 결재 처리
+function signApproval(flag) {
+    if (!approvalDetailRow) return;
+
+    const msg = flag === '11' ? '결재 처리하시겠습니까?' : '결재취소 처리하시겠습니까?';
+
+    customAlert('알림', msg, 'YN').then(function (ok) {
+        if (!ok) return;
+
+        cmAjax('/approval/signApproval.do', 'POST', {
+            ccCode: approvalDetailRow.ccCode,
+            flag: flag,
+            rmk: ''
+        }, true).done(function (res) {
+            if (!res || res.success !== true) {
+                customAlert('경고', (res && res.message) || '처리 실패', 'WARN').then(function () {
+                    detailDrawerClose(true, true);
+                    loadApprovalList();
+                });
+                return;
+            }
+
+            customAlert('알림', '처리되었습니다.', 'CONFIRM').then(function () {
+                detailDrawerClose(true, true);
+                loadApprovalList();
+            });
+        });
+    });
+}
+
+// 상세 새로고침
+function reloadApprovalDetail() {
+    const ccCode = approvalDetailRow.ccCode;
+
+    loadApprovalList().done(function () {
+        const row = approvalListAll.find(function (x) {
+            return String(x.ccCode || '') === String(ccCode || '');
+        });
+
+        if (!row) {
+            detailDrawerClose(true, true);
+            return;
+        }
+
+        approvalDetailRow = row;
+
+        const $rowEl = $('#approvalList .approval-row').filter(function () {
+            return String($(this).data('cc-code') || '') === String(ccCode || '');
+        }).first();
+
+        if ($rowEl.length > 0) {
+            approvalDetail($rowEl[0]);
+        } else {
+            detailDrawerClose(true, true);
+        }
     });
 }

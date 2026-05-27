@@ -123,3 +123,31 @@
     min-width: 48px;
     text-align: center;
 }
+
+/* ================== 결재 버튼 영역 ↓================== */
+.approval-action-wrap {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    padding: 18px 10px 8px;
+}
+
+.approval-action-btn {
+    width: 100%;
+    max-width: 180px;
+    height: 42px;
+    border: 0;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--white);
+}
+
+.approval-sign-btn {
+    background: var(--blue-007bff);
+}
+
+.approval-cancel-btn {
+    background: var(--red-e11d48);
+}
+/* ================== 결재 버튼 영역 ↑================== */

@@ -305,4 +305,61 @@ public class ApprovalService {
 
         return commonCodeService.getHelpCodeName("Elec00", ccFlag);
     }
+
+    @Transactional
+    public String signApproval(String code, String saCd, String flag, String rmk) {
+        Map<String, Object> row = approvalMapper.selectApprovalSignLock(code);
+
+        if (row == null) {
+            return "NOT_FOUND";
+        }
+
+        int seq = getMySignSeq(row, saCd);
+
+        if (seq < 1) {
+            return "NOT_SIGN_USER";
+        }
+
+        String signDt = String.valueOf(row.getOrDefault("Es_SignDt" + seq, ""));
+
+        if ("11".equals(flag) && !"".equals(signDt)) {
+            return "ALREADY_SIGN";
+        }
+
+        if ("12".equals(flag) && "".equals(signDt)) {
+            return "ALREADY_CANCEL";
+        }
+
+        if ("12".equals(flag) && seq < 8) {
+            String nextSign = String.valueOf(row.getOrDefault("Es_Sign" + (seq + 1), ""));
+            String nextSignDt = String.valueOf(row.getOrDefault("Es_SignDt" + (seq + 1), ""));
+
+            if (!"".equals(nextSign) && !"".equals(nextSignDt)) {
+                return "NEXT_ALREADY_SIGN";
+            }
+        }
+
+        approvalMapper.signApproval(code, saCd, flag, rmk);
+
+        return "OK";
+    }
+
+    private int getMySignSeq(Map<String, Object> row, String saCd) {
+        for (int i = 1; i <= 8; i++) {
+            String sign = String.valueOf(row.getOrDefault("Es_Sign" + i, ""));
+
+            if (sign.length() > 6) {
+                sign = sign.substring(8);
+                if (sign.length() > 10) {
+                    sign = sign.substring(0, 10);
+                }
+            }
+
+            if (saCd.equals(sign)) {
+                return i;
+            }
+        }
+
+        return 0;
+    }
 }

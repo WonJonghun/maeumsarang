@@ -156,4 +156,68 @@ public class ApprovalController {
 
         return "jsp/approval/detail/approvalDetailLayout";
     }
+
+    @ResponseBody
+    @PostMapping("/signApproval.do")
+    public Map<String, Object> signApproval(@RequestParam("ccCode") String ccCode,
+                                            @RequestParam("flag") String flag,
+                                            @RequestParam(value = "rmk", required = false, defaultValue = "") String rmk,
+                                            @AuthenticationPrincipal LoginUserDto loginUser) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        if (loginUser == null) {
+            result.put("success", false);
+            result.put("message", "로그인 정보가 없습니다.");
+            return result;
+        }
+
+        if (!"11".equals(flag) && !"12".equals(flag)) {
+            result.put("success", false);
+            result.put("message", "잘못된 요청입니다.");
+            return result;
+        }
+
+        String resultCode = approvalService.signApproval(ccCode, loginUser.getIcCode(), flag, rmk);
+
+        if ("ALREADY_SIGN".equals(resultCode)) {
+            result.put("success", false);
+            result.put("message", "이미 결재완료되었습니다.");
+            return result;
+        }
+
+        if ("ALREADY_CANCEL".equals(resultCode)) {
+            result.put("success", false);
+            result.put("message", "이미 결재취소되었습니다.");
+            return result;
+        }
+
+        if ("NEXT_ALREADY_SIGN".equals(resultCode)) {
+            result.put("success", false);
+            result.put("message", "다음 결재자가 이미 결재하여 취소할 수 없습니다.");
+            return result;
+        }
+
+        if ("NOT_SIGN_USER".equals(resultCode)) {
+            result.put("success", false);
+            result.put("message", "결재자가 아닙니다.");
+            return result;
+        }
+
+        if ("NOT_FOUND".equals(resultCode)) {
+            result.put("success", false);
+            result.put("message", "결재 문서를 찾을 수 없습니다.");
+            return result;
+        }
+
+        if (!"OK".equals(resultCode)) {
+            result.put("success", false);
+            result.put("message", "처리할 수 없는 결재입니다.");
+            return result;
+        }
+
+        result.put("success", true);
+        result.put("message", "처리되었습니다.");
+        return result;
+    }
 }
