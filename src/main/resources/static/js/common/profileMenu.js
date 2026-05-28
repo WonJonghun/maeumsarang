@@ -16,10 +16,9 @@ function bindEvents() {
 
             detailDrawerShow(html, true);
 
-            //드로어 DOM 주입 후 렌더
-            // renderProfileCheckCounts();
             loadCheckApproList();
             loadCommuteStat();
+            loadVacationStatus();
 
             return false;
         });
@@ -109,4 +108,29 @@ function loadCommuteStat() {
         $('#commuteInTime').text(inTime);
         $('#commuteOutTime').text(outTime);
     });
+}
+
+//휴가 현황
+function loadVacationStatus() {
+    const param = {
+        ccCode: $('#loginIcCode').val(),
+        searchDate: cmGetToday('-')
+    };
+
+    cmAjax('/vacation/status.do', 'GET', param, true).done(function (row) {
+        if (!row) return;
+
+        $('#vacTotal').text(formatVacationNumber(row.flag21));
+        $('#vacUsed').text(formatVacationNumber(row.flag22));
+        $('#vacLeft').text(formatVacationNumber(row.changeJan));
+
+        $('#vacLeft').toggleClass('vac-value-left-negative', Number(row.changeJan) < 0);
+    });
+}
+
+//휴가 숫자 포맷
+function formatVacationNumber(value) {
+    if (value === null || value === undefined || value === '') return '-';
+
+    return String(Number(value)).replace(/\.?0+$/, '');
 }

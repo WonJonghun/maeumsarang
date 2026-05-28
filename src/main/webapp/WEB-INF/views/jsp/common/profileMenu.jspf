@@ -155,18 +155,15 @@
                 <div class="vac-grid">
                     <div class="vac-item">
                         <p class="vac-label">총 연차</p>
-                        <fmt:formatNumber value="${vacationStatus.flag21}" pattern="#.########" var="flag21Fmt"/>
-                        <p class="vac-value vac-value-total"><c:out value="${flag21Fmt}"/></p>
+                        <p class="vac-value vac-value-total" id="vacTotal">-</p>
                     </div>
                     <div class="vac-item">
                         <p class="vac-label">사용</p>
-                        <fmt:formatNumber value="${vacationStatus.flag22}" pattern="#.########" var="flag22Fmt"/>
-                        <p class="vac-value vac-value-used"><c:out value="${flag22Fmt}"/></p>
+                        <p class="vac-value vac-value-used" id="vacUsed">-</p>
                     </div>
                     <div class="vac-item">
                         <p class="vac-label">잔여</p>
-                        <fmt:formatNumber value="${vacationStatus.changeJan}" pattern="#.########" var="changeJanFmt"/>
-                        <p class="vac-value vac-value-left ${vacationStatus.changeJan < 0 ? 'vac-value-left-negative' : ''}"><c:out value="${changeJanFmt}"/></p>
+                        <p class="vac-value vac-value-left" id="vacLeft">-</p>
                     </div>
                 </div>
                 <%--<button type="button" class="btn-gray-full">휴가 신청하기</button>--%>
