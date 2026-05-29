@@ -15,6 +15,14 @@
     min-width: 0;
 }
 
+.approval-header.no-sign {
+    justify-content: center;
+}
+
+.approval-header.no-sign .approval-detail-title {
+    text-align: center;
+}
+
 .approval-detail-title {
     flex: 0 0 auto;
     width: 40%;

@@ -1,9 +1,6 @@
 package com.example.mshintra.approval.controller;
 
-import com.example.mshintra.approval.dto.ApprovalDetailDto;
-import com.example.mshintra.approval.dto.ApprovalDetailFCDto;
-import com.example.mshintra.approval.dto.ApprovalDetailORDto;
-import com.example.mshintra.approval.dto.ApprovalDto;
+import com.example.mshintra.approval.dto.*;
 import com.example.mshintra.approval.service.ApprovalService;
 import com.example.mshintra.login.dto.LoginUserDto;
 import com.example.mshintra.menu.dto.MenuDto;
@@ -130,7 +127,12 @@ public class ApprovalController {
 
         String flag = ccFlag == null ? "" : ccFlag.trim().toUpperCase();
         ApprovalDetailDto detail;
-        detail = approvalService.getApprovalDetail(ccCode, ccFlag);
+
+        if ("PL".equals(flag)) {
+            detail = approvalService.getApprovalPaperApprovalDetail(ymd, ccSeq);
+        } else {
+            detail = approvalService.getApprovalDetail(ccCode, ccFlag);
+        }
 
         //기안 공문일때
         if ("FC".equals(flag)) {
@@ -139,6 +141,18 @@ public class ApprovalController {
         } else if ("OR".equals(flag)) {
             List<ApprovalDetailORDto> orDetail = approvalService.getApprovalOrDetail(ccCode, ccFlag);
             model.addAttribute("orDetail", orDetail);
+        } else if ("PL".equals(flag)) {
+            ApprovalDetailPLDto plDetail = approvalService.getApprovalPaperDetail(ymd, ccSeq);
+            model.addAttribute("plDetail", plDetail);
+
+            if (plDetail != null) {
+                detail.setCcFlagNm(plDetail.getCcFgNm() + "접수");
+
+                if (!"공문".equals(plDetail.getCcFgNm())) {
+                    detail.setSignList(Collections.emptyList());
+                    detail.setCcSignCnt(0);
+                }
+            }
         }
 
         String bodyPage = "/WEB-INF/views/jsp/approval/detail/approvalDetail.jsp";
@@ -147,7 +161,8 @@ public class ApprovalController {
         if ("OF".equals(flag)
                 || "IO".equals(flag)
                 || "OR".equals(flag)
-                || "FC".equals(flag)) {
+                || "FC".equals(flag)
+                || "PL".equals(flag)) {
             bodyPage = "/WEB-INF/views/jsp/approval/detail/approval" + flag + ".jsp";
         }
 

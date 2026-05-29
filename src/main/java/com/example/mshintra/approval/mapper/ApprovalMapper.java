@@ -2,6 +2,7 @@ package com.example.mshintra.approval.mapper;
 
 import com.example.mshintra.approval.dto.ApprovalDetailFCDto;
 import com.example.mshintra.approval.dto.ApprovalDetailORDto;
+import com.example.mshintra.approval.dto.ApprovalDetailPLDto;
 import com.example.mshintra.approval.dto.ApprovalDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -30,4 +31,10 @@ public interface ApprovalMapper {
     Map<String, Object> selectApprovalSignLock(@Param("code") String code);
 
     List<ApprovalDto> selectApprovalPaperList(ApprovalDto searchDto);
+
+    ApprovalDetailPLDto selectApprovalPaperDetail(@Param("ymd") String ymd, @Param("piSeq") Integer piSeq);
+
+    Map<String, Object> selectApprovalPaperSign(@Param("ymd") String ymd, @Param("piSeq") Integer piSeq);
+
+    Map<String, Object> selectApprovalPaperSignNum(@Param("ymd") String ymd, @Param("piSeq") Integer piSeq);
 }

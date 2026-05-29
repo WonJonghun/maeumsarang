@@ -55,6 +55,20 @@ public class ApprovalService {
         Map<String, Object> row = approvalMapper.selectApprovalDetail(ccCode, ccFlag);
         Map<String, Object> signRow = approvalMapper.selectApprovalSignNum(ccCode, ccFlag);
 
+        return buildApprovalDetailDto(row, signRow);
+    }
+
+    @Transactional(readOnly = true)
+    public ApprovalDetailDto getApprovalPaperApprovalDetail(String ymd, Integer piSeq) {
+
+        Map<String, Object> row = approvalMapper.selectApprovalPaperSign(ymd, piSeq);
+        Map<String, Object> signRow = approvalMapper.selectApprovalPaperSignNum(ymd, piSeq);
+
+        return buildApprovalDetailDto(row, signRow);
+    }
+
+    private ApprovalDetailDto buildApprovalDetailDto(Map<String, Object> row, Map<String, Object> signRow) {
+
         if (row == null) {
             row = Collections.emptyMap();
         }
@@ -197,6 +211,11 @@ public class ApprovalService {
     @Transactional(readOnly = true)
     public List<ApprovalDetailORDto> getApprovalOrDetail(String ccCode, String ccFlag) {
         return approvalMapper.selectApprovalOrDetail(ccCode, ccFlag);
+    }
+
+    @Transactional(readOnly = true)
+    public ApprovalDetailPLDto getApprovalPaperDetail(String ymd, Integer piSeq) {
+        return approvalMapper.selectApprovalPaperDetail(ymd, piSeq);
     }
 
     private List<ApprovalSignDto> buildSignList(ApprovalDetailDto dto) {

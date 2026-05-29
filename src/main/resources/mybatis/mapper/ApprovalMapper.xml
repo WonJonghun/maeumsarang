@@ -417,4 +417,161 @@
             ORDER BY Pi_Date DESC, Pi_Seq DESC
         ]]>
     </select>
+
+    <select id="selectApprovalPaperDetail" resultType="com.example.mshintra.approval.dto.ApprovalDetailPLDto">
+    <![CDATA[
+        SELECT
+            cc_Code = CONVERT(VARCHAR(8), Pi_Date, 112) + RIGHT('0000' + CONVERT(VARCHAR, Pi_Seq), 4),
+            cc_Flag = 'PL',
+            cc_FgNm = CASE CONVERT(VARCHAR, Pi_Flag)
+            WHEN '1' THEN '공문'
+            WHEN '2' THEN '등기'
+            WHEN '3' THEN '택배'
+            ELSE '기타'
+        END,
+            cc_Date = CONVERT(VARCHAR(10), Pi_Date, 120),
+            cc_Day = DATENAME(WEEKDAY, Pi_Date),
+
+            cc_Title = Pi_Title,
+            cc_RMK = Pi_RMK,
+
+            cc_Place = Pi_Place,
+            cc_PaperNo = Pi_PaperNO,
+            cc_ReDate = CASE
+                            WHEN Pi_ReDate IS NULL THEN ''
+                            ELSE CONVERT(VARCHAR(10), Pi_ReDate, 120)
+        END,
+            cc_ReCD = Pi_ReCD,
+            cc_ReSaCD = Pi_ReSaCD,
+            cc_ReBuserNm = ISNULL(dbo.GetBuserNm(Pi_ReCD), Pi_ReCD),
+            cc_ReSaNm = ISNULL(dbo.GetSaNm(Pi_ReSaCD), Pi_ReSaCD),
+            cc_ManagerNm = ISNULL(dbo.GetSaNm(Pi_RegUID), Pi_RegUID),
+
+            cc_ImgNO = Pi_ImgNO,
+            cc_Buser = Pi_ReCD,
+            cc_Seq = Pi_Seq,
+            cc_Plseq = Pi_Seq,
+            fcNum = Pi_PaperNO,
+
+            cc_SignCnt = 1,
+            cc_Sign1 = Pi_ReSaCD,
+            cc_SignOK1 = CASE WHEN ISNULL(Es_SignDt1, '') = '' THEN 0 ELSE 1 END,
+            cc_OK = CASE WHEN ISNULL(Es_SignDt1, '') = '' THEN 0 ELSE 1 END,
+            cc_OK1 = CASE WHEN ISNULL(Es_SignDt1, '') = '' THEN 0 ELSE 1 END,
+
+            cc_ReSign = '',
+            cc_ReRMK = '',
+            cc_ReSignDt = '',
+            cc_Use = 'Y'
+        FROM I_PaperInout
+        LEFT JOIN I_ElecSign ON Es_Code = Pi_SignUK
+        WHERE Pi_Date = #{ymd}
+        AND Pi_Seq = #{piSeq}
+        ]]>
+    </select>
+
+    <select id="selectApprovalPaperSign" resultType="hashmap">
+    <![CDATA[
+        SELECT
+            cc_Code = ISNULL(es.Es_Code, ''),
+            cc_Flag = ISNULL(es.Es_Flag, 'PL'),
+            cc_SeFg = ISNULL(es.Es_SeFg, ''),
+            cc_Date = ISNULL(es.Es_Date, GETDATE()),
+            cc_Buser = ISNULL(dbo.GetSaBuser(
+                                      CASE
+                                          WHEN LEN(ISNULL(es.Es_Sign1, '')) > 6 THEN SUBSTRING(es.Es_Sign1, 9, 10)
+                                          ELSE ISNULL(es.Es_Sign1, '')
+                                          END,
+                                      es.Es_Date
+                              ), ''),
+            cc_SignCnt = ISNULL(es.Es_SignCnt, 4),
+
+            cc_Sign1 = CASE WHEN LEN(ISNULL(es.Es_Sign1, '')) > 6 THEN 'C:\Medapp\intranet\imsi\' + es.Es_Sign1 + '.JPG' ELSE ISNULL(es.Es_Sign1, '') END,
+            cc_SignDt1 = CASE WHEN ISNULL(es.Es_SignDt1, '') = '' THEN CHAR(13) + CHAR(10) ELSE '' END
+            + ISNULL(dbo.GetSaNm(CASE WHEN LEN(ISNULL(es.Es_Sign1, '')) > 6 THEN SUBSTRING(es.Es_Sign1, 9, 10) ELSE es.Es_Sign1 END), '')
+            + CHAR(13) + CHAR(10)
+            + SUBSTRING(ISNULL(es.Es_SignDt1, ''), 3, 10),
+            cc_SignTt1 = CASE WHEN ISNULL(es.Es_Sign1, '') = '' THEN '담당'
+            ELSE dbo.GetSaJikGub(CASE WHEN LEN(ISNULL(es.Es_Sign1, '')) > 6 THEN SUBSTRING(es.Es_Sign1, 9, 10) ELSE ISNULL(es.Es_Sign1, '') END, es.Es_Date, ISNULL(hc.Hc_Ratio, 3)) END,
+
+            cc_Sign2 = CASE WHEN LEN(ISNULL(es.Es_Sign2, '')) > 6 THEN 'C:\Medapp\intranet\imsi\' + es.Es_Sign2 + '.JPG' ELSE ISNULL(es.Es_Sign2, '') END,
+            cc_SignDt2 = CASE WHEN ISNULL(es.Es_SignDt2, '') = '' THEN CHAR(13) + CHAR(10) ELSE '' END
+                       + ISNULL(dbo.GetSaNm(CASE WHEN LEN(ISNULL(es.Es_Sign2, '')) > 6 THEN SUBSTRING(es.Es_Sign2, 9, 10) ELSE es.Es_Sign2 END), '')
+                       + CHAR(13) + CHAR(10)
+                       + SUBSTRING(ISNULL(es.Es_SignDt2, ''), 3, 10),
+            cc_SignTt2 = CASE WHEN ISNULL(es.Es_Sign2, '') = '' THEN '팀장'
+                              ELSE dbo.GetSaJikGub(CASE WHEN LEN(ISNULL(es.Es_Sign2, '')) > 6 THEN SUBSTRING(es.Es_Sign2, 9, 10) ELSE ISNULL(es.Es_Sign2, '') END, es.Es_Date, ISNULL(hc.Hc_Ratio, 3)) END,
+
+            cc_Sign3 = CASE WHEN LEN(ISNULL(es.Es_Sign3, '')) > 6 THEN 'C:\Medapp\intranet\imsi\' + es.Es_Sign3 + '.JPG' ELSE ISNULL(es.Es_Sign3, '') END,
+            cc_SignDt3 = CASE WHEN ISNULL(es.Es_SignDt3, '') = '' THEN CHAR(13) + CHAR(10) ELSE '' END
+                       + ISNULL(dbo.GetSaNm(CASE WHEN LEN(ISNULL(es.Es_Sign3, '')) > 6 THEN SUBSTRING(es.Es_Sign3, 9, 10) ELSE es.Es_Sign3 END), '')
+                       + CHAR(13) + CHAR(10)
+                       + SUBSTRING(ISNULL(es.Es_SignDt3, ''), 3, 10),
+            cc_SignTt3 = CASE WHEN ISNULL(es.Es_Sign3, '') = '' THEN '본부장'
+                              ELSE dbo.GetSaJikGub(CASE WHEN LEN(ISNULL(es.Es_Sign3, '')) > 6 THEN SUBSTRING(es.Es_Sign3, 9, 10) ELSE ISNULL(es.Es_Sign3, '') END, es.Es_Date, ISNULL(hc.Hc_Ratio, 3)) END,
+
+            cc_Sign4 = CASE WHEN LEN(ISNULL(es.Es_Sign4, '')) > 6 THEN 'C:\Medapp\intranet\imsi\' + es.Es_Sign4 + '.JPG' ELSE ISNULL(es.Es_Sign4, '') END,
+            cc_SignDt4 = CASE WHEN ISNULL(es.Es_SignDt4, '') = '' THEN CHAR(13) + CHAR(10) ELSE '' END
+                       + ISNULL(dbo.GetSaNm(CASE WHEN LEN(ISNULL(es.Es_Sign4, '')) > 6 THEN SUBSTRING(es.Es_Sign4, 9, 10) ELSE es.Es_Sign4 END), '')
+                       + CHAR(13) + CHAR(10)
+                       + SUBSTRING(ISNULL(es.Es_SignDt4, ''), 3, 10),
+            cc_SignTt4 = CASE WHEN ISNULL(es.Es_Sign4, '') = '' THEN '원장'
+                              ELSE dbo.GetSaJikGub(CASE WHEN LEN(ISNULL(es.Es_Sign4, '')) > 6 THEN SUBSTRING(es.Es_Sign4, 9, 10) ELSE ISNULL(es.Es_Sign4, '') END, es.Es_Date, ISNULL(hc.Hc_Ratio, 3)) END,
+
+            cc_Sign5 = CASE WHEN LEN(ISNULL(es.Es_Sign5, '')) > 6 THEN 'C:\Medapp\intranet\imsi\' + es.Es_Sign5 + '.JPG' ELSE ISNULL(es.Es_Sign5, '') END,
+            cc_SignDt5 = CASE WHEN ISNULL(es.Es_SignDt5, '') = '' THEN CHAR(13) + CHAR(10) ELSE '' END
+                       + ISNULL(dbo.GetSaNm(CASE WHEN LEN(ISNULL(es.Es_Sign5, '')) > 6 THEN SUBSTRING(es.Es_Sign5, 9, 10) ELSE es.Es_Sign5 END), '')
+                       + CHAR(13) + CHAR(10)
+                       + SUBSTRING(ISNULL(es.Es_SignDt5, ''), 3, 10),
+            cc_SignTt5 = CASE WHEN ISNULL(es.Es_Sign5, '') = '' THEN ''
+                              ELSE dbo.GetSaJikGub(CASE WHEN LEN(ISNULL(es.Es_Sign5, '')) > 6 THEN SUBSTRING(es.Es_Sign5, 9, 10) ELSE ISNULL(es.Es_Sign5, '') END, es.Es_Date, ISNULL(hc.Hc_Ratio, 3)) END,
+
+            cc_Sign6 = '',
+            cc_SignDt6 = '',
+            cc_SignTt6 = '',
+            cc_Sign7 = '',
+            cc_SignDt7 = '',
+            cc_SignTt7 = '',
+            cc_Sign8 = '',
+            cc_SignDt8 = '',
+            cc_SignTt8 = '',
+
+            cc_UK = ISNULL(es.Es_UK, ''),
+            cc_ImgNO = ISNULL(pi.Pi_ImgNO, ''),
+            cc_RMK = CASE
+                        WHEN ISNULL(es.Es_RMK, '') = '' THEN ISNULL(es.Es_ReRMK, '')
+                        WHEN ISNULL(es.Es_RMK, '') <> '' AND ISNULL(es.Es_ReRMK, '') <> '' THEN es.Es_RMK + CHAR(13) + CHAR(10) + es.Es_ReRMK
+                        ELSE ISNULL(es.Es_RMK, '') + ISNULL(es.Es_ReRMK, '')
+        END
+        FROM I_PaperInout pi
+        LEFT JOIN I_ElecSign es
+            ON es.Es_Code = pi.Pi_SignUK
+           AND es.Es_Flag = 'PL'
+        LEFT JOIN I_HelpCD hc
+            ON hc.Hc_Code = 'Elec00'
+           AND hc.Hc_ColumNm = 'PL'
+        WHERE pi.Pi_Date = #{ymd}
+        AND pi.Pi_Seq = #{piSeq}
+        ]]>
+</select>
+
+    <select id="selectApprovalPaperSignNum" resultType="hashmap">
+    <![CDATA[
+        SELECT
+            CASE WHEN LEN(ISNULL(es.Es_Sign1, '')) > 6 THEN es.Es_Sign1 ELSE '' END AS esSign1,
+            CASE WHEN LEN(ISNULL(es.Es_Sign2, '')) > 6 THEN es.Es_Sign2 ELSE '' END AS esSign2,
+            CASE WHEN LEN(ISNULL(es.Es_Sign3, '')) > 6 THEN es.Es_Sign3 ELSE '' END AS esSign3,
+            CASE WHEN LEN(ISNULL(es.Es_Sign4, '')) > 6 THEN es.Es_Sign4 ELSE '' END AS esSign4,
+            CASE WHEN LEN(ISNULL(es.Es_Sign5, '')) > 6 THEN es.Es_Sign5 ELSE '' END AS esSign5,
+            CASE WHEN LEN(ISNULL(es.Es_Sign6, '')) > 6 THEN es.Es_Sign6 ELSE '' END AS esSign6,
+            CASE WHEN LEN(ISNULL(es.Es_Sign7, '')) > 6 THEN es.Es_Sign7 ELSE '' END AS esSign7,
+            CASE WHEN LEN(ISNULL(es.Es_Sign8, '')) > 6 THEN es.Es_Sign8 ELSE '' END AS esSign8
+        FROM I_PaperInout pi
+                 LEFT JOIN I_ElecSign es
+                           ON es.Es_Code = pi.Pi_SignUK
+                               AND es.Es_Flag = 'PL'
+        WHERE pi.Pi_Date = #{ymd}
+          AND pi.Pi_Seq = #{piSeq}
+        ]]>
+</select>
 </mapper>

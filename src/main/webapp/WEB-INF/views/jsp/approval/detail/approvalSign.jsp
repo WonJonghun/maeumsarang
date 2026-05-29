@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<div class="approval-header">
+<div class="approval-header <c:if test="${empty detail.signList}">no-sign</c:if>">
     <div class="approval-detail-title">
         <c:set var="bracketIdx" value="${fn:indexOf(detail.ccFlagNm, '(')}" />
 
