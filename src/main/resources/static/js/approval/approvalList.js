@@ -41,11 +41,21 @@ let approvalDetailRow = null;
 
 // 전자결재 목록 호출
 function loadApprovalList() {
+    const ccBaseKey = $.trim($('#baseKey').val() || '');
+
+    if (ccBaseKey === 'PL') {
+        const monthRange = cmGetThisMonthRange('-');
+
+        $('#searchFromDate').val(monthRange.from);
+        $('#searchToDate').val(monthRange.to);
+    }
+
     const data = {
         searchFromDate: $('#searchFromDate').val(),
         searchToDate: $('#searchToDate').val(),
         searchId: $('#loginIcCode').val(),
         ccHomeFlag: $('#ccHomeFlag').val(),
+        ccBaseKey: ccBaseKey,
         ccFlag: $('#selectBox1').val() || $('#ccFlag').val()
     };
 
@@ -68,6 +78,8 @@ function filterApprovalList() {
 // 목록 그리기
 function renderApprovalList(list, emptyText) {
     const approvalListEl = $('#approvalList');
+    const ccBaseKey = $.trim($('#baseKey').val() || '');
+
     approvalListEl.empty();
 
     if (!list || list.length === 0) {
@@ -88,9 +100,19 @@ function renderApprovalList(list, emptyText) {
         const fgNm = $.trim(row.ccFgNm || '');
         const fcNum = $.trim(row.fcNum || '');
 
-        const subText = [[ymd, day].filter(Boolean).join(' '), team, fgNm]
-            .filter(Boolean)
-            .join(' · ');
+        let subText;
+
+        if (ccBaseKey === 'PL') {
+            const place = $.trim(row.ccRMK || '');
+
+            subText = [[ymd, day].filter(Boolean).join(' '), place, fgNm]
+                .filter(Boolean)
+                .join(' · ');
+        } else {
+            subText = [[ymd, day].filter(Boolean).join(' '), team, fgNm]
+                .filter(Boolean)
+                .join(' · ');
+        }
 
         const isDone = Number(row.ccOK1 || 0) === 1;
         const statusText = isDone ? '결재완료' : '진행중';
@@ -120,6 +142,7 @@ function renderApprovalList(list, emptyText) {
 // 상세 조회
 function approvalDetail(rowEl) {
     const selRow = $(rowEl);
+    const ccBaseKey = $.trim($('#baseKey').val() || '');
 
     if (!detailDrawerShow) return;
 
@@ -136,9 +159,19 @@ function approvalDetail(rowEl) {
     const ccFlag = $.trim(row.ccFlag || '');
     const fcNum = $.trim(selRow.data('fc-num') || row.fcNum || '');
 
-    const subText = [[ymd, day].filter(Boolean).join(' '), team, fgNm]
-        .filter(Boolean)
-        .join(' · ');
+    let subText;
+
+    if (ccBaseKey === 'PL') {
+        const place = $.trim(row.ccRMK || '');
+
+        subText = [[ymd, day].filter(Boolean).join(' '), place, fgNm]
+            .filter(Boolean)
+            .join(' · ');
+    } else {
+        subText = [[ymd, day].filter(Boolean).join(' '), team, fgNm]
+            .filter(Boolean)
+            .join(' · ');
+    }
 
     const isDone = Number(row.ccOK1 || 0) === 1;
     const statusText = isDone ? '결재완료' : '진행중';

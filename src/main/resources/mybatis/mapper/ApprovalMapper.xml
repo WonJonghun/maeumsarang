@@ -356,4 +356,65 @@
         FROM I_ElecSign WITH (UPDLOCK, HOLDLOCK)
         WHERE Es_Code = #{code}
     </select>
+
+    <select id="selectApprovalPaperList" resultType="com.example.mshintra.approval.dto.ApprovalDto">
+        <![CDATA[
+            SELECT
+                cc_Code = CONVERT(VARCHAR(8), Pi_Date, 112) + RIGHT('0000' + CONVERT(VARCHAR, Pi_Seq), 4),
+                cc_Flag = 'PL',
+                cc_FgNm = CASE CONVERT(VARCHAR, Pi_Flag)
+                            WHEN '1' THEN '공문'
+                            WHEN '2' THEN '등기'
+                            WHEN '3' THEN '택배'
+                            ELSE '기타'
+                          END,
+                cc_Date = CONVERT(VARCHAR(10), Pi_Date, 120),
+                cc_Day = DATENAME(WEEKDAY, Pi_Date),
+
+                cc_Title = Pi_Title,
+                cc_RMK = Pi_RMK,
+
+                cc_Place = Pi_Place,
+                cc_PaperNo = Pi_PaperNO,
+                cc_ReDate = CASE
+                                WHEN Pi_ReDate IS NULL THEN ''
+                                ELSE CONVERT(VARCHAR(10), Pi_ReDate, 120)
+                            END,
+                cc_ReCD = Pi_ReCD,
+                cc_ReSaCD = Pi_ReSaCD,
+                cc_ReBuserNm = ISNULL(dbo.GetBuserNm(Pi_ReCD), Pi_ReCD),
+                cc_ReSaNm = ISNULL(dbo.GetSaNm(Pi_ReSaCD), Pi_ReSaCD),
+                cc_ManagerNm = ISNULL(dbo.GetSaNm(Pi_RegUID), Pi_RegUID),
+
+                cc_ImgNO = Pi_ImgNO,
+                cc_Buser = Pi_ReCD,
+                cc_Seq = Pi_Seq,
+                cc_Plseq = Pi_Seq,
+                fcNum = Pi_PaperNO,
+
+                cc_SignCnt = 1,
+                cc_Sign1 = Pi_ReSaCD,
+                cc_SignOK1 = CASE WHEN ISNULL(Es_SignDt1, '') = '' THEN 0 ELSE 1 END,
+                cc_OK = CASE WHEN ISNULL(Es_SignDt1, '') = '' THEN 0 ELSE 1 END,
+                cc_OK1 = CASE WHEN ISNULL(Es_SignDt1, '') = '' THEN 0 ELSE 1 END,
+
+                cc_ReSign = '',
+                cc_ReRMK = '',
+                cc_ReSignDt = '',
+                cc_Use = 'Y'
+            FROM I_PaperInout
+            LEFT JOIN I_ElecSign ON Es_Code = Pi_SignUK
+            WHERE Pi_Date BETWEEN #{searchFromDate} AND #{searchToDate}
+              AND 1 = CASE
+                        WHEN #{searchId} = '' THEN 1
+                        WHEN Pi_ReCD = #{searchId} THEN 1
+                        WHEN Pi_ReCD IN (
+                            SELECT Buser
+                            FROM dbo.GetBuser(#{searchId}, Pi_Date)
+                        ) THEN 1
+                        ELSE 0
+                      END
+            ORDER BY Pi_Date DESC, Pi_Seq DESC
+        ]]>
+    </select>
 </mapper>

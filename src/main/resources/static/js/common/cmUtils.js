@@ -159,3 +159,17 @@ function cmToNumber(value) {
 function cmFormatAmount(value) {
     return cmToNumber(value).toLocaleString('ko-KR');
 }
+
+//이번달 시작일/마지막일
+function cmGetThisMonthRange(param) {
+    const sep = (param === undefined || param === null) ? '-' : param;
+    const d = new Date();
+
+    const first = new Date(d.getFullYear(), d.getMonth(), 1);
+    const last = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+
+    return {
+        from: cmFormatYmd(first, sep),
+        to: cmFormatYmd(last, sep)
+    };
+}

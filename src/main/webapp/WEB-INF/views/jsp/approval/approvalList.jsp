@@ -27,6 +27,7 @@
     <input type="hidden" id="ccFlag" value="<c:out value='${ccFlag}'/>"/>
     <input type="hidden" id="ccHomeFlag" value="<c:out value='${ccHomeFlag}'/>"/>
     <textarea id="approvalDocTypeJson" style="display:none;"><c:out value="${approvalDocTypeJson}" /></textarea>
+    <input type="hidden" id="ccBaseKey" value="<c:out value='${ccBaseKey}'/>"/>
 </div>
 
 <%@ include file="../common/detailDrawer.jspf" %>

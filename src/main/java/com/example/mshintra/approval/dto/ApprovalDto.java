@@ -66,4 +66,13 @@ public class ApprovalDto extends SearchDto {
     private Integer ccSo1;        // 참석자 사인요청 여부(0/1)
     private String fcNum;         // 문서번호
     private Integer ccSeq;         // 서식번호
+    private String ccBaseKey;     // 메뉴 baseKey
+    private String ccPlace;
+    private String ccPaperNo;
+    private String ccReDate;
+    private String ccReCD;
+    private String ccReSaCD;
+    private String ccReBuserNm;
+    private String ccReSaNm;
+    private String ccManagerNm;
 }

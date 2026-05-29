@@ -33,6 +33,7 @@ public class ApprovalController {
 
     @GetMapping("/approvalList.do")
     public String approvalList(@RequestParam(required = false) String ccFlag,
+                               @RequestParam(required = false) String ccBaseKey,
                                @RequestParam(required = false) String ccHomeFlag,
                                @AuthenticationPrincipal LoginUserDto loginUser,
                                HttpSession session,
@@ -101,6 +102,7 @@ public class ApprovalController {
         model.addAttribute("ccFlag", ccFlag);
         model.addAttribute("ccHomeFlag", ccHomeFlag);
         model.addAttribute("approvalDocTypeJson", new ObjectMapper().writeValueAsString(approvalDocTypeMap));
+        model.addAttribute("ccBaseKey", ccBaseKey);
 
         return "jsp/approval/approvalList";
     }

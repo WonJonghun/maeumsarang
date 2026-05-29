@@ -33,7 +33,14 @@ public class ApprovalService {
     @Transactional(readOnly = true)
     public List<ApprovalDto> selectApprovalList(ApprovalDto searchDto) {
 
-        List<ApprovalDto> list = approvalMapper.selectApprovalList(searchDto);
+        List<ApprovalDto> list;
+
+        if ("PL".equals(searchDto.getCcBaseKey())) {    //문서수신관리일때
+            list = approvalMapper.selectApprovalPaperList(searchDto);
+        } else {
+            list = approvalMapper.selectApprovalList(searchDto);
+        }
+
         if (list == null || list.isEmpty()) {
             return list;
         }

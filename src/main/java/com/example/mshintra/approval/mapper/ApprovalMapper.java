@@ -28,4 +28,6 @@ public interface ApprovalMapper {
     void signApproval(@Param("code") String code, @Param("saCd") String saCd, @Param("flag") String flag, @Param("rmk") String rmk);
 
     Map<String, Object> selectApprovalSignLock(@Param("code") String code);
+
+    List<ApprovalDto> selectApprovalPaperList(ApprovalDto searchDto);
 }
