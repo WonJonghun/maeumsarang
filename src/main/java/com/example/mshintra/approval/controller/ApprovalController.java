@@ -122,7 +122,7 @@ public class ApprovalController {
                                  @RequestParam("ccFlag") String ccFlag,
                                  @RequestParam(value = "ymd", required = false, defaultValue = "") String ymd,
                                  @RequestParam(value = "fcNum", required = false, defaultValue = "") String fcNum,
-                                 @RequestParam(value = "ccSeq", required = false, defaultValue = "") Integer ccSeq,
+                                 @RequestParam(value = "ccSeq", required = false) Integer ccSeq,
                                  Model model) {
 
         String flag = ccFlag == null ? "" : ccFlag.trim().toUpperCase();
