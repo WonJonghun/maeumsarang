@@ -120,25 +120,31 @@
                     <div class="profile-check-txt">전자메일</div>
                 </a>
 
-                <a href="#" class="profile-check-item is-color bg-3" data-target="main">
+                <a href="/approval/approvalList.do?ccHomeFlag=1&ccFlag=PL&ccBaseKey=PL&ccWinCode=w_paper_Inout&paperTab=공문"
+                   class="profile-check-item is-color bg-3"
+                   data-target="main">
                     <span class="profile-check-badge" data-key="official" style="display:none;">0</span>
                     <i class="bi bi-file-earmark-text profile-check-ico"></i>
                     <div class="profile-check-txt">공문도착</div>
                 </a>
 
-                <a href="#" class="profile-check-item is-color bg-4" data-target="main">
-                    <span class="profile-check-badge" data-key="post" style="display:none;">0</span>
-                    <i class="bi bi-mailbox profile-check-ico"></i>
-                    <div class="profile-check-txt">우편도착</div>
+                <a href="/approval/approvalList.do?ccHomeFlag=1&ccFlag=PL&ccBaseKey=PL&ccWinCode=w_paper_Inout&paperTab=등기"
+                   class="profile-check-item is-color bg-3"
+                   data-target="main">
+                    <span class="profile-check-badge" data-key="mail" style="display:none;">0</span>
+                    <i class="bi bi-envelope profile-check-ico"></i>
+                    <div class="profile-check-txt">우편</div>
                 </a>
 
-                <a href="#" class="profile-check-item is-color bg-5" data-target="main">
+                <a href="/approval/approvalList.do?ccHomeFlag=1&ccFlag=PL&ccBaseKey=PL&ccWinCode=w_paper_Inout&paperTab=택배"
+                   class="profile-check-item is-color bg-3"
+                   data-target="main">
                     <span class="profile-check-badge" data-key="parcel" style="display:none;">0</span>
                     <i class="bi bi-box-seam profile-check-ico"></i>
-                    <div class="profile-check-txt">택배도착</div>
+                    <div class="profile-check-txt">택배</div>
                 </a>
 
-                <a href="#" class="profile-check-item is-color bg-6" data-target="main">
+                <a href="/approval/approvalList.do?ccHomeFlag=1&title=전체문서" class="profile-check-item is-color bg-6" data-target="main">
                     <span class="profile-check-badge" data-key="coop" style="display:none;">0</span>
                     <i class="bi bi-people profile-check-ico"></i>
                     <div class="profile-check-txt">협조문서</div>

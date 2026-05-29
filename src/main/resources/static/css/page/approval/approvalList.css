@@ -151,3 +151,58 @@
     background: var(--red-e11d48);
 }
 /* ================== 결재 버튼 영역 ↑================== */
+
+/* ================== 문서수신관리 탭 영역 ↓================== */
+.approval-tab-wrap {
+    position: sticky;
+    top: 54px;
+    z-index: 9;
+    display: flex;
+    align-items: flex-end;
+    gap: 0;
+    padding: 10px 16px 0;
+    margin: 0 -16px;
+    border-bottom: 1px solid var(--gray-cccccc);
+    background: var(--gray-f9fafb);
+}
+
+.approval-tab {
+    position: relative;
+    min-width: 82px;
+    height: 34px;
+    padding: 0 14px;
+    margin-right: -1px;
+    border: 1px solid var(--gray-cccccc);
+    border-bottom: none;
+    border-radius: 9px 9px 0 0;
+    background: #f1f1f1;
+    color: var(--gray-6b7280);
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.approval-tab:hover {
+    background: var(--blue-eef4ff);
+    color: var(--blue-2563eb);
+}
+
+.approval-tab.active {
+    z-index: 2;
+    height: 38px;
+    background: var(--gray-f9fafb);
+    color: var(--blue-2563eb);
+    font-weight: 700;
+}
+
+.approval-tab.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: var(--gray-f9fafb);
+}
+/* ================== 문서수신관리 탭 영역 ↑================== */

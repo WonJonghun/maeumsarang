@@ -37,4 +37,8 @@ public interface ApprovalMapper {
     Map<String, Object> selectApprovalPaperSign(@Param("ymd") String ymd, @Param("piSeq") Integer piSeq);
 
     Map<String, Object> selectApprovalPaperSignNum(@Param("ymd") String ymd, @Param("piSeq") Integer piSeq);
+
+    Map<String, Object> selectApprovalPaperLock(@Param("ymd") String ymd, @Param("piSeq") Integer piSeq);
+
+    void receiveApprovalPaper(@Param("ymd") String ymd, @Param("piSeq") Integer piSeq, @Param("saCd") String saCd);
 }

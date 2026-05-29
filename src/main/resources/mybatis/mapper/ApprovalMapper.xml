@@ -394,9 +394,9 @@
 
                 cc_SignCnt = 1,
                 cc_Sign1 = Pi_ReSaCD,
-                cc_SignOK1 = CASE WHEN ISNULL(Es_SignDt1, '') = '' THEN 0 ELSE 1 END,
-                cc_OK = CASE WHEN ISNULL(Es_SignDt1, '') = '' THEN 0 ELSE 1 END,
-                cc_OK1 = CASE WHEN ISNULL(Es_SignDt1, '') = '' THEN 0 ELSE 1 END,
+                cc_SignOK1 = CASE WHEN Pi_ReDate IS NULL THEN 0 ELSE 1 END,
+                cc_OK = CASE WHEN Pi_ReDate IS NULL THEN 0 ELSE 1 END,
+                cc_OK1 = CASE WHEN Pi_ReDate IS NULL THEN 0 ELSE 1 END,
 
                 cc_ReSign = '',
                 cc_ReRMK = '',
@@ -455,9 +455,9 @@
 
             cc_SignCnt = 1,
             cc_Sign1 = Pi_ReSaCD,
-            cc_SignOK1 = CASE WHEN ISNULL(Es_SignDt1, '') = '' THEN 0 ELSE 1 END,
-            cc_OK = CASE WHEN ISNULL(Es_SignDt1, '') = '' THEN 0 ELSE 1 END,
-            cc_OK1 = CASE WHEN ISNULL(Es_SignDt1, '') = '' THEN 0 ELSE 1 END,
+            cc_SignOK1 = CASE WHEN Pi_ReDate IS NULL THEN 0 ELSE 1 END,
+            cc_OK = CASE WHEN Pi_ReDate IS NULL THEN 0 ELSE 1 END,
+            cc_OK1 = CASE WHEN Pi_ReDate IS NULL THEN 0 ELSE 1 END,
 
             cc_ReSign = '',
             cc_ReRMK = '',
@@ -573,5 +573,27 @@
         WHERE pi.Pi_Date = #{ymd}
           AND pi.Pi_Seq = #{piSeq}
         ]]>
-</select>
+    </select>
+
+    <select id="selectApprovalPaperLock" resultType="map">
+    <![CDATA[
+        SELECT
+            Pi_Date,
+            Pi_Seq,
+            Pi_ReSaCD,
+            Pi_ReDate
+        FROM I_PaperInout WITH (UPDLOCK, HOLDLOCK)
+        WHERE Pi_Date = #{ymd}
+          AND Pi_Seq = #{piSeq}
+        ]]>
+    </select>
+
+    <update id="receiveApprovalPaper">
+    <![CDATA[
+        EXEC dbo.Intranet_ElecApproval_Paper_SignUp
+        #{ymd},
+        #{piSeq},
+        #{saCd}
+    ]]>
+    </update>
 </mapper>

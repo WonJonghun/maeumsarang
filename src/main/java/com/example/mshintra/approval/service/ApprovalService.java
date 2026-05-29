@@ -388,4 +388,23 @@ public class ApprovalService {
 
         return 0;
     }
+
+    @Transactional
+    public String receivePaper(String ymd, Integer piSeq, String saCd) {
+        Map<String, Object> row = approvalMapper.selectApprovalPaperLock(ymd, piSeq);
+
+        if (row == null) {
+            return "NOT_FOUND";
+        }
+
+        String piReDate = String.valueOf(row.getOrDefault("Pi_ReDate", ""));
+
+        if (!"".equals(piReDate) && !"null".equalsIgnoreCase(piReDate)) {
+            return "ALREADY_RECEIVED";
+        }
+
+        approvalMapper.receiveApprovalPaper(ymd, piSeq, saCd);
+
+        return "OK";
+    }
 }

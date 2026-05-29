@@ -237,4 +237,43 @@ public class ApprovalController {
         result.put("message", "처리되었습니다.");
         return result;
     }
+
+    @ResponseBody
+    @PostMapping("/receivePaper.do")
+    public Map<String, Object> receivePaper(@RequestParam("ymd") String ymd,
+                                            @RequestParam("piSeq") Integer piSeq,
+                                            @AuthenticationPrincipal LoginUserDto loginUser) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        if (loginUser == null) {
+            result.put("success", false);
+            result.put("message", "로그인 정보가 없습니다.");
+            return result;
+        }
+
+        String resultCode = approvalService.receivePaper(ymd, piSeq, loginUser.getIcCode());
+
+        if ("NOT_FOUND".equals(resultCode)) {
+            result.put("success", false);
+            result.put("message", "접수 문서를 찾을 수 없습니다.");
+            return result;
+        }
+
+        if ("ALREADY_RECEIVED".equals(resultCode)) {
+            result.put("success", false);
+            result.put("message", "이미 접수되었습니다.");
+            return result;
+        }
+
+        if (!"OK".equals(resultCode)) {
+            result.put("success", false);
+            result.put("message", "처리할 수 없습니다.");
+            return result;
+        }
+
+        result.put("success", true);
+        result.put("message", "접수되었습니다.");
+        return result;
+    }
 }

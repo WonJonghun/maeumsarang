@@ -1,9 +1,18 @@
 $(function () {
-    cmSetSelectOptions($('#selectBox1'), '문서종류',
-        JSON.parse($('#approvalDocTypeJson').val())
-    );
+    if ($('#selectBox1').length > 0) {
+        cmSetSelectOptions($('#selectBox1'), '문서종류',
+            JSON.parse($('#approvalDocTypeJson').val())
+        );
+    }
 
+    initApprovalSearchDate();
+    setApprovalPaperTab();
     loadApprovalList();
+
+    // 상단바 검색
+    $(document).on('topbar:search.approvalList', function () {
+        loadApprovalList();
+    });
 
     // 상세 보기
     $(document).on('click', '#approvalList .approval-row', function (e) {
@@ -14,14 +23,17 @@ $(function () {
         approvalDetail(this);
     });
 
-    // 검색 버튼
-    $('#topbarFilterSearch').on('click', function (e) {
-        e.preventDefault();
-        loadApprovalList();
-    });
-
     // 텍스트 실시간 검색
     $('#searchKeyword').on('input', function () {
+        filterApprovalList();
+    });
+
+    // 문서수신관리 탭
+    $(document).on('click', '.approval-tab', function () {
+        $('.approval-tab').removeClass('active');
+        $(this).addClass('active');
+
+        approvalPaperTab = $.trim($(this).data('paper-tab') || '');
         filterApprovalList();
     });
 
@@ -34,21 +46,30 @@ $(function () {
     $(document).on('click', '#approvalCancelBtn', function () {
         signApproval('12');
     });
+
+    // 문서접수
+    $(document).on('click', '#approvalReceiveBtn', function () {
+        receiveApprovalPaper();
+    });
 });
 
 let approvalListAll = [];
 let approvalDetailRow = null;
+let approvalPaperTab = getPaperTabParam();
+
+// 검색일자 초기화
+function initApprovalSearchDate() {
+    if (getCcBaseKey() !== 'PL') return;
+
+    const monthRange = cmGetThisMonthRange('-');
+
+    $('#searchFromDate').val(monthRange.from);
+    $('#searchToDate').val(monthRange.to);
+}
 
 // 전자결재 목록 호출
 function loadApprovalList() {
-    const ccBaseKey = $.trim($('#baseKey').val() || '');
-
-    if (ccBaseKey === 'PL') {
-        const monthRange = cmGetThisMonthRange('-');
-
-        $('#searchFromDate').val(monthRange.from);
-        $('#searchToDate').val(monthRange.to);
-    }
+    const ccBaseKey = getCcBaseKey();
 
     const data = {
         searchFromDate: $('#searchFromDate').val(),
@@ -56,7 +77,7 @@ function loadApprovalList() {
         searchId: $('#loginIcCode').val(),
         ccHomeFlag: $('#ccHomeFlag').val(),
         ccBaseKey: ccBaseKey,
-        ccFlag: $('#selectBox1').val() || $('#ccFlag').val()
+        ccFlag: ccBaseKey === 'PL' ? '' : ($('#selectBox1').val() || $('#ccFlag').val())
     };
 
     return cmAjax('/approval/selectApprovalList.do', 'GET', data, true).done(function (list) {
@@ -65,11 +86,21 @@ function loadApprovalList() {
     });
 }
 
-// 텍스트 검색
+// 목록 필터
 function filterApprovalList() {
-    const keyword = $('#searchKeyword').val().toLowerCase();
+    const keyword = $.trim($('#searchKeyword').val() || '').toLowerCase();
+    const ccBaseKey = getCcBaseKey();
+
     const filteredList = approvalListAll.filter(function (row) {
-        return String(row.ccTitle || '').toLowerCase().indexOf(keyword) > -1;
+        if (ccBaseKey === 'PL' && $.trim(row.ccFgNm || '') !== approvalPaperTab) {
+            return false;
+        }
+
+        if (!keyword) {
+            return true;
+        }
+
+        return getApprovalSearchText(row, ccBaseKey).toLowerCase().indexOf(keyword) > -1;
     });
 
     renderApprovalList(filteredList, keyword ? '검색 결과가 없습니다.' : '문서가 없습니다.');
@@ -78,7 +109,7 @@ function filterApprovalList() {
 // 목록 그리기
 function renderApprovalList(list, emptyText) {
     const approvalListEl = $('#approvalList');
-    const ccBaseKey = $.trim($('#baseKey').val() || '');
+    const ccBaseKey = getCcBaseKey();
 
     approvalListEl.empty();
 
@@ -92,30 +123,10 @@ function renderApprovalList(list, emptyText) {
 
     for (let i = 0; i < list.length; i++) {
         const row = list[i] || {};
-
         const title = $.trim(row.ccTitle || '');
-        const ymd = String(row.ccDate || '').substring(0, 10);
-        const day = String(row.ccDay || '').substring(0, 1);
-        const team = $.trim(row.ccBuserNm || '');
-        const fgNm = $.trim(row.ccFgNm || '');
         const fcNum = $.trim(row.fcNum || '');
-
-        let subText;
-
-        if (ccBaseKey === 'PL') {
-            const place = $.trim(row.ccRMK || '');
-
-            subText = [[ymd, day].filter(Boolean).join(' '), place, fgNm]
-                .filter(Boolean)
-                .join(' · ');
-        } else {
-            subText = [[ymd, day].filter(Boolean).join(' '), team, fgNm]
-                .filter(Boolean)
-                .join(' · ');
-        }
-
         const isDone = Number(row.ccOK1 || 0) === 1;
-        const statusText = isDone ? '결재완료' : '진행중';
+        const statusText = getApprovalStatusText(ccBaseKey, isDone);
         const statusCls = isDone ? 'text-green' : 'text-yellow';
 
         const rowEl = $('<div/>', {
@@ -131,7 +142,7 @@ function renderApprovalList(list, emptyText) {
 
         rowEl.append(
             $('<div/>', { class: 'approval-sub' })
-                .append($('<span/>', { class: 'approval-sub-text', text: subText }))
+                .append($('<span/>', { class: 'approval-sub-text', text: getApprovalSubText(row, ccBaseKey) }))
                 .append($('<span/>', { class: 'approval-status ' + statusCls, text: statusText }))
         );
 
@@ -142,7 +153,7 @@ function renderApprovalList(list, emptyText) {
 // 상세 조회
 function approvalDetail(rowEl) {
     const selRow = $(rowEl);
-    const ccBaseKey = $.trim($('#baseKey').val() || '');
+    const ccBaseKey = getCcBaseKey();
 
     if (!detailDrawerShow) return;
 
@@ -153,35 +164,17 @@ function approvalDetail(rowEl) {
 
     const title = $.trim(row.ccTitle || '');
     const ymd = String(row.ccDate || '').substring(0, 10);
-    const day = String(row.ccDay || '').substring(0, 1);
-    const team = $.trim(row.ccBuserNm || '');
-    const fgNm = $.trim(row.ccFgNm || '');
     const ccFlag = $.trim(row.ccFlag || '');
     const fcNum = $.trim(selRow.data('fc-num') || row.fcNum || '');
-
-    let subText;
-
-    if (ccBaseKey === 'PL') {
-        const place = $.trim(row.ccRMK || '');
-
-        subText = [[ymd, day].filter(Boolean).join(' '), place, fgNm]
-            .filter(Boolean)
-            .join(' · ');
-    } else {
-        subText = [[ymd, day].filter(Boolean).join(' '), team, fgNm]
-            .filter(Boolean)
-            .join(' · ');
-    }
-
     const isDone = Number(row.ccOK1 || 0) === 1;
-    const statusText = isDone ? '결재완료' : '진행중';
+    const statusText = getApprovalStatusText(ccBaseKey, isDone);
     const statusCls = isDone ? 'text-green' : 'text-yellow';
 
     let headHtml = '';
     headHtml += '<div class="post-detail-head">';
     headHtml += '  <h3 class="post-detail-title">' + cmEscapeHtml(title) + '</h3>';
     headHtml += '  <div class="approval-detail-sub-line">';
-    headHtml += '    <span class="approval-detail-sub-left">' + cmEscapeHtml(subText) + '</span>';
+    headHtml += '    <span class="approval-detail-sub-left">' + cmEscapeHtml(getApprovalSubText(row, ccBaseKey)) + '</span>';
     headHtml += '    <span class="approval-status ' + cmEscapeHtml(statusCls) + '">' + cmEscapeHtml(statusText) + '</span>';
     headHtml += '  </div>';
     headHtml += '</div>';
@@ -198,15 +191,97 @@ function approvalDetail(rowEl) {
         if (!bodyHtml) return;
 
         approvalDetailRow = row;
-        detailDrawerShow(headHtml + bodyHtml + getApprovalActionHtml(row), true, row.ccImgNO);
+
+        if (ccBaseKey === 'PL') {
+            detailDrawerShow(headHtml + bodyHtml, true, row.ccImgNO);
+            setApprovalReceiveButtonAfterPreview(getApprovalActionHtml(row));
+        } else {
+            detailDrawerShow(headHtml + bodyHtml + getApprovalActionHtml(row), true, row.ccImgNO);
+        }
     }).fail(function (xhr) {
         console.log('detail fail:', xhr);
         detailDrawerShow(headHtml + '<div style="padding:16px;">상세 조회 실패</div>', true);
     });
 }
 
+// 검색 대상 문자열
+function getApprovalSearchText(row, ccBaseKey) {
+    const isDone = Number(row.ccOK1 || 0) === 1;
+
+    if (ccBaseKey === 'PL') {
+        return [
+            row.ccTitle,
+            row.ccDate,
+            row.ccDay,
+            row.ccFgNm,
+            row.ccRMK,
+            row.ccPlace,
+            row.ccPaperNo,
+            row.ccManagerNm,
+            row.ccReBuserNm,
+            row.ccReSaNm,
+            row.ccReDate,
+            getApprovalStatusText(ccBaseKey, isDone)
+        ].join(' ');
+    }
+
+    return [
+        row.ccTitle,
+        row.ccDate,
+        row.ccDay,
+        row.ccBuserNm,
+        row.ccFgNm,
+        row.fcNum,
+        row.ccRMK,
+        getApprovalStatusText(ccBaseKey, isDone)
+    ].join(' ');
+}
+
+// 목록 부제목
+function getApprovalSubText(row, ccBaseKey) {
+    const ymd = String(row.ccDate || '').substring(0, 10);
+    const day = String(row.ccDay || '').substring(0, 1);
+
+    if (ccBaseKey === 'PL') {
+        return [
+            [ymd, day].filter(Boolean).join(' '),
+            $.trim(row.ccRMK || ''),
+            $.trim(row.ccFgNm || '')
+        ].filter(Boolean).join(' · ');
+    }
+
+    return [
+        [ymd, day].filter(Boolean).join(' '),
+        $.trim(row.ccBuserNm || ''),
+        $.trim(row.ccFgNm || '')
+    ].filter(Boolean).join(' · ');
+}
+
+// 상태 라벨
+function getApprovalStatusText(ccBaseKey, isDone) {
+    if (ccBaseKey === 'PL') {
+        return isDone ? '접수완료' : '접수대기';
+    }
+
+    return isDone ? '결재완료' : '진행중';
+}
+
 // 결재 버튼 HTML
 function getApprovalActionHtml(row) {
+    const ccBaseKey = getCcBaseKey();
+
+    if (ccBaseKey === 'PL') {
+        if (Number(row.ccOK1 || 0) !== 1) {
+            return `
+                <div class="approval-action-wrap">
+                    <button type="button" id="approvalReceiveBtn" class="approval-action-btn approval-sign-btn">접수</button>
+                </div>
+            `;
+        }
+
+        return '';
+    }
+
     if (isMyApprovalTurn(row)) {
         return `
             <div class="approval-action-wrap">
@@ -224,6 +299,18 @@ function getApprovalActionHtml(row) {
     }
 
     return '';
+}
+
+// 접수 버튼 이미지 미리보기 아래 배치
+function setApprovalReceiveButtonAfterPreview(actionHtml) {
+    if (!actionHtml) return;
+
+    if ($('#detailImagePreview').length > 0) {
+        $('#detailImagePreview').after(actionHtml);
+        return;
+    }
+
+    $('#detailDrawerAttachRoot').prepend(actionHtml);
 }
 
 // 내 결재 차례 여부
@@ -310,6 +397,33 @@ function signApproval(flag) {
     });
 }
 
+// 문서접수 처리
+function receiveApprovalPaper() {
+    if (!approvalDetailRow) return;
+
+    customAlert('알림', '접수 처리하시겠습니까?', 'YN').then(function (ok) {
+        if (!ok) return;
+
+        cmAjax('/approval/receivePaper.do', 'POST', {
+            ymd: String(approvalDetailRow.ccDate || '').substring(0, 10),
+            piSeq: approvalDetailRow.ccSeq
+        }, true).done(function (res) {
+            if (!res || res.success !== true) {
+                customAlert('경고', (res && res.message) || '처리 실패', 'WARN').then(function () {
+                    detailDrawerClose(true, true);
+                    loadApprovalList();
+                });
+                return;
+            }
+
+            customAlert('알림', '접수되었습니다.', 'CONFIRM').then(function () {
+                detailDrawerClose(true, true);
+                reloadApprovalDetail();
+            });
+        });
+    });
+}
+
 // 상세 새로고침
 function reloadApprovalDetail() {
     const ccCode = approvalDetailRow.ccCode;
@@ -336,4 +450,31 @@ function reloadApprovalDetail() {
             detailDrawerClose(true, true);
         }
     });
+}
+
+// baseKey
+function getCcBaseKey() {
+    return $.trim($('#baseKey').val() || $('#ccBaseKey').val() || '');
+}
+
+// 문서수신관리 탭 파라미터
+function getPaperTabParam() {
+    const params = new URLSearchParams(window.location.search);
+    const paperTab = $.trim(params.get('paperTab') || '');
+
+    if (paperTab === '등기' || paperTab === '택배') {
+        return paperTab;
+    }
+
+    return '공문';
+}
+
+// 문서수신관리 탭 선택
+function setApprovalPaperTab() {
+    if (getCcBaseKey() !== 'PL') return;
+
+    $('.approval-tab').removeClass('active');
+    $('.approval-tab').filter(function () {
+        return $.trim($(this).data('paper-tab') || '') === approvalPaperTab;
+    }).addClass('active');
 }
