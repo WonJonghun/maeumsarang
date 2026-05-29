@@ -304,7 +304,7 @@ function signApproval(flag) {
 
             customAlert('알림', '처리되었습니다.', 'CONFIRM').then(function () {
                 detailDrawerClose(true, true);
-                loadApprovalList();
+                reloadApprovalDetail();
             });
         });
     });
