@@ -1,0 +1,333 @@
+/* ================== 자산재고조사 트리 영역 ↓================== */
+.property-look-wrap {
+    padding: 10px 12px 28px;
+    background: transparent;
+}
+
+#property-look-list {
+    width: 100%;
+}
+
+.property-area-group {
+    margin-bottom: 8px;
+}
+
+/* 공통 제목 */
+.property-tree-node {
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 10px;
+    border-radius: 9px;
+    background: transparent;
+    color: #1f2937;
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.property-tree-node:hover {
+    background: #f5f7fb;
+}
+
+/* 열렸을 때 */
+.property-tree-node.is-open {
+    background: #dbeafe;
+}
+
+.property-tree-node.is-open:hover {
+    background: #dbeafe;
+}
+
+.property-area-title.is-open {
+    background: #dbeafe;
+}
+
+.property-area-title.is-open:hover {
+    background: #dbeafe;
+}
+
+.property-item-title.is-open {
+    border-radius: 10px 10px 0 0;
+    background: #e8f1ff;
+}
+
+.property-item-title.is-open:hover {
+    background: #e8f1ff;
+}
+
+/* 화살표 */
+.property-tree-toggle {
+    width: 16px;
+    flex: 0 0 16px;
+    color: #64748b;
+    font-size: 16px;
+    line-height: 1;
+    text-align: center;
+    transition: transform .15s;
+}
+
+.property-tree-node.is-open .property-tree-toggle {
+    transform: rotate(90deg);
+}
+
+/* 제목명 */
+.property-tree-name {
+    min-width: 0;
+    flex: 1;
+    color: #1f2937;
+    font-size: 12px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 최상위 타이틀 */
+.property-area-title .property-tree-name {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* 품목 타이틀 */
+.property-item-title .property-tree-name {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* 개수 */
+.property-tree-count {
+    min-width: auto;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    color: #111827;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: normal;
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* 관리장소 하위 */
+.property-area-body {
+    margin-left: 24px;
+    padding: 3px 0 5px;
+}
+
+/* 품목 그룹 */
+.property-item-group {
+    margin: 4px 0;
+    border-radius: 10px;
+}
+
+/* 품목 그룹 타이틀 */
+.property-item-title {
+    min-height: 36px;
+    padding: 0 10px;
+    border-radius: 9px;
+    background: transparent;
+}
+
+.property-item-title:hover {
+    background: #f5f7fb;
+}
+
+/* 여러 개짜리 하위 div */
+.property-item-body {
+    margin: 0;
+    padding: 4px 6px 6px;
+    border-radius: 0 0 10px 10px;
+    background: #e8f1ff;
+}
+
+.property-item-title.is-open + .property-item-body {
+    background: #e8f1ff;
+}
+
+/* 기존 branch 제거 */
+.property-tree-branch {
+    display: none;
+}
+
+/* 단일 row / 하위 row 공통 */
+.property-look-row {
+    min-height: 36px;
+    display: grid;
+    grid-template-columns: minmax(100px, 1fr) minmax(100px, 160px) 66px;
+    align-items: center;
+    column-gap: 8px;
+    margin: 3px 0;
+    padding: 0 10px 0 34px;
+    border-radius: 9px;
+    background: transparent;
+    color: #1f2937;
+    cursor: pointer;
+}
+
+.property-look-row:hover {
+    background: #f8fafc;
+}
+
+/* 여러 개짜리 안의 row */
+.property-item-body .property-look-row {
+    padding-left: 34px;
+    background: transparent;
+}
+
+.property-item-body .property-look-row:hover {
+    background: rgba(255, 255, 255, 0.55);
+}
+
+/* row 값 */
+.property-row-name {
+    min-width: 0;
+    color: #1f2937;
+    font-size: 13px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.property-row-model {
+    min-width: 0;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.property-row-status {
+    padding: 2px 6px;
+    border-radius: 999px;
+    background: #d1d5db;
+    color: #374151;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.property-row-status.is-done {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.property-row-status.is-disuse {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+/* 최신 JS에는 qty span 없음. 남아 있어도 영향 없게 둠 */
+.property-row-qty {
+    display: none;
+}
+
+/* 빈 목록 */
+.property-look-empty {
+    padding: 24px 4px;
+    text-align: center;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* 모바일 */
+@media (max-width: 640px) {
+    .property-look-wrap {
+        padding: 8px 10px 24px;
+    }
+
+    .property-area-body {
+        margin-left: 16px;
+    }
+
+    .property-item-body {
+        margin-left: 0;
+    }
+
+    .property-look-row {
+        grid-template-columns: minmax(70px, 1fr) minmax(70px, 100px) 58px;
+        column-gap: 6px;
+        padding-left: 34px;
+    }
+
+    .property-item-body .property-look-row {
+        padding-left: 34px;
+    }
+
+    .property-area-title .property-tree-name {
+        font-size: 13px;
+    }
+
+    .property-row-name,
+    .property-tree-name {
+        font-size: 12px;
+    }
+
+    .property-row-model {
+        font-size: 12px;
+    }
+
+    .property-row-status {
+        padding: 2px 5px;
+        font-size: 10px;
+    }
+}
+/* ================== 자산재고조사 트리 영역 ↑================== */
+
+
+/* ================== 자산재고조사 상세 영역 ↓================== */
+.property-look-page .post-detail-head {
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.property-look-page .post-detail-head > div {
+    margin-top: 8px;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.property-look-page table {
+    width: 100%;
+    margin-top: 10px;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #ffffff;
+}
+
+.property-look-page th {
+    width: 96px;
+    padding: 10px 9px;
+    border-bottom: 1px solid #eef2f7;
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: left;
+    vertical-align: top;
+    white-space: nowrap;
+}
+
+.property-look-page td {
+    padding: 10px 9px;
+    border-bottom: 1px solid #eef2f7;
+    color: #334155;
+    font-size: 14px;
+    word-break: break-word;
+}
+
+.property-look-page tr:last-child th,
+.property-look-page tr:last-child td {
+    border-bottom: 0;
+}
+/* ================== 자산재고조사 상세 영역 ↑================== */
