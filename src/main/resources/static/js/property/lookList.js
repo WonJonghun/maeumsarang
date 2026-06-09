@@ -66,9 +66,19 @@ function loadPropertyLookList(isSearchOnly) {
                 row.ppAreaNm || '',
                 row.ocFlagNm || '',
                 row.ppOccodeNm || '',
+                row.ppOcName || '',
+                row.ppSecode1 || '',
                 row.ppSeName || '',
                 row.ppModel || '',
                 row.ppStanSize || '',
+                row.ppSerial || '',
+                row.ppPrcode || '',
+                row.ppPrName || '',
+                row.ppBuser || '',
+                row.ppBuserNm || '',
+                row.ppSaCode || '',
+                row.ppSaNm || '',
+                row.ppRemark || '',
                 row.ppDate1 || '',
                 row.ppDate2 || '',
                 row.ppQty || ''
@@ -80,7 +90,7 @@ function loadPropertyLookList(isSearchOnly) {
     }
 
     const data = {
-        searchDate: $('#searchToDate').val(),
+        searchDate: cmGetToday('-'),
         searchBuserCd: $('#loginBuser').val()
     };
 
@@ -118,7 +128,7 @@ function renderPropertyLookList() {
 
         if (!areaMap[areaKey].itemMap[itemKey]) {
             areaMap[areaKey].itemMap[itemKey] = {
-                itemNm: row.ppOccodeNm || row.ppOccode || '미정',
+                itemNm: row.ppOccodeNm || row.ppOcName || row.ppOccode || '미정',
                 list: []
             };
         }
@@ -184,17 +194,38 @@ function renderPropertyLookList() {
     $('#property-look-list').html(html);
 }
 
+//조사상태
+function getPropertyLookStatus(row) {
+    if (row.ppDate2) {
+        return {
+            text: '폐기',
+            className: 'text-red'
+        };
+    }
+
+    if (Number(row.chk || 0) === 1) {
+        return {
+            text: '조사완료',
+            className: 'text-green'
+        };
+    }
+
+    return {
+        text: '미조사',
+        className: 'text-yellow'
+    };
+}
+
 //목록 row
 function getPropertyLookRowHtml(item) {
     const row = item.row || {};
-    const chkText = row.ppDate2 ? '폐기' : (Number(row.chk || 0) === 1 ? '조사완료' : '미조사');
-    const chkClass = row.ppDate2 ? ' is-disuse' : (Number(row.chk || 0) === 1 ? ' is-done' : '');
+    const status = getPropertyLookStatus(row);
 
     return `
         <div class="property-look-row" data-index="${item.index}">
-            <span class="property-row-name">${cmEscapeHtml(row.ppOccodeNm || '-')}</span>
-            <span class="property-row-model">${cmEscapeHtml(row.ppModel)}</span>
-            <span class="property-row-status${chkClass}">${cmEscapeHtml(chkText)}</span>
+            <span class="property-row-name">${cmEscapeHtml(row.ppOccodeNm || row.ppOcName || '-')}</span>
+            <span class="property-row-model">${cmEscapeHtml(row.ppModel || row.ppSeName || '')}</span>
+            <span class="property-row-status ${status.className}">${cmEscapeHtml(status.text)}</span>
         </div>
     `;
 }
@@ -207,79 +238,116 @@ function propertyLookDetail(rowEl) {
 
 //상세 열기
 function openPropertyLookDetail(row) {
-    const chkText = row.ppDate2 ? '폐기' : (Number(row.chk || 0) === 1 ? '조사완료' : '미조사');
+    const status = getPropertyLookStatus(row);
 
     detailDrawerShow(`
         <div class="post-detail-head">
-            <h3 class="post-detail-title">${cmEscapeHtml(row.ppOccodeNm || '')}</h3>
-            <div>
-                ${cmEscapeHtml(row.ppAreaNm || '미정')} · ${cmEscapeHtml(row.ocFlagNm || '기타')} · ${cmEscapeHtml(chkText)}
+            <h3 class="post-detail-title">${cmEscapeHtml(row.ppOccodeNm || row.ppOcName || '')}</h3>
+            <div class="property-detail-sub-line">
+                <span class="property-detail-sub-left">
+                    ${cmEscapeHtml(row.ppAreaNm || '미정')} · ${cmEscapeHtml(row.ocFlagNm || '기타')}
+                </span>
+                <span class="property-detail-status-chip ${status.className}">
+                    ${cmEscapeHtml(status.text)}
+                </span>
             </div>
         </div>
 
         <div>
-            <table>
+            <table class="property-detail-table">
+                <colgroup>
+                    <col class="property-detail-th-col">
+                    <col>
+                    <col class="property-detail-qty-th-col">
+                    <col class="property-detail-qty-col">
+                </colgroup>
                 <tbody>
                     <tr>
-                        <th>조사여부</th>
-                        <td>${cmEscapeHtml(chkText)}</td>
-                    </tr>
-                    <tr>
-                        <th>관리장소</th>
-                        <td>${cmEscapeHtml(row.ppAreaNm || '미정')}</td>
-                    </tr>
-                    <tr>
-                        <th>구분</th>
-                        <td>${cmEscapeHtml(row.ocFlagNm || '기타')}</td>
-                    </tr>
-                    <tr>
-                        <th>품목</th>
-                        <td>${cmEscapeHtml(row.ppOccodeNm || '')}</td>
+                        <th>품목명</th>
+                        <td colspan="3">${cmEscapeHtml(row.ppOccodeNm + ' (' + row.ppCode + ')' || row.ppOcName + '(' + row.ppCode + ')' || '')}</td>
                     </tr>
                     <tr>
                         <th>상세명칭</th>
-                        <td>${cmEscapeHtml(row.ppSeName || '')}</td>
+                        <td colspan="3">${cmEscapeHtml(row.ppSeName || '')}</td>
                     </tr>
                     <tr>
-                        <th>모델</th>
-                        <td>${cmEscapeHtml(row.ppModel || '')}</td>
+                        <th>모델명</th>
+                        <td colspan="3">${cmEscapeHtml(row.ppModel || '')}</td>
                     </tr>
                     <tr>
-                        <th>규격</th>
-                        <td>${cmEscapeHtml(row.ppStanSize || '')}</td>
+                        <th>구입가격</th>
+                        <td class="property-detail-money">${cmFormatAmount(row.ppAmount)}</td>
+                        <th class="property-detail-sub-th">수량</th>
+                        <td class="property-detail-qty">${cmFormatAmount(row.ppQty)}</td>
                     </tr>
                     <tr>
-                        <th>구입일</th>
-                        <td>${cmEscapeHtml(formatDate(row.ppDate1))}</td>
+                        <th>규격/시리얼</th>
+                        <td colspan="3">${cmEscapeHtml(getPropertyStanSerialText(row))}</td>
                     </tr>
                     <tr>
-                        <th>폐기일</th>
-                        <td>${cmEscapeHtml(formatDate(row.ppDate2))}</td>
+                        <th>구입처</th>
+                        <td colspan="3">${cmEscapeHtml(row.ppPrcode || '')}</td>
                     </tr>
                     <tr>
-                        <th>수량</th>
-                        <td>${Number(row.ppQty || 0).toLocaleString()}개</td>
+                        <th>제조사</th>
+                        <td colspan="3">${cmEscapeHtml(row.ppPrName || '')}</td>
                     </tr>
                     <tr>
-                        <th>자산코드</th>
-                        <td>${cmEscapeHtml(row.ppCode || '')}</td>
+                        <th>관리부서</th>
+                        <td colspan="3">${cmEscapeHtml(row.ppBuserNm || '')}</td>
                     </tr>
                     <tr>
-                        <th>관리장소코드</th>
-                        <td>${cmEscapeHtml(row.ppArea || '')}</td>
+                        <th>사용장소</th>
+                        <td colspan="3">${cmEscapeHtml(row.ppAreaNm || '')}</td>
                     </tr>
                     <tr>
-                        <th>구분코드</th>
-                        <td>${cmEscapeHtml(row.ocFlag || '')}</td>
+                        <th>관리사원</th>
+                        <td colspan="3">${cmEscapeHtml(row.ppSaNm || '')}</td>
                     </tr>
                     <tr>
-                        <th>품목코드</th>
-                        <td>${cmEscapeHtml(row.ppOccode || '')}</td>
+                        <th>취득구분</th>
+                        <td colspan="3">${cmEscapeHtml(getPropertyGuFlagName(row.ppGuFlag))}</td>
+                    </tr>
+                    <tr>
+                        <th>취득일자</th>
+                        <td colspan="3">${cmEscapeHtml(formatDate(row.ppDate1))}</td>
+                    </tr>
+                    <tr>
+                        <th>내용년수</th>
+                        <td colspan="3">${cmEscapeHtml(row.ppYear || '')}</td>
+                    </tr>
+                    <tr>
+                        <th>잔존가액</th>
+                        <td colspan="3" class="property-detail-money">${cmEscapeHtml(row.ppAmt2 || '')}</td>
+                    </tr>
+                    <tr>
+                        <th>사용상태</th>
+                        <td colspan="3">${cmEscapeHtml(getPropertyUseFlagName(row.ppUseFlag))}</td>
+                    </tr>
+                    <tr>
+                        <th>시작일</th>
+                        <td colspan="3">${cmEscapeHtml(formatDate(row.ccDate0 || row.ppDate1))}</td>
+                    </tr>
+                    <tr>
+                        <th>종료일</th>
+                        <td colspan="3">${cmEscapeHtml(formatDate(row.ppDate2))}</td>
+                    </tr>
+                    <tr>
+                        <th>Code</th>
+                        <td colspan="3">${cmEscapeHtml('*' + row.ppCode + '*' || '')}</td>
+                    </tr>
+                    <tr>
+                        <th>처분금액</th>
+                        <td colspan="3" class="property-detail-money">${cmEscapeHtml(row.ppAmt1 || '')}</td>
+                    </tr>
+                    <tr>
+                        <th>비고</th>
+                        <td colspan="3">${cmNl2br(row.ppRemark || '')}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
-    `, true);
+    `, true, $.trim(row.ppImgNum || ''));
 }
 
 //QR 스캔 열기
@@ -367,7 +435,7 @@ function openPropertyDetailByQr(qrValue) {
 
 //QR 값 정리
 function getPropertyQrCode(qrValue) {
-    return $.trim(String(qrValue || ''));
+    return $.trim(String(qrValue || '').replace(/\*/g, ''));
 }
 
 //QR 닫기
@@ -394,7 +462,29 @@ function closePropertyQrScanner() {
     $('#propertyQrLayer').fadeOut(120);
 }
 
+//규격/시리얼
+function getPropertyStanSerialText(row) {
+    if (row.ppStanSize && row.ppSerial) return row.ppStanSize + ' / ' + row.ppSerial;
+    if (row.ppStanSize) return row.ppStanSize;
+    if (row.ppSerial) return row.ppSerial;
+    return '';
+}
+
+//취득구분명
+function getPropertyGuFlagName(value) {
+    if (String(value || '') === '1') return '신품';
+    if (String(value || '') === '2') return '중고';
+    return value || '';
+}
+
+//사용상태명
+function getPropertyUseFlagName(value) {
+    if (String(value || '') === '1') return '사용중';
+    if (String(value || '') === '0') return '미사용';
+    return value || '';
+}
+
 //날짜표시
 function formatDate(value) {
-    return value ? String(value).substring(0, 10) : '';
+    return value ? cmDateOnly(value).replaceAll('-', '/') : '';
 }

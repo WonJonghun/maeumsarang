@@ -15,7 +15,7 @@
 <div class="page-root">
     <c:set var="headerMainYn" value="N"/>
     <c:set var="headerSearchYn" value="Y"/>
-    <c:set var="headerDateYn" value="Y"/>
+    <c:set var="headerDateYn" value="N"/>
     <c:set var="headerDefaultRangeDays" value="0"/>
     <c:set var="headerSelectBox" value="0"/>
     <c:set var="headerQrYn" value="Y"/>

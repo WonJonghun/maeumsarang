@@ -18,7 +18,10 @@ public class PropertyLookDto {
     private String ocFlag;        // 구분코드
     private String ocFlagNm;      // 구분명
     private String ppOccode;      // 품목코드
+    private String ppOcName;      // 품목명
     private String ppOccodeNm;    // 품목명
+    private String ppSecode;      // 세부코드
+    private String ppSecode1;     // 세부명
     private String ppSeName;      // 상세명칭
     private String ppModel;       // 모델
     private String ppStanSize;    // 규격
@@ -28,7 +31,6 @@ public class PropertyLookDto {
 
     private String ppCode;
     private String ppGuFlag;
-    private String ppSecode;
     private Integer ppAmount;
     private String ppYear;
     private Integer ppAmt1;
@@ -37,11 +39,15 @@ public class PropertyLookDto {
     private String ppPrcode;
     private String ppPrName;
     private String ppBuser;
+    private String ppBuserNm;
     private String ppSaCode;
+    private String ppSaNm;
     private String ppBaCode;
     private String ppUseFlag;
     private String ppUkFlag;
     private String ppUK;
+    private String ppImgNum;
+    private String ccImg;
     private String ppRemark;
     private String ppRegDate;
     private String ppUserID;
