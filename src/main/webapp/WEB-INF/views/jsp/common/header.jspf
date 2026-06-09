@@ -14,6 +14,7 @@
 <c:set var="headerDateYn" value="${empty headerDateYn ? 'N' : headerDateYn}"/>
 <c:set var="headerSelectBox" value="${empty headerSelectBox ? 0 : headerSelectBox}"/>
 <c:set var="headerDefaultRangeDays" value="${empty headerDefaultRangeDays ? 365 : headerDefaultRangeDays}"/>
+<c:set var="headerQrYn" value="${empty headerQrYn ? 'N' : headerQrYn}"/>
 
 <header class="topbar"
         data-main-yn="<c:out value='${headerMainYn}'/>"
@@ -103,7 +104,16 @@
     </div>
 
     <div class="topbar-right">
-        <!-- searchYn이 Y면 검색 보임 -->
+        <c:if test="${headerQrYn eq 'Y'}">
+            <button type="button"
+                    class="icon-button topbar-qr-btn"
+                    id="btnTopbarQr"
+                    aria-label="QR스캔">
+                <i class="bi bi-qr-code-scan"></i>
+            </button>
+        </c:if>
+
+        <!-- searchYn이 N이면 숨김 -->
         <button type="button"
                 class="icon-button topbar-search-btn"
                 id="btnTopbarSearch"

@@ -32,6 +32,15 @@ $(function () {
         propertyLookDetail(this);
     });
 
+    $(document).on('click', '#btnTopbarQr', function () {
+        openPropertyQrScanner();
+    });
+
+    $(document).on('click', '#btnPropertyQrClose, #propertyQrLayer', function (e) {
+        if ($(e.target).closest('.property-qr-box').length > 0 && e.target.id !== 'btnPropertyQrClose') return;
+        closePropertyQrScanner();
+    });
+
     $(document).on('topbar:search', function () {
         loadPropertyLookList();
     });
@@ -43,6 +52,8 @@ $(function () {
 
 let propertyLookListAll = [];
 let propertyLookListView = [];
+let propertyQrStream = null;
+let propertyQrTimer = null;
 
 //목록조회 + 검색
 function loadPropertyLookList(isSearchOnly) {
@@ -51,6 +62,7 @@ function loadPropertyLookList(isSearchOnly) {
     if (isSearchOnly) {
         propertyLookListView = propertyLookListAll.filter(function (row) {
             return [
+                row.ppCode || '',
                 row.ppAreaNm || '',
                 row.ocFlagNm || '',
                 row.ppOccodeNm || '',
@@ -132,7 +144,7 @@ function renderPropertyLookList() {
                     <span class="property-tree-name">${cmEscapeHtml(area.areaNm)}</span>
                     <span class="property-tree-count">${areaCnt}개</span>
                 </div>
-                <div class="property-tree-children property-area-body" style="display:none;">
+                <div class="property-area-body" style="display:none;">
         `;
 
         for (const itemKey in area.itemMap) {
@@ -147,7 +159,7 @@ function renderPropertyLookList() {
                             <span class="property-tree-name">${cmEscapeHtml(item.itemNm)}</span>
                             <span class="property-tree-count">${item.list.length}개</span>
                         </div>
-                        <div class="property-tree-children property-item-body" style="display:none;">
+                        <div class="property-item-body" style="display:none;">
                 `;
 
                 for (let i = 0; i < item.list.length; i++) {
@@ -190,7 +202,12 @@ function getPropertyLookRowHtml(item) {
 //상세
 function propertyLookDetail(rowEl) {
     const row = propertyLookListView[Number($(rowEl).data('index'))] || {};
-    const chkText = Number(row.chk || 0) === 1 ? '확인' : '미확인';
+    openPropertyLookDetail(row);
+}
+
+//상세 열기
+function openPropertyLookDetail(row) {
+    const chkText = row.ppDate2 ? '폐기' : (Number(row.chk || 0) === 1 ? '조사완료' : '미조사');
 
     detailDrawerShow(`
         <div class="post-detail-head">
@@ -263,6 +280,118 @@ function propertyLookDetail(rowEl) {
             </table>
         </div>
     `, true);
+}
+
+//QR 스캔 열기
+function openPropertyQrScanner() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        customAlert('알림', '카메라를 사용할 수 없습니다.', 'WARN');
+        return;
+    }
+
+    if (!window.BarcodeDetector) {
+        customAlert('알림', '현재 브라우저는 QR 스캔을 지원하지 않습니다.', 'WARN');
+        return;
+    }
+
+    $('#propertyQrLayer').fadeIn(120);
+
+    navigator.mediaDevices.getUserMedia({
+        video: {
+            facingMode: { ideal: 'environment' }
+        },
+        audio: false
+    }).then(function (stream) {
+        const video = document.getElementById('propertyQrVideo');
+
+        propertyQrStream = stream;
+        video.srcObject = stream;
+        video.play();
+
+        startPropertyQrScan(video);
+    }).catch(function () {
+        closePropertyQrScanner();
+        customAlert('알림', '카메라 권한을 허용해 주세요.', 'WARN');
+    });
+}
+
+//QR 스캔 시작
+function startPropertyQrScan(video) {
+    const detector = new BarcodeDetector({ formats: ['qr_code'] });
+
+    if (propertyQrTimer) {
+        clearInterval(propertyQrTimer);
+    }
+
+    propertyQrTimer = setInterval(function () {
+        if (!video.videoWidth) return;
+
+        detector.detect(video).then(function (codes) {
+            if (!codes || !codes.length) return;
+
+            const qrValue = $.trim(codes[0].rawValue || '');
+
+            if (!qrValue) return;
+
+            closePropertyQrScanner();
+            openPropertyDetailByQr(qrValue);
+        }).catch(function () {
+            //스캔 실패는 무시
+        });
+    }, 350);
+}
+
+//QR 자산 상세 열기
+function openPropertyDetailByQr(qrValue) {
+    const ppCode = getPropertyQrCode(qrValue);
+
+    if (!ppCode) {
+        customAlert('알림', 'QR 코드 값이 없습니다.', 'WARN');
+        return;
+    }
+
+    const matched = propertyLookListAll.find(function (row) {
+        return String(row.ppCode || '').toUpperCase() === ppCode.toUpperCase();
+    });
+
+    if (!matched) {
+        customAlert('알림', '해당 자산코드를 찾을 수 없습니다.', 'WARN');
+        return;
+    }
+
+    openPropertyLookDetail(matched);
+
+    //TODO 조사여부 업데이트 처리
+    //예: updatePropertyLookCheck(matched.ppCode);
+}
+
+//QR 값 정리
+function getPropertyQrCode(qrValue) {
+    return $.trim(String(qrValue || ''));
+}
+
+//QR 닫기
+function closePropertyQrScanner() {
+    if (propertyQrTimer) {
+        clearInterval(propertyQrTimer);
+        propertyQrTimer = null;
+    }
+
+    if (propertyQrStream) {
+        propertyQrStream.getTracks().forEach(function (track) {
+            track.stop();
+        });
+        propertyQrStream = null;
+    }
+
+    const video = document.getElementById('propertyQrVideo');
+
+    if (video) {
+        video.pause();
+        video.srcObject = null;
+    }
+
+    $('#propertyQrLayer').fadeOut(120);
 }
 
 //날짜표시
