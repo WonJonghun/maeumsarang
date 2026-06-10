@@ -11,26 +11,40 @@
     </select>
 
     <select id="selectPropertyChangeList" resultType="com.example.mshintra.property.dto.PropertyChangeDto">
-        SELECT Pc_Code,
-               Pc_Seq,
-               Pc_Date,
-               Pc_Flag,
-               Pc_JumFg,
-               Pc_Area1,
+        SELECT pc.Pc_Code,
+               pc.Pc_Seq,
+               pc.Pc_Date,
+               pc.Pc_Flag,
+               pc.Pc_JumFg,
+               pc.Pc_Area1,
                Pc_Area1Nm = ar1.Ar_Name,
-               Pc_Area2,
+               pc.Pc_Area2,
                Pc_Area2Nm = ar2.Ar_Name,
-               Pc_Remark,
-               Pc_RegDate,
-               Pc_UserID
+               pc.Pc_RepairPrCD,
+               Pc_RepairPrNm = pr.Pr_Name,
+               pc.Pc_RepairItem,
+               pc.Pc_RepairAmt,
+               pc.Pc_Remark,
+               pc.Pc_RegDate,
+               pc.Pc_UserID,
+               Pc_UserNm = dbo.GetSaNm(pc.Pc_UserID)
         FROM I_PropertyChange pc
                  LEFT JOIN I_Area ar1
                            ON ar1.Ar_Code = pc.Pc_Area1
                  LEFT JOIN I_Area ar2
                            ON ar2.Ar_Code = pc.Pc_Area2
-        WHERE pc.Pc_Flag = '1'
+                 LEFT JOIN J_ProVider pr
+                           ON CONVERT(VARCHAR(50), pr.Pr_Code) = CONVERT(VARCHAR(50), pc.Pc_RepairPrCD)
+                          AND ISNULL(pr.Pr_Name, '') &lt;&gt; ''
+        WHERE pc.Pc_Flag = #{pcFlag}
           AND pc.Pc_Code = #{ppCode}
-        ORDER BY pc.Pc_Date, pc.Pc_Seq
+        <choose>
+            <when test="pcFlag == '3'">
+                ORDER BY pc.Pc_Date
+            </when>
+            <otherwise>
+                ORDER BY pc.Pc_Date, pc.Pc_Seq
+            </otherwise>
+        </choose>
     </select>
-
 </mapper>

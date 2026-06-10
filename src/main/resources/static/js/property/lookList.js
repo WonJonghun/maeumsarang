@@ -274,7 +274,7 @@ function openPropertyLookDetail(row) {
                 <button type="button" class="property-detail-tab" data-tab="change">변경내역</button>
                 <button type="button" class="property-detail-tab" data-tab="repair">수리내역</button>
                 <button type="button" class="property-detail-tab" data-tab="stock">재고조사</button>
-                <button type="button" class="property-detail-tab" data-tab="depreciation">감가상각</button>
+<!--                <button type="button" class="property-detail-tab" data-tab="depreciation">감가상각</button>-->
             </div>
 
             <div class="property-detail-tab-panel" data-tab="asset" data-loaded="Y">
@@ -365,10 +365,6 @@ function getPropertyAssetDetailHtml(row) {
                     <td colspan="3">${cmEscapeHtml(row.ppYear || '')}</td>
                 </tr>
                 <tr>
-                    <th>잔존가액</th>
-                    <td colspan="3" class="property-detail-money">${cmEscapeHtml(row.ppAmt2 || '')}</td>
-                </tr>
-                <tr>
                     <th>사용상태</th>
                     <td colspan="3">${cmEscapeHtml(getPropertyUseFlagName(row.ppUseFlag))}</td>
                 </tr>
@@ -427,40 +423,45 @@ function loadPropertyDetailTab(tab, $wrap) {
     if ($panel.data('loaded') === 'Y') return;
 
     if (tab === 'change') {
-        loadPropertyChangeList(ppCode, $panel);
+        loadPropertyChangeList(ppCode, $panel, '1', '변경내역');
         return;
     }
 
     if (tab === 'repair') {
-        //TODO 수리내역 조회
-        $panel.data('loaded', 'Y');
+        loadPropertyChangeList(ppCode, $panel, '2', '수리내역');
         return;
     }
 
     if (tab === 'stock') {
-        //TODO 재고조사 조회
-        $panel.data('loaded', 'Y');
+        loadPropertyChangeList(ppCode, $panel, '3', '재고조사');
         return;
     }
 
     if (tab === 'depreciation') {
-        //TODO 감가상각 조회
         $panel.data('loaded', 'Y');
     }
 }
 
-//변경내역 조회
-function loadPropertyChangeList(ppCode, $panel) {
+//변경/수리/재고조사 조회
+function loadPropertyChangeList(ppCode, $panel, pcFlag, title) {
     if (!ppCode) {
-        $panel.html(getPropertyEmptyTabHtml('변경내역'));
+        $panel.html(getPropertyEmptyTabHtml(title));
         $panel.data('loaded', 'Y');
         return;
     }
 
     cmAjax('/property/selectPropertyChangeList.do', 'GET', {
-        ppCode: ppCode
+        ppCode: ppCode,
+        pcFlag: pcFlag
     }, false).done(function (list) {
-        $panel.html(getPropertyChangeListHtml(list || []));
+        if (pcFlag === '2') {
+            $panel.html(getPropertyRepairListHtml(list || []));
+        } else if (pcFlag === '3') {
+            $panel.html(getPropertyStockListHtml(list || []));
+        } else {
+            $panel.html(getPropertyChangeListHtml(list || []));
+        }
+
         $panel.data('loaded', 'Y');
     });
 }
@@ -472,9 +473,9 @@ function getPropertyChangeListHtml(list) {
     }
 
     let html = `
-        <table class="property-detail-table property-change-table">
+        <table class="property-detail-table property-history-table">
             <colgroup>
-                <col class="property-change-date-col">
+                <col class="property-history-date-col">
                 <col>
                 <col>
                 <col>
@@ -499,6 +500,101 @@ function getPropertyChangeListHtml(list) {
                 <td>${cmEscapeHtml(row.pcArea1Nm || row.pcArea1 || '')}</td>
                 <td>${cmEscapeHtml(row.pcArea2Nm || row.pcArea2 || '')}</td>
                 <td>${cmNl2br(row.pcRemark || '')}</td>
+            </tr>
+        `;
+    }
+
+    html += `
+            </tbody>
+        </table>
+    `;
+
+    return html;
+}
+
+//수리내역 html
+function getPropertyRepairListHtml(list) {
+    if (!list.length) {
+        return getPropertyEmptyTabHtml('수리내역');
+    }
+
+    let html = `
+        <table class="property-detail-table property-history-table">
+            <colgroup>
+                <col class="property-history-date-col">
+                <col class="property-history-provider-col">
+                <col class="property-history-item-col">
+                <col class="property-history-amount-col">
+                <col class="property-history-remark-col">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>수리일자</th>
+                    <th>수리업체</th>
+                    <th>수리품목</th>
+                    <th>수리금액</th>
+                    <th>수리내역</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    for (let i = 0; i < list.length; i++) {
+        const row = list[i] || {};
+
+        html += `
+            <tr>
+                <td>${cmEscapeHtml(formatDate(row.pcDate))}</td>
+                <td>${cmEscapeHtml(row.pcRepairPrNm || row.pcRepairPrCD || '')}</td>
+                <td>${cmEscapeHtml(row.pcRepairItem || '')}</td>
+                <td class="property-detail-money">${cmFormatAmount(row.pcRepairAmt)}</td>
+                <td>${cmNl2br(row.pcRemark || '')}</td>
+            </tr>
+        `;
+    }
+
+    html += `
+            </tbody>
+        </table>
+    `;
+
+    return html;
+}
+
+//재고조사 html
+function getPropertyStockListHtml(list) {
+    if (!list.length) {
+        return getPropertyEmptyTabHtml('재고조사');
+    }
+
+    let html = `
+        <table class="property-detail-table property-history-table">
+            <colgroup>
+                <col class="property-history-date-col">
+                <col class="property-history-type-col">
+                <col class="property-history-user-col">
+                <col class="property-history-place-col">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>조사일자</th>
+                    <th>구분</th>
+                    <th>조사자</th>
+                    <th>장소</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    for (let i = 0; i < list.length; i++) {
+        const row = list[i] || {};
+
+        html += `
+            <tr>
+                <td>${cmEscapeHtml(formatDate(row.pcDate))}</td>
+                <td>${cmEscapeHtml(getPropertyJumFlagName(row.pcJumFg))}</td>
+                <td>${cmEscapeHtml(row.pcUserNm || '')}</td>
+                <td>${cmEscapeHtml(row.pcArea2Nm || row.pcArea2 || row.pcArea1Nm || row.pcArea1 || '')}</td>
             </tr>
         `;
     }
@@ -651,6 +747,13 @@ function getPropertyGuFlagName(value) {
 function getPropertyUseFlagName(value) {
     if (String(value || '') === '1') return '사용중';
     if (String(value || '') === '0') return '미사용';
+    return value || '';
+}
+
+//재고조사 구분명
+function getPropertyJumFlagName(value) {
+    if (String(value || '') === '1') return '정기';
+    if (String(value || '') === '2') return '수시';
     return value || '';
 }
 

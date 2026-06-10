@@ -13,5 +13,6 @@ public interface PropertyMapper {
 
     List<PropertyLookDto> selectPropertyLookList(SearchDto searchDto);
 
-    List<PropertyChangeDto> selectPropertyChangeList(@Param("ppCode") String ppCode);
+    List<PropertyChangeDto> selectPropertyChangeList(@Param("ppCode") String ppCode,
+                                                     @Param("pcFlag") String pcFlag);
 }

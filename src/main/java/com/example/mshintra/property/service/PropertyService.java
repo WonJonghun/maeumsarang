@@ -22,7 +22,7 @@ public class PropertyService {
     }
 
     @Transactional(readOnly = true)
-    public List<PropertyChangeDto> selectPropertyChangeList(String ppCode) {
-        return propertyMapper.selectPropertyChangeList(ppCode);
+    public List<PropertyChangeDto> selectPropertyChangeList(String ppCode, String pcFlag) {
+        return propertyMapper.selectPropertyChangeList(ppCode, pcFlag);
     }
 }

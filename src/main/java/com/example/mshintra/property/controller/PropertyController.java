@@ -31,7 +31,7 @@ public class PropertyController {
 
     @ResponseBody
     @GetMapping("/selectPropertyChangeList.do")
-    public List<PropertyChangeDto> selectPropertyChangeList(String ppCode) {
-        return propertyService.selectPropertyChangeList(ppCode);
+    public List<PropertyChangeDto> selectPropertyChangeList(String ppCode, String pcFlag) {
+        return propertyService.selectPropertyChangeList(ppCode, pcFlag);
     }
 }

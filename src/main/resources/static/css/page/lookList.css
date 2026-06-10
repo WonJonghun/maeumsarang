@@ -649,7 +649,7 @@
     }
 
     .property-detail-tab {
-        min-width: 68px;
+        min-width: 80px;
         height: 32px;
         padding: 0 10px;
         font-size: 12px;
@@ -661,36 +661,128 @@
 }
 /* ================== 상세 탭 영역 ↑================== */
 
-
-/* ================== 변경내역 탭 영역 ↓================== */
-.property-change-date-col {
-    width: 92px;
+/* ================== 상세 공통 테이블 영역 ↓================== */
+.property-detail-wrap,
+.property-detail-tab-panel {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
-.property-change-table th,
-.property-change-table td {
+.property-detail-tab-panel {
+    overflow-x: hidden;
+}
+
+.property-history-table {
+    width: 100%;
+    max-width: 100%;
+    table-layout: fixed;
+}
+
+.property-history-table th,
+.property-history-table td {
+    /*width: auto;*/
+    min-width: 0;
+    padding: 8px 5px;
     text-align: left;
+    white-space: normal;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+    vertical-align: middle;
+    box-sizing: border-box;
 }
 
-.property-change-table thead th {
+.property-history-table th {
+    padding-left: 5px;
     background: #eef4fb;
     color: #334155;
+    font-size: 12px;
     font-weight: 700;
+    text-align: center;
 }
 
-.property-change-table tbody td {
-    vertical-align: middle;
+.property-history-table td {
+    font-size: 13px;
+}
+
+.property-history-date-col {
+    width: 70px;
+}
+
+.property-history-provider-col {
+    width: 22%;
+}
+
+.property-history-item-col {
+    width: 18%;
+}
+
+.property-history-amount-col {
+    width: 64px;
+}
+
+.property-history-remark-col {
+    width: auto;
+}
+
+.property-history-table .property-detail-money {
+    padding-left: 5px;
+    text-align: right;
+    white-space: normal;
+    word-break: break-all;
+}
+
+.property-history-type-col {
+    width: 60px;
+}
+
+.property-history-user-col {
+    width: 80px;
+}
+
+.property-history-place-col {
+    width: auto;
 }
 
 @media (max-width: 640px) {
-    .property-change-date-col {
-        width: 76px;
+    .property-history-table th,
+    .property-history-table td {
+        padding: 7px 3px;
+        font-size: 12px;
     }
 
-    .property-change-table th,
-    .property-change-table td {
-        padding: 8px 5px;
-        font-size: 11px;
+    .property-history-table th {
+        padding-left: 3px;
+        font-size: 12px;
+        letter-spacing: -0.5px;
+    }
+
+    .property-history-date-col {
+        width: 72px;
+    }
+
+    .property-history-provider-col {
+        width: 21%;
+    }
+
+    .property-history-item-col {
+        width: 17%;
+    }
+
+    .property-history-amount-col {
+        width: 54px;
+    }
+
+    .property-history-table .property-detail-money {
+        padding-left: 3px;
+    }
+
+    .property-history-type-col {
+        width: 48px;
+    }
+
+    .property-history-user-col {
+        width: 64px;
     }
 }
-/* ================== 변경내역 탭 영역 ↑================== */
+/* ================== 상세 공통 테이블 영역 ↑================== */

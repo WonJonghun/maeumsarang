@@ -16,7 +16,15 @@ public class PropertyChangeDto {
     private String pcArea1Nm;
     private String pcArea2;
     private String pcArea2Nm;
+
+    private String pcRepairPrCD;
+    private String pcRepairPrNm;
+    private String pcRepairItem;
+    private Integer pcRepairAmt;
+    private String pcUseHour;
+
     private String pcRemark;
     private String pcRegDate;
     private String pcUserID;
+    private String pcUserNm;
 }
