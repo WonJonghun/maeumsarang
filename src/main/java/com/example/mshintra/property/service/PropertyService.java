@@ -1,6 +1,7 @@
 package com.example.mshintra.property.service;
 
 import com.example.mshintra.common.dto.SearchDto;
+import com.example.mshintra.property.dto.PropertyChangeDto;
 import com.example.mshintra.property.dto.PropertyLookDto;
 import com.example.mshintra.property.mapper.PropertyMapper;
 import lombok.RequiredArgsConstructor;
@@ -18,5 +19,10 @@ public class PropertyService {
     @Transactional(readOnly = true)
     public List<PropertyLookDto> selectPropertyLookList(SearchDto searchDto) {
         return propertyMapper.selectPropertyLookList(searchDto);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PropertyChangeDto> selectPropertyChangeList(String ppCode) {
+        return propertyMapper.selectPropertyChangeList(ppCode);
     }
 }

@@ -32,6 +32,21 @@ $(function () {
         propertyLookDetail(this);
     });
 
+    $(document).on('click', '.property-detail-tab', function () {
+        const $this = $(this);
+        const tab = $this.data('tab');
+        const $wrap = $this.closest('.property-detail-wrap');
+
+        $wrap.find('.property-detail-tab').removeClass('active');
+        $this.addClass('active');
+
+        $wrap.find('.property-detail-tab-panel').hide();
+        $wrap.find('.property-detail-tab-panel[data-tab="' + tab + '"]').show();
+
+        togglePropertyDetailAttach(tab);
+        loadPropertyDetailTab(tab, $wrap);
+    });
+
     $(document).on('click', '#btnTopbarQr', function () {
         openPropertyQrScanner();
     });
@@ -72,7 +87,7 @@ function loadPropertyLookList(isSearchOnly) {
                 row.ppModel || '',
                 row.ppStanSize || '',
                 row.ppSerial || '',
-                row.ppPrcode || '',
+                row.ppProviderNm || '',
                 row.ppPrName || '',
                 row.ppBuser || '',
                 row.ppBuserNm || '',
@@ -253,101 +268,256 @@ function openPropertyLookDetail(row) {
             </div>
         </div>
 
-        <div>
-            <table class="property-detail-table">
-                <colgroup>
-                    <col class="property-detail-th-col">
-                    <col>
-                    <col class="property-detail-qty-th-col">
-                    <col class="property-detail-qty-col">
-                </colgroup>
-                <tbody>
-                    <tr>
-                        <th>품목명</th>
-                        <td colspan="3">${cmEscapeHtml(row.ppOccodeNm + ' (' + row.ppCode + ')' || row.ppOcName + '(' + row.ppCode + ')' || '')}</td>
-                    </tr>
-                    <tr>
-                        <th>상세명칭</th>
-                        <td colspan="3">${cmEscapeHtml(row.ppSeName || '')}</td>
-                    </tr>
-                    <tr>
-                        <th>모델명</th>
-                        <td colspan="3">${cmEscapeHtml(row.ppModel || '')}</td>
-                    </tr>
-                    <tr>
-                        <th>구입가격</th>
-                        <td class="property-detail-money">${cmFormatAmount(row.ppAmount)}</td>
-                        <th class="property-detail-sub-th">수량</th>
-                        <td class="property-detail-qty">${cmFormatAmount(row.ppQty)}</td>
-                    </tr>
-                    <tr>
-                        <th>규격/시리얼</th>
-                        <td colspan="3">${cmEscapeHtml(getPropertyStanSerialText(row))}</td>
-                    </tr>
-                    <tr>
-                        <th>구입처</th>
-                        <td colspan="3">${cmEscapeHtml(row.ppPrcode || '')}</td>
-                    </tr>
-                    <tr>
-                        <th>제조사</th>
-                        <td colspan="3">${cmEscapeHtml(row.ppPrName || '')}</td>
-                    </tr>
-                    <tr>
-                        <th>관리부서</th>
-                        <td colspan="3">${cmEscapeHtml(row.ppBuserNm || '')}</td>
-                    </tr>
-                    <tr>
-                        <th>사용장소</th>
-                        <td colspan="3">${cmEscapeHtml(row.ppAreaNm || '')}</td>
-                    </tr>
-                    <tr>
-                        <th>관리사원</th>
-                        <td colspan="3">${cmEscapeHtml(row.ppSaNm || '')}</td>
-                    </tr>
-                    <tr>
-                        <th>취득구분</th>
-                        <td colspan="3">${cmEscapeHtml(getPropertyGuFlagName(row.ppGuFlag))}</td>
-                    </tr>
-                    <tr>
-                        <th>취득일자</th>
-                        <td colspan="3">${cmEscapeHtml(formatDate(row.ppDate1))}</td>
-                    </tr>
-                    <tr>
-                        <th>내용년수</th>
-                        <td colspan="3">${cmEscapeHtml(row.ppYear || '')}</td>
-                    </tr>
-                    <tr>
-                        <th>잔존가액</th>
-                        <td colspan="3" class="property-detail-money">${cmEscapeHtml(row.ppAmt2 || '')}</td>
-                    </tr>
-                    <tr>
-                        <th>사용상태</th>
-                        <td colspan="3">${cmEscapeHtml(getPropertyUseFlagName(row.ppUseFlag))}</td>
-                    </tr>
-                    <tr>
-                        <th>시작일</th>
-                        <td colspan="3">${cmEscapeHtml(formatDate(row.ccDate0 || row.ppDate1))}</td>
-                    </tr>
-                    <tr>
-                        <th>종료일</th>
-                        <td colspan="3">${cmEscapeHtml(formatDate(row.ppDate2))}</td>
-                    </tr>
-                    <tr>
-                        <th>Code</th>
-                        <td colspan="3">${cmEscapeHtml('*' + row.ppCode + '*' || '')}</td>
-                    </tr>
-                    <tr>
-                        <th>처분금액</th>
-                        <td colspan="3" class="property-detail-money">${cmEscapeHtml(row.ppAmt1 || '')}</td>
-                    </tr>
-                    <tr>
-                        <th>비고</th>
-                        <td colspan="3">${cmNl2br(row.ppRemark || '')}</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="property-detail-wrap" data-pp-code="${cmEscapeHtml(row.ppCode || '')}">
+            <div class="property-detail-tab-wrap">
+                <button type="button" class="property-detail-tab active" data-tab="asset">자산내역</button>
+                <button type="button" class="property-detail-tab" data-tab="change">변경내역</button>
+                <button type="button" class="property-detail-tab" data-tab="repair">수리내역</button>
+                <button type="button" class="property-detail-tab" data-tab="stock">재고조사</button>
+                <button type="button" class="property-detail-tab" data-tab="depreciation">감가상각</button>
+            </div>
+
+            <div class="property-detail-tab-panel" data-tab="asset" data-loaded="Y">
+                ${getPropertyAssetDetailHtml(row)}
+            </div>
+            <div class="property-detail-tab-panel" data-tab="change" data-loaded="N" style="display:none;">
+                ${getPropertyEmptyTabHtml('변경내역')}
+            </div>
+            <div class="property-detail-tab-panel" data-tab="repair" data-loaded="N" style="display:none;">
+                ${getPropertyEmptyTabHtml('수리내역')}
+            </div>
+            <div class="property-detail-tab-panel" data-tab="stock" data-loaded="N" style="display:none;">
+                ${getPropertyEmptyTabHtml('재고조사')}
+            </div>
+            <div class="property-detail-tab-panel" data-tab="depreciation" data-loaded="N" style="display:none;">
+                ${getPropertyEmptyTabHtml('감가상각')}
+            </div>
         </div>
     `, true, $.trim(row.ppImgNum || ''));
+
+    movePropertyDetailAttachToAsset();
+    togglePropertyDetailAttach('asset');
+}
+
+//자산내역 상세 html
+function getPropertyAssetDetailHtml(row) {
+    return `
+        <table class="property-detail-table">
+            <colgroup>
+                <col class="property-detail-th-col">
+                <col>
+                <col class="property-detail-qty-th-col">
+                <col class="property-detail-qty-col">
+            </colgroup>
+            <tbody>
+                <tr>
+                    <th>품목명</th>
+                    <td colspan="3">${cmEscapeHtml((row.ppOccodeNm || row.ppOcName || '') + (row.ppCode ? ' (' + row.ppCode + ')' : ''))}</td>
+                </tr>
+                <tr>
+                    <th>상세명칭</th>
+                    <td colspan="3">${cmEscapeHtml(row.ppSeName || '')}</td>
+                </tr>
+                <tr>
+                    <th>모델명</th>
+                    <td colspan="3">${cmEscapeHtml(row.ppModel || '')}</td>
+                </tr>
+                <tr>
+                    <th>구입가격</th>
+                    <td class="property-detail-money">${cmFormatAmount(row.ppAmount)}</td>
+                    <th class="property-detail-sub-th">수량</th>
+                    <td class="property-detail-qty">${cmFormatAmount(row.ppQty)}</td>
+                </tr>
+                <tr>
+                    <th>규격/시리얼</th>
+                    <td colspan="3">${cmEscapeHtml(getPropertyStanSerialText(row))}</td>
+                </tr>
+                <tr>
+                    <th>구입처</th>
+                    <td colspan="3">${cmEscapeHtml(row.ppProviderNm || '')}</td>
+                </tr>
+                <tr>
+                    <th>제조사</th>
+                    <td colspan="3">${cmEscapeHtml(row.ppPrName || '')}</td>
+                </tr>
+                <tr>
+                    <th>관리부서</th>
+                    <td colspan="3">${cmEscapeHtml(row.ppBuserNm || '')}</td>
+                </tr>
+                <tr>
+                    <th>사용장소</th>
+                    <td colspan="3">${cmEscapeHtml(row.ppAreaNm || '')}</td>
+                </tr>
+                <tr>
+                    <th>관리사원</th>
+                    <td colspan="3">${cmEscapeHtml(row.ppSaNm || '')}</td>
+                </tr>
+                <tr>
+                    <th>취득구분</th>
+                    <td colspan="3">${cmEscapeHtml(getPropertyGuFlagName(row.ppGuFlag))}</td>
+                </tr>
+                <tr>
+                    <th>취득일자</th>
+                    <td colspan="3">${cmEscapeHtml(formatDate(row.ppDate1))}</td>
+                </tr>
+                <tr>
+                    <th>내용년수</th>
+                    <td colspan="3">${cmEscapeHtml(row.ppYear || '')}</td>
+                </tr>
+                <tr>
+                    <th>잔존가액</th>
+                    <td colspan="3" class="property-detail-money">${cmEscapeHtml(row.ppAmt2 || '')}</td>
+                </tr>
+                <tr>
+                    <th>사용상태</th>
+                    <td colspan="3">${cmEscapeHtml(getPropertyUseFlagName(row.ppUseFlag))}</td>
+                </tr>
+                <tr>
+                    <th>시작일</th>
+                    <td colspan="3">${cmEscapeHtml(formatDate(row.ccDate0 || row.ppDate1))}</td>
+                </tr>
+                <tr>
+                    <th>종료일</th>
+                    <td colspan="3">${cmEscapeHtml(formatDate(row.ppDate2))}</td>
+                </tr>
+                <tr>
+                    <th>Code</th>
+                    <td colspan="3">${cmEscapeHtml(row.ppCode ? '*' + row.ppCode + '*' : '')}</td>
+                </tr>
+                <tr>
+                    <th>처분금액</th>
+                    <td colspan="3" class="property-detail-money">${cmEscapeHtml(row.ppAmt1 || '')}</td>
+                </tr>
+                <tr>
+                    <th>비고</th>
+                    <td colspan="3">${cmNl2br(row.ppRemark || '')}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div id="propertyAssetAttachArea" class="property-asset-attach-area"></div>
+    `;
+}
+
+//자산내역 첨부 위치 이동
+function movePropertyDetailAttachToAsset() {
+    const $attachRoot = $('#detailDrawerAttachRoot');
+    const $assetAttachArea = $('#propertyAssetAttachArea');
+
+    if (!$attachRoot.length || !$assetAttachArea.length) return;
+
+    $assetAttachArea.append($attachRoot);
+}
+
+//자산내역 첨부 표시
+function togglePropertyDetailAttach(tab) {
+    if (tab === 'asset') {
+        $('#detailDrawerAttachRoot').show();
+        return;
+    }
+
+    $('#detailDrawerAttachRoot').hide();
+}
+
+//상세 탭 조회
+function loadPropertyDetailTab(tab, $wrap) {
+    const ppCode = $wrap.data('pp-code');
+    const $panel = $wrap.find('.property-detail-tab-panel[data-tab="' + tab + '"]');
+
+    if ($panel.data('loaded') === 'Y') return;
+
+    if (tab === 'change') {
+        loadPropertyChangeList(ppCode, $panel);
+        return;
+    }
+
+    if (tab === 'repair') {
+        //TODO 수리내역 조회
+        $panel.data('loaded', 'Y');
+        return;
+    }
+
+    if (tab === 'stock') {
+        //TODO 재고조사 조회
+        $panel.data('loaded', 'Y');
+        return;
+    }
+
+    if (tab === 'depreciation') {
+        //TODO 감가상각 조회
+        $panel.data('loaded', 'Y');
+    }
+}
+
+//변경내역 조회
+function loadPropertyChangeList(ppCode, $panel) {
+    if (!ppCode) {
+        $panel.html(getPropertyEmptyTabHtml('변경내역'));
+        $panel.data('loaded', 'Y');
+        return;
+    }
+
+    cmAjax('/property/selectPropertyChangeList.do', 'GET', {
+        ppCode: ppCode
+    }, false).done(function (list) {
+        $panel.html(getPropertyChangeListHtml(list || []));
+        $panel.data('loaded', 'Y');
+    });
+}
+
+//변경내역 html
+function getPropertyChangeListHtml(list) {
+    if (!list.length) {
+        return getPropertyEmptyTabHtml('변경내역');
+    }
+
+    let html = `
+        <table class="property-detail-table property-change-table">
+            <colgroup>
+                <col class="property-change-date-col">
+                <col>
+                <col>
+                <col>
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>변경일자</th>
+                    <th>변경전(장소)</th>
+                    <th>변경후(장소)</th>
+                    <th>변경사항</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    for (let i = 0; i < list.length; i++) {
+        const row = list[i] || {};
+
+        html += `
+            <tr>
+                <td>${cmEscapeHtml(formatDate(row.pcDate))}</td>
+                <td>${cmEscapeHtml(row.pcArea1Nm || row.pcArea1 || '')}</td>
+                <td>${cmEscapeHtml(row.pcArea2Nm || row.pcArea2 || '')}</td>
+                <td>${cmNl2br(row.pcRemark || '')}</td>
+            </tr>
+        `;
+    }
+
+    html += `
+            </tbody>
+        </table>
+    `;
+
+    return html;
+}
+
+//빈 탭 html
+function getPropertyEmptyTabHtml(title) {
+    return `
+        <div class="property-detail-empty-tab">
+            ${cmEscapeHtml(title)} 데이터가 없습니다.
+        </div>
+    `;
 }
 
 //QR 스캔 열기

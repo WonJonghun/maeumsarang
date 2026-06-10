@@ -1,8 +1,10 @@
 package com.example.mshintra.property.mapper;
 
 import com.example.mshintra.common.dto.SearchDto;
+import com.example.mshintra.property.dto.PropertyChangeDto;
 import com.example.mshintra.property.dto.PropertyLookDto;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -10,4 +12,6 @@ import java.util.List;
 public interface PropertyMapper {
 
     List<PropertyLookDto> selectPropertyLookList(SearchDto searchDto);
+
+    List<PropertyChangeDto> selectPropertyChangeList(@Param("ppCode") String ppCode);
 }

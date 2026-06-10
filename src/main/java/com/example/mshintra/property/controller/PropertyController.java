@@ -1,6 +1,7 @@
 package com.example.mshintra.property.controller;
 
 import com.example.mshintra.common.dto.SearchDto;
+import com.example.mshintra.property.dto.PropertyChangeDto;
 import com.example.mshintra.property.dto.PropertyLookDto;
 import com.example.mshintra.property.service.PropertyService;
 import lombok.RequiredArgsConstructor;
@@ -26,5 +27,11 @@ public class PropertyController {
     @GetMapping("/selectPropertyLookList.do")
     public List<PropertyLookDto> selectPropertyLookList(SearchDto searchDto) {
         return propertyService.selectPropertyLookList(searchDto);
+    }
+
+    @ResponseBody
+    @GetMapping("/selectPropertyChangeList.do")
+    public List<PropertyChangeDto> selectPropertyChangeList(String ppCode) {
+        return propertyService.selectPropertyChangeList(ppCode);
     }
 }

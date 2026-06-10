@@ -91,7 +91,7 @@
 }
 
 .property-tree-count {
-    min-width: auto;
+    min-width: 54px;
     padding: 0;
     border-radius: 0;
     background: transparent;
@@ -99,7 +99,7 @@
     font-size: 12px;
     font-weight: 700;
     line-height: normal;
-    text-align: left;
+    text-align: right;
     white-space: nowrap;
 }
 
@@ -142,11 +142,11 @@
 .property-look-row {
     min-height: 36px;
     display: grid;
-    grid-template-columns: minmax(100px, 0.7fr) minmax(100px, 180px) 66px;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.5fr) 54px;
     align-items: center;
     column-gap: 8px;
     margin: 3px 0;
-    padding: 0 0 0 34px;
+    padding: 0 0 0 12px;
     border-radius: 9px;
     background: transparent;
     color: #1f2937;
@@ -154,16 +154,16 @@
 }
 
 .property-look-row:hover {
-    background: #f8fafc;
+    background: transparent;
 }
 
 .property-item-body .property-look-row {
-    padding-left: 34px;
+    padding-left: 12px;
     background: transparent;
 }
 
 .property-item-body .property-look-row:hover {
-    background: rgba(255, 255, 255, 0.55);
+    background: transparent;
 }
 
 .property-row-name {
@@ -174,6 +174,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    text-align: left;
 }
 
 .property-row-model {
@@ -184,15 +185,19 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    text-align: center;
 }
 
 .property-row-status {
+    width: 54px;
+    box-sizing: border-box;
+    justify-self: end;
     margin-left: 0;
-    padding: 2px 8px;
+    padding: 2px 0;
     border-radius: 3px;
-    background: var(--gray-f9fafb);
-    color: var(--gray-374151);
-    border: 1px solid var(--gray-cccccc);
+    background: #f9fafb;
+    color: #374151;
+    border: 1px solid #cccccc;
     font-size: 11px;
     font-weight: 600;
     text-align: center;
@@ -201,20 +206,20 @@
 
 .property-row-status.text-yellow {
     color: #b45309;
-    background: rgba(245, 158, 11, 0.10);
-    border-color: rgba(245, 158, 11, 0.25);
+    background: #fdfaf0;
+    border-color: #ffc564;
 }
 
 .property-row-status.text-green {
     color: #15803d;
-    background: rgba(22, 163, 74, 0.10);
-    border-color: rgba(22, 163, 74, 0.25);
+    background: #dcfce7;
+    border-color: #59e08a;
 }
 
 .property-row-status.text-red {
     color: #b91c1c;
-    background: rgba(225, 29, 72, 0.10);
-    border-color: rgba(225, 29, 72, 0.25);
+    background: #fee2e2;
+    border-color: #e84267;
 }
 
 .property-row-qty {
@@ -243,13 +248,18 @@
     }
 
     .property-look-row {
-        grid-template-columns: minmax(70px, 0.7fr) minmax(70px, 150px) 58px;
+        grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.5fr) 48px;
         column-gap: 6px;
-        padding-left: 34px;
+        padding-left: 10px;
     }
 
     .property-item-body .property-look-row {
-        padding-left: 44px;
+        padding-left: 29px;
+    }
+
+    .property-tree-count {
+        min-width: 48px;
+        font-size: 11px;
     }
 
     .property-area-title .property-tree-name {
@@ -266,7 +276,8 @@
     }
 
     .property-row-status {
-        padding: 2px 5px;
+        width: 48px;
+        padding: 2px 0;
         font-size: 10px;
     }
 }
@@ -309,36 +320,35 @@
     margin-left: 0;
     padding: 2px 8px;
     border-radius: 3px;
-    background: var(--gray-f9fafb);
-    color: var(--gray-374151);
-    border: 1px solid var(--gray-cccccc);
+    background: #f9fafb;
+    color: #374151;
+    border: 1px solid #cccccc;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 500;
     text-align: center;
     white-space: nowrap;
 }
 
 .property-detail-status-chip.text-yellow {
     color: #b45309;
-    background: rgba(245, 158, 11, 0.10);
-    border-color: rgba(245, 158, 11, 0.25);
+    background: #fdfaf0;
+    border-color: #ffc564;
 }
 
-.property-detail-status-chip.text-green {
+.property-row-status.text-green {
     color: #15803d;
-    background: rgba(22, 163, 74, 0.10);
-    border-color: rgba(22, 163, 74, 0.25);
+    background: #dcfce7;
+    border-color: #59e08a;
 }
 
-.property-detail-status-chip.text-red {
+.property-row-status.text-red {
     color: #b91c1c;
-    background: rgba(225, 29, 72, 0.10);
-    border-color: rgba(225, 29, 72, 0.25);
+    background: #fee2e2;
+    border-color: #e84267;
 }
 
 .property-look-page table {
     width: 100%;
-    /*margin-top: 10px;*/
     border-collapse: collapse;
     table-layout: fixed;
     background: #ffffff;
@@ -561,3 +571,126 @@
     text-align: center;
 }
 /* ================== QR 스캔 영역 ↑================== */
+
+
+/* ================== 상세 탭 영역 ↓================== */
+.property-detail-wrap {
+    padding-top: 10px;
+}
+
+.property-detail-tab-wrap {
+    display: flex;
+    align-items: flex-end;
+    gap: 0;
+    margin: 0;
+    border-bottom: 1px solid #cccccc;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.property-detail-tab {
+    position: relative;
+    min-width: 82px;
+    height: 34px;
+    padding: 0 14px;
+    margin-right: -1px;
+    border: 1px solid #cccccc;
+    border-bottom: none;
+    border-radius: 9px 9px 0 0;
+    background: #f1f1f1;
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.property-detail-tab:hover {
+    background: #eef4ff;
+    color: #2563eb;
+}
+
+.property-detail-tab.active {
+    z-index: 2;
+    height: 38px;
+    background: #ffffff;
+    color: #2563eb;
+    font-weight: 700;
+}
+
+.property-detail-tab.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: #ffffff;
+}
+
+.property-detail-tab-panel {
+    width: 100%;
+}
+
+.property-detail-empty-tab {
+    padding: 34px 12px;
+    border: 1px solid #edf2f7;
+    border-radius: 8px;
+    background: #fcfdff;
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+}
+
+@media (max-width: 640px) {
+    .property-detail-tab-wrap {
+        justify-content: center;
+    }
+
+    .property-detail-tab {
+        min-width: 68px;
+        height: 32px;
+        padding: 0 10px;
+        font-size: 12px;
+    }
+
+    .property-detail-tab.active {
+        height: 36px;
+    }
+}
+/* ================== 상세 탭 영역 ↑================== */
+
+
+/* ================== 변경내역 탭 영역 ↓================== */
+.property-change-date-col {
+    width: 92px;
+}
+
+.property-change-table th,
+.property-change-table td {
+    text-align: left;
+}
+
+.property-change-table thead th {
+    background: #eef4fb;
+    color: #334155;
+    font-weight: 700;
+}
+
+.property-change-table tbody td {
+    vertical-align: middle;
+}
+
+@media (max-width: 640px) {
+    .property-change-date-col {
+        width: 76px;
+    }
+
+    .property-change-table th,
+    .property-change-table td {
+        padding: 8px 5px;
+        font-size: 11px;
+    }
+}
+/* ================== 변경내역 탭 영역 ↑================== */

@@ -37,6 +37,7 @@ public class PropertyLookDto {
     private Integer ppAmt2;
     private String ppSerial;
     private String ppPrcode;
+    private String ppProviderNm;
     private String ppPrName;
     private String ppBuser;
     private String ppBuserNm;

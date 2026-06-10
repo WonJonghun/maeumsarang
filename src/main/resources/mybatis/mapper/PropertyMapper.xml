@@ -10,4 +10,27 @@
         @Flag = ''
     </select>
 
+    <select id="selectPropertyChangeList" resultType="com.example.mshintra.property.dto.PropertyChangeDto">
+        SELECT Pc_Code,
+               Pc_Seq,
+               Pc_Date,
+               Pc_Flag,
+               Pc_JumFg,
+               Pc_Area1,
+               Pc_Area1Nm = ar1.Ar_Name,
+               Pc_Area2,
+               Pc_Area2Nm = ar2.Ar_Name,
+               Pc_Remark,
+               Pc_RegDate,
+               Pc_UserID
+        FROM I_PropertyChange pc
+                 LEFT JOIN I_Area ar1
+                           ON ar1.Ar_Code = pc.Pc_Area1
+                 LEFT JOIN I_Area ar2
+                           ON ar2.Ar_Code = pc.Pc_Area2
+        WHERE pc.Pc_Flag = '1'
+          AND pc.Pc_Code = #{ppCode}
+        ORDER BY pc.Pc_Date, pc.Pc_Seq
+    </select>
+
 </mapper>
