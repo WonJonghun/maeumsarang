@@ -25,4 +25,37 @@ public class PropertyService {
     public List<PropertyChangeDto> selectPropertyChangeList(String ppCode, String pcFlag) {
         return propertyMapper.selectPropertyChangeList(ppCode, pcFlag);
     }
+
+    @Transactional
+    public String insertPropertyLookCheck(PropertyChangeDto propertyChangeDto) {
+        if (propertyMapper.selectTodayPropertyLookCheckCount(propertyChangeDto.getPcCode()) > 0) {
+            return "DUPLICATE_TODAY";
+        }
+
+        String pcJumFg = propertyMapper.selectActivePropertyLookFlag();
+
+        if (pcJumFg == null || pcJumFg.isEmpty()) {
+            return "NO_ACTIVE_LOOK";
+        }
+
+        propertyChangeDto.setPcJumFg(pcJumFg);
+        propertyMapper.insertPropertyLookCheck(propertyChangeDto);
+
+        return "SUCCESS";
+    }
+
+    @Transactional
+    public String insertManualPropertyLookCheck(PropertyChangeDto propertyChangeDto) {
+        if (propertyMapper.selectTodayPropertyLookCheckCount(propertyChangeDto.getPcCode()) > 0) {
+            return "DUPLICATE_TODAY";
+        }
+
+        if (!"1".equals(propertyChangeDto.getPcJumFg()) && !"2".equals(propertyChangeDto.getPcJumFg())) {
+            return "FAIL";
+        }
+
+        propertyMapper.insertPropertyLookCheck(propertyChangeDto);
+
+        return "SUCCESS";
+    }
 }

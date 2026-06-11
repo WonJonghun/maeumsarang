@@ -47,4 +47,49 @@
             </otherwise>
         </choose>
     </select>
+
+    <select id="selectTodayPropertyLookCheckCount" resultType="int">
+        SELECT COUNT(1)
+        FROM I_PropertyChange
+        WHERE Pc_Code = #{pcCode}
+          AND Pc_Flag = '3'
+          AND Pc_Date = CONVERT(DATETIME, CONVERT(CHAR(10), GETDATE(), 120))
+    </select>
+
+    <select id="selectActivePropertyLookFlag" resultType="string">
+        SELECT TOP 1 Pl_Flag
+        FROM I_PropertyLook
+        WHERE CONVERT(DATETIME, CONVERT(CHAR(10), GETDATE(), 120)) BETWEEN Pl_fDt AND Pl_lDt
+          AND Pl_Flag IN ('1', '2')
+        ORDER BY Pl_fDt DESC
+    </select>
+
+    <insert id="insertPropertyLookCheck">
+        INSERT INTO I_PropertyChange (
+            Pc_Code,
+            Pc_Seq,
+            Pc_Date,
+            Pc_Flag,
+            Pc_JumFg,
+            Pc_Area1,
+            Pc_Remark,
+            Pc_UserID,
+            Pc_RegDate
+        )
+        SELECT #{pcCode},
+               ISNULL(MAX(Pc_Seq), 0) + 1,
+               CONVERT(DATETIME, CONVERT(CHAR(10), GETDATE(), 120)),
+               '3',
+               #{pcJumFg},
+               #{pcArea1},
+               CASE
+                   WHEN #{pcJumFg} = '1' THEN 'QR 정기 재고조사'
+                   WHEN #{pcJumFg} = '2' THEN 'QR 수시 재고조사'
+                   ELSE 'QR 재고조사'
+                   END,
+               #{pcUserID},
+               GETDATE()
+        FROM I_PropertyChange WITH (UPDLOCK, HOLDLOCK)
+        WHERE Pc_Code = #{pcCode}
+    </insert>
 </mapper>

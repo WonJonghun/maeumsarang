@@ -28,13 +28,23 @@
     function buildButtons(type) {
         let alertFoot = $('#uiAlertFoot');
         alertFoot.empty();
+
         if (type === 'YN') {
             alertFoot.append('<button type="button" class="ui-alert-btn cancel" data-v="0">아니요</button>');
             alertFoot.append('<button type="button" class="ui-alert-btn ok" data-v="1">예</button>');
+        } else if (type === 'JUMFG') {
+            alertFoot.append('<button type="button" class="ui-alert-btn green" data-v="1">정기</button>');
+            alertFoot.append('<button type="button" class="ui-alert-btn ok" data-v="2">수시</button>');
         } else {
             alertFoot.append('<button type="button" class="ui-alert-btn ok" data-v="1">확인</button>');
         }
+
         alertFoot.find('button').off('click').on('click', function () {
+            if (type === 'JUMFG') {
+                close(String($(this).data('v')));
+                return;
+            }
+
             close($(this).data('v') === 1);
         });
     }

@@ -210,13 +210,13 @@
     border-color: #ffc564;
 }
 
-.property-row-status.text-green {
+.property-detail-status-chip.text-green {
     color: #15803d;
     background: #dcfce7;
     border-color: #59e08a;
 }
 
-.property-row-status.text-red {
+.property-detail-status-chip.text-red {
     color: #b91c1c;
     background: #fee2e2;
     border-color: #e84267;
@@ -499,7 +499,7 @@
 
 .property-qr-box {
     width: 100%;
-    max-width: 360px;
+    max-width: 480px;
     overflow: hidden;
     border-radius: 18px;
     background: #ffffff;
@@ -548,7 +548,7 @@
 .property-qr-video-wrap::before {
     content: "";
     position: absolute;
-    inset: 22%;
+    inset: 16%;
     z-index: 1;
     border: 3px solid #ffffff;
     border-radius: 14px;
@@ -558,7 +558,7 @@
 
 #propertyQrVideo {
     width: 100%;
-    height: 260px;
+    height: 360px;
     display: block;
     object-fit: cover;
 }
@@ -569,6 +569,24 @@
     color: #64748b;
     font-size: 13px;
     text-align: center;
+}
+
+@media (max-width: 640px) {
+    .property-qr-layer {
+        padding: 10px;
+    }
+
+    .property-qr-box {
+        max-width: 100%;
+    }
+
+    #propertyQrVideo {
+        height: clamp(320px, 62vh, 460px);
+    }
+
+    .property-qr-video-wrap::before {
+        inset: 14%;
+    }
 }
 /* ================== QR 스캔 영역 ↑================== */
 

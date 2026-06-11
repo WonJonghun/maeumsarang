@@ -178,4 +178,15 @@
     padding-top: 0;
     min-width: auto;
 }
+
+.ui-alert-btn.green {
+    color: #ffffff;
+    background: #16a34a;
+    border-color: #16a34a;
+}
+
+.ui-alert-btn.green:hover {
+    background: #15803d;
+    border-color: #15803d;
+}
 /* ================== 공통 Alert 영역 ↑================== */

@@ -15,4 +15,10 @@ public interface PropertyMapper {
 
     List<PropertyChangeDto> selectPropertyChangeList(@Param("ppCode") String ppCode,
                                                      @Param("pcFlag") String pcFlag);
+
+    int selectTodayPropertyLookCheckCount(String pcCode);
+
+    String selectActivePropertyLookFlag();
+
+    int insertPropertyLookCheck(PropertyChangeDto propertyChangeDto);
 }

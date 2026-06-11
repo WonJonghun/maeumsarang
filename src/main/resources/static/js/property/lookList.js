@@ -693,10 +693,115 @@ function openPropertyDetailByQr(qrValue) {
         return;
     }
 
-    openPropertyLookDetail(matched);
+    customAlert(
+        '알림',
+        `${matched.ppOccodeNm || matched.ppOcName || '해당 품목'}(${matched.ppCode}) 조사처리 하시겠습니까?`,
+        'YN'
+    ).then(function (ok) {
+        if (!ok) {
+            customAlert('알림', '취소되었습니다.', 'CONFIRM').then(function () {
+                openPropertyLookDetail(matched);
+            });
+            return;
+        }
 
-    //TODO 조사여부 업데이트 처리
-    //예: updatePropertyLookCheck(matched.ppCode);
+        insertPropertyLookCheck(matched);
+    });
+}
+
+//QR 조사처리
+function insertPropertyLookCheck(row) {
+    cmAjax('/property/insertPropertyLookCheck.do', 'POST', {
+        pcCode: row.ppCode,
+        pcArea1: row.ppArea
+    }, true).done(function (result) {
+        if (!result || result.resultCode === 'FAIL') {
+            customAlert('알림', result && result.message ? result.message : '조사처리에 실패했습니다.', 'WARN').then(function () {
+                openPropertyLookDetail(row);
+            });
+            return;
+        }
+
+        if (result.resultCode === 'DUPLICATE_TODAY') {
+            customAlert('알림', '오늘 이미 검사했습니다.', 'CONFIRM').then(function () {
+                openPropertyLookDetail(row);
+            });
+            return;
+        }
+
+        if (result.resultCode === 'NO_ACTIVE_LOOK') {
+            confirmManualPropertyLookCheck(row);
+            return;
+        }
+
+        completePropertyLookCheck(row);
+    });
+}
+
+//진행중인 조사 없음 확인
+function confirmManualPropertyLookCheck(row) {
+    customAlert(
+        '알림',
+        '진행중인 정기,수시조사가 없습니다.\n그래도 조사하시겠습니까?',
+        'YN'
+    ).then(function (ok) {
+        if (!ok) {
+            customAlert('알림', '취소되었습니다.', 'CONFIRM').then(function () {
+                openPropertyLookDetail(row);
+            });
+            return;
+        }
+
+        customAlert('알림', '조사구분을 선택하세요.', 'JUMFG').then(function (pcJumFg) {
+            insertManualPropertyLookCheck(row, pcJumFg);
+        });
+    });
+}
+
+//정기/수시 수동 조사처리
+function insertManualPropertyLookCheck(row, pcJumFg) {
+    cmAjax('/property/insertManualPropertyLookCheck.do', 'POST', {
+        pcCode: row.ppCode,
+        pcArea1: row.ppArea,
+        pcJumFg: pcJumFg
+    }, true).done(function (result) {
+        if (!result || result.resultCode === 'FAIL') {
+            customAlert('알림', result && result.message ? result.message : '조사처리에 실패했습니다.', 'WARN').then(function () {
+                openPropertyLookDetail(row);
+            });
+            return;
+        }
+
+        if (result.resultCode === 'DUPLICATE_TODAY') {
+            customAlert('알림', '오늘 이미 검사했습니다.', 'CONFIRM').then(function () {
+                openPropertyLookDetail(row);
+            });
+            return;
+        }
+
+        completePropertyLookCheck(row);
+    });
+}
+
+//조사완료 화면처리
+function completePropertyLookCheck(row) {
+    row.chk = 1;
+
+    propertyLookListAll.forEach(function (item) {
+        if (String(item.ppCode || '') === String(row.ppCode || '')) {
+            item.chk = 1;
+        }
+    });
+
+    propertyLookListView.forEach(function (item) {
+        if (String(item.ppCode || '') === String(row.ppCode || '')) {
+            item.chk = 1;
+        }
+    });
+
+    renderPropertyLookList();
+    openPropertyLookDetail(row);
+    customAlert('알림', '조사처리 되었습니다.', 'CONFIRM');
 }
 
 //QR 값 정리
