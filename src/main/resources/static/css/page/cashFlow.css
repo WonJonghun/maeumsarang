@@ -1,0 +1,349 @@
+/* ================== 현금명세서 목록 영역 ↓================== */
+html,
+body.cash-flow-page {
+    height: var(--cash-flow-vh, 100dvh);
+    overflow: hidden;
+    background: var(--gray-f9fafb);
+}
+
+body.cash-flow-page .page-root {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--gray-f9fafb);
+}
+
+body.cash-flow-page .topbar {
+    flex: 0 0 auto;
+}
+
+.cash-flow-wrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0 0;
+    overflow: hidden;
+    background: transparent;
+}
+
+.cash-flow-summary {
+    flex: 0 0 auto;
+    padding: 0 12px 10px;
+    margin: 0;
+}
+
+.cash-flow-summary:empty {
+    display: none;
+}
+
+.cash-flow-summary-card {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.cash-flow-summary-item {
+    min-width: 0;
+    padding: 10px 8px;
+    border: 1px solid var(--gray-e3e3e3);
+    border-radius: 4px;
+    background: var(--white);
+    text-align: center;
+}
+
+.cash-flow-summary-item span {
+    display: block;
+    color: #111827;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.cash-flow-summary-item strong {
+    display: block;
+    margin-top: 4px;
+    font-size: 15px;
+    font-weight: 900;
+    word-break: keep-all;
+}
+
+.cash-flow-summary-item.income {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.cash-flow-summary-item.income strong {
+    color: var(--green-16a34a);
+}
+
+.cash-flow-summary-item.expense {
+    background: #fff1f2;
+    border-color: #fecdd3;
+}
+
+.cash-flow-summary-item.expense strong {
+    color: var(--red-e11d48);
+}
+
+.cash-flow-summary-item.balance.is-plus {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.cash-flow-summary-item.balance.is-plus strong {
+    color: var(--green-16a34a);
+}
+
+.cash-flow-summary-item.balance.is-minus {
+    background: #fff1f2;
+    border-color: #fecdd3;
+}
+
+.cash-flow-summary-item.balance.is-minus strong {
+    color: var(--red-e11d48);
+}
+
+#cash-flow-table {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.cash-flow-table-wrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    overflow: auto;
+    padding-bottom: calc(env(safe-area-inset-bottom) + 16px);
+    border-top: 1px solid var(--gray-e3e3e3);
+    border-bottom: 1px solid var(--gray-e3e3e3);
+    box-sizing: border-box;
+    background: var(--white);
+    cursor: grab;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
+}
+
+.cash-flow-table-wrap.is-dragging {
+    cursor: grabbing;
+    user-select: none;
+}
+
+.cash-flow-table {
+    width: max-content;
+    min-width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: auto;
+    background: var(--white);
+}
+
+.cash-flow-name-col {
+    width: 132px;
+}
+
+.cash-flow-month-col {
+    width: 76px;
+}
+
+.cash-flow-total-col {
+    width: 92px;
+}
+
+.cash-flow-table th,
+.cash-flow-table td {
+    padding: 7px 8px;
+    border-bottom: 1px solid #edf2f7;
+    border-right: 1px solid #edf2f7;
+    box-sizing: border-box;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.cash-flow-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    background: #eef4fb;
+    color: #334155;
+    font-weight: 800;
+    text-align: center;
+}
+
+.cash-flow-table thead th:first-child {
+    left: 0;
+    z-index: 6;
+    width: 132px;
+    min-width: 132px;
+    max-width: 132px;
+    text-align: left;
+    box-shadow: 1px 0 0 #edf2f7;
+}
+
+.cash-flow-table tbody th {
+    position: sticky;
+    left: 0;
+    z-index: 3;
+    width: 132px;
+    min-width: 132px;
+    max-width: 132px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: #fcfdff;
+    color: #111827;
+    font-weight: 700;
+    text-align: left;
+    box-shadow: 1px 0 0 #edf2f7;
+}
+
+.cash-flow-table tbody td {
+    background: #fcfdff;
+    color: #111827;
+    font-weight: 600;
+    text-align: right;
+}
+
+.cash-flow-table tr > *:last-child {
+    border-right: none;
+}
+
+.cash-flow-table tbody tr:last-child th,
+.cash-flow-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.cash-flow-table .cash-flow-income-total th,
+.cash-flow-table .cash-flow-income-total td {
+    background: #f0fdf4;
+    color: #111827;
+    font-weight: 800;
+}
+
+.cash-flow-table .cash-flow-income-total .cash-flow-sum,
+.cash-flow-table .cash-flow-income-total .cash-flow-diff {
+    color: var(--green-16a34a);
+    font-weight: 900;
+}
+
+.cash-flow-table .cash-flow-expense-total th,
+.cash-flow-table .cash-flow-expense-total td {
+    background: #fff1f2;
+    color: #111827;
+    font-weight: 800;
+}
+
+.cash-flow-table .cash-flow-expense-total .cash-flow-sum,
+.cash-flow-table .cash-flow-expense-total .cash-flow-diff {
+    color: var(--red-e11d48);
+    font-weight: 900;
+}
+
+.cash-flow-table .cash-flow-balance-total.is-plus th,
+.cash-flow-table .cash-flow-balance-total.is-plus td {
+    background: #f0fdf4;
+    color: #111827;
+    font-weight: 800;
+}
+
+.cash-flow-table .cash-flow-balance-total.is-plus .cash-flow-sum,
+.cash-flow-table .cash-flow-balance-total.is-plus .cash-flow-diff {
+    color: var(--green-16a34a);
+    font-weight: 900;
+}
+
+.cash-flow-table .cash-flow-balance-total.is-minus th,
+.cash-flow-table .cash-flow-balance-total.is-minus td {
+    background: #fff1f2;
+    color: #111827;
+    font-weight: 800;
+}
+
+.cash-flow-table .cash-flow-balance-total.is-minus .cash-flow-sum,
+.cash-flow-table .cash-flow-balance-total.is-minus .cash-flow-diff {
+    color: var(--red-e11d48);
+    font-weight: 900;
+}
+
+.cash-flow-table .cash-flow-sum,
+.cash-flow-table .cash-flow-prev,
+.cash-flow-table .cash-flow-diff {
+    color: #111827;
+    font-weight: 700;
+}
+
+.cash-flow-table .cash-flow-income-total .cash-flow-prev,
+.cash-flow-table .cash-flow-expense-total .cash-flow-prev,
+.cash-flow-table .cash-flow-balance-total .cash-flow-prev {
+    color: var(--blue-2563eb);
+    font-weight: 900;
+}
+
+.cash-flow-empty {
+    flex: 1 1 auto;
+    padding: 24px 4px;
+    text-align: center;
+    color: var(--gray-6b7280);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+@media (max-width: 640px) {
+    .cash-flow-wrap {
+        padding: 8px 0 0;
+    }
+
+    .cash-flow-summary {
+        padding: 0 10px 8px;
+    }
+
+    .cash-flow-summary-card {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+    }
+
+    .cash-flow-summary-item {
+        padding: 8px 4px;
+        border-radius: 4px;
+        text-align: center;
+    }
+
+    .cash-flow-summary-item span {
+        font-size: 11px;
+    }
+
+    .cash-flow-summary-item strong {
+        margin-top: 3px;
+        font-size: 12px;
+    }
+
+    .cash-flow-name-col {
+        width: 116px;
+    }
+
+    .cash-flow-table thead th:first-child,
+    .cash-flow-table tbody th {
+        width: 116px;
+        min-width: 116px;
+        max-width: 116px;
+    }
+
+    .cash-flow-month-col {
+        width: 68px;
+    }
+
+    .cash-flow-total-col {
+        width: 82px;
+    }
+
+    .cash-flow-table th,
+    .cash-flow-table td {
+        padding: 6px 6px;
+        font-size: 11px;
+    }
+}
+/* ================== 현금명세서 목록 영역 ↑================== */
