@@ -56,6 +56,13 @@
                     <input class="form-input" type="password" id="loginPw" name="loginPw" autocomplete="current-password" placeholder="비밀번호">
                 </div>
             </div>
+            <div class="login-keep-wrap">
+                <label class="login-keep-label" for="rememberMe">
+                    <input type="checkbox" id="rememberMe" name="rememberMe" value="true">
+                    <span>자동로그인</span>
+                </label>
+            </div>
+
             <button type="submit" class="login-btn">로그인</button>
         </form>
 

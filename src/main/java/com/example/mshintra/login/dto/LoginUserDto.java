@@ -1,19 +1,64 @@
 package com.example.mshintra.login.dto;
 
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-@Getter @Setter
+import java.util.Collection;
+import java.util.List;
+
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class LoginUserDto {
-    private String icCode;      // 사번
-    private String icName;      // 이름
-    private String icBuser;     // 부서코드
-    private String ccBuser;     // 부서명
-    private String icJikgub;    // 직급코드
-    private String icJikgubNm;  // 직급명
-    private String afFilename;  // 사진명
-    private byte[] afContent;   // 사진BLOB
-    private int flag;           // 직종구분코드
+public class LoginUserDto implements UserDetails {
+
+    private static final long serialVersionUID = 1L;
+
+    private String icCode;
+    private String icName;
+    private String icBuser;
+    private String ccBuser;
+    private String icJikgub;
+    private String icJikgubNm;
+    private String afFilename;
+    private byte[] afContent;
+    private int flag;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+    }
+
+    @Override
+    public String getPassword() {
+        return "";
+    }
+
+    @Override
+    public String getUsername() {
+        return icCode;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }

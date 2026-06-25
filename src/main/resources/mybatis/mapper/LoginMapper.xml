@@ -44,4 +44,43 @@
     </select>
 <!--dbo.GetPwChk(#{loginId},#{loginPw}) = 'OK';-->
 <!--AND (dbo.GetPwChk(#{loginId},#{loginPw}) = 'OK' OR #{loginPw} = 'rkskekfk12');-->
+
+    <select id="selectLoginUserById" resultType="com.example.mshintra.login.dto.LoginUserDto">
+        SELECT
+            Ic_Code      AS icCode,
+            RTRIM(Ic_Name) AS icName,
+            Ic_Buser     AS icBuser,
+            Bs_Name      AS ccBuser,
+            Af_FileName  AS afFilename,
+            Af_Content   AS afContent,
+            Ic_Jikgub    AS icJikgub,
+            dbo.GetJikgubNm(Ic_Jikgub) AS icJikgubNm,
+            CASE
+                WHEN ISNULL(Id_Job, Ic_Buser) BETWEEN 200 AND 299 THEN '1'
+                WHEN ISNULL(Id_FamName, Ic_Jikchek) IN (25,26,27) THEN '2'
+                WHEN ISNULL(Id_FamName, Ic_Jikchek) = 1 THEN '7'
+                WHEN ISNULL(Id_FamName, Ic_Jikchek) NOT IN (1,3,4,17,19,25,26,27)
+                    AND ISNULL(Id_Job, Ic_Buser) <![CDATA[<>]]> '110'
+                    AND ISNULL(Id_Job, Ic_Buser) NOT BETWEEN 200 AND 299 THEN '9'
+                ELSE '0'
+                END AS flag
+        FROM P_InsaCode
+                 LEFT JOIN P_InsaDetail
+                           ON Id_Code = Ic_Code
+                               AND Id_DtFlag = 4
+                               AND Id_Saflag = Ic_Saflag
+                               AND Id_Date1 = (
+                                   SELECT MAX(Id_Date1)
+                                   FROM P_InsaDetail
+                                   WHERE Id_Code = Ic_Code
+                                     AND Id_DtFlag = 4
+                                     AND Id_Saflag = Ic_Saflag
+                                     AND Id_Date1 <![CDATA[<=]]> GETDATE()
+                               )
+                 LEFT JOIN P_Buser   ON Bs_Code = Id_Job
+                 LEFT JOIN P_Jikgub  ON Jg_Code = Id_Amount
+                 LEFT JOIN P_JikChek ON Jc_Code = Id_FamName
+                 LEFT JOIN File_DB.dbo.i_addFile ON Ic_Code = Af_Num
+        WHERE Ic_Code = #{loginId}
+    </select>
 </mapper>

@@ -33,8 +33,7 @@ public class LoginAuthenticationProvider implements AuthenticationProvider {
         LoginUserDto user = loginMapper.selectLoginUser(req);
         if (user == null) throw new BadCredentialsException("아이디 또는 비밀번호를 확인해 주세요.");
 
-        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
-        return new UsernamePasswordAuthenticationToken(user, null, authorities);
+        return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
     }
 
     @Override

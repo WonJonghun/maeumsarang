@@ -22,7 +22,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/css/**",
                         "/js/**",
                         "/images/**",
-                        "/error"
+                        "/favicon.ico",
+                        "/manifest.json",
+                        "/service-worker.js",
+                        "/error",
+                        "/error/**"
                 );
     }
 }
