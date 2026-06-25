@@ -2,12 +2,7 @@ package com.example.mshintra.schedule.service;
 
 import com.example.mshintra.common.dto.SearchDto;
 import com.example.mshintra.common.service.CommonCodeService;
-import com.example.mshintra.schedule.dto.CalendarDto;
-import com.example.mshintra.schedule.dto.DayDutyDto;
-import com.example.mshintra.schedule.dto.HolidayDto;
-import com.example.mshintra.schedule.dto.MonthDutyDto;
-import com.example.mshintra.schedule.dto.ScheduleDto;
-import com.example.mshintra.schedule.dto.ScheduleMenuDto;
+import com.example.mshintra.schedule.dto.*;
 import com.example.mshintra.schedule.mapper.ScheduleMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -108,5 +103,10 @@ public class ScheduleService {
             } catch (Exception ignored) {
             }
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<SatScheduleDto> selectSatScheduleList(SatScheduleDto searchDto) {
+        return scheduleMapper.selectSatScheduleList(searchDto);
     }
 }

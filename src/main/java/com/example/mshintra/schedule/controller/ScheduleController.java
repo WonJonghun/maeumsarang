@@ -62,4 +62,15 @@ public class ScheduleController {
     public List<HolidayDto> selectHolidayList(HolidayDto searchDto) {
         return scheduleService.selectHolidayList(searchDto);
     }
+
+    @GetMapping("/satSchedule.do")
+    public String satSchedule() {
+        return "jsp/schedule/satScheduleList";
+    }
+
+    @ResponseBody
+    @GetMapping("/satScheduleList.do")
+    public List<SatScheduleDto> selectSatScheduleList(@ModelAttribute SatScheduleDto searchDto) {
+        return scheduleService.selectSatScheduleList(searchDto);
+    }
 }

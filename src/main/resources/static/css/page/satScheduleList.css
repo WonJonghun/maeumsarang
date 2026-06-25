@@ -1,0 +1,175 @@
+/* ================== 토요일 근무 목록 영역 ↓================== */
+html,
+body.sat-schedule-page {
+    min-height: 100%;
+    background: var(--gray-f9fafb);
+}
+
+body.sat-schedule-page {
+    overflow: auto;
+}
+
+body.sat-schedule-page .page-root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--gray-f9fafb);
+}
+
+@supports (height: 100dvh) {
+    body.sat-schedule-page .page-root {
+        min-height: 100dvh;
+    }
+}
+
+body.sat-schedule-page .topbar {
+    flex: 0 0 auto;
+}
+
+.sat-schedule-wrap {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    background: transparent;
+}
+
+#sat-schedule-table {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.sat-schedule-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
+    padding-bottom: calc(env(safe-area-inset-bottom) + 16px);
+    border-top: 1px solid var(--gray-e3e3e3);
+    border-bottom: 1px solid var(--gray-e3e3e3);
+    box-sizing: border-box;
+    background: var(--white);
+    -webkit-overflow-scrolling: touch;
+}
+
+.sat-schedule-table {
+    width: auto;
+    min-width: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: auto;
+    background: var(--white);
+}
+
+.sat-schedule-table th,
+.sat-schedule-table td {
+    padding: 7px 10px;
+    border-bottom: 1px solid #edf2f7;
+    border-right: 1px solid #edf2f7;
+    box-sizing: border-box;
+    font-size: 12px;
+    white-space: nowrap;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.sat-schedule-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    background: #eef4fb;
+    color: #334155;
+    font-weight: 800;
+}
+
+.sat-schedule-table tbody td {
+    background: #fcfdff;
+    color: #111827;
+    font-weight: 600;
+}
+
+.sat-schedule-table tbody tr.date-change-row td {
+    border-top: 3px solid #96a0ad;
+}
+
+.sat-schedule-table tr > *:last-child {
+    border-right: none;
+}
+
+/* 날짜 */
+.sat-schedule-table th:nth-child(1),
+.sat-schedule-table td:nth-child(1) {
+    width: 82px;
+}
+
+/* 요일 */
+.sat-schedule-table th:nth-child(2),
+.sat-schedule-table td:nth-child(2) {
+    width: 46px;
+}
+
+/* 부서 */
+.sat-schedule-table th:nth-child(3),
+.sat-schedule-table td:nth-child(3) {
+    width: 1%;
+}
+
+/* 이름 */
+.sat-schedule-table th:nth-child(4),
+.sat-schedule-table td:nth-child(4) {
+    width: 58px;
+}
+
+/* 근무 */
+.sat-schedule-table th:nth-child(5),
+.sat-schedule-table td:nth-child(5) {
+    width: 44px;
+}
+
+/* 출근 */
+.sat-schedule-table th:nth-child(6),
+.sat-schedule-table td:nth-child(6) {
+    width: 56px;
+}
+
+.sat-schedule-empty {
+    padding: 24px 4px;
+    text-align: center;
+    color: var(--gray-6b7280);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+@media (max-width: 640px) {
+    .sat-schedule-table th,
+    .sat-schedule-table td {
+        padding: 6px 8px;
+        font-size: 11px;
+    }
+
+    .sat-schedule-table th:nth-child(1),
+    .sat-schedule-table td:nth-child(1) {
+        width: 78px;
+    }
+
+    .sat-schedule-table th:nth-child(2),
+    .sat-schedule-table td:nth-child(2) {
+        width: 42px;
+    }
+
+    .sat-schedule-table th:nth-child(4),
+    .sat-schedule-table td:nth-child(4) {
+        width: 52px;
+    }
+
+    .sat-schedule-table th:nth-child(5),
+    .sat-schedule-table td:nth-child(5) {
+        width: 40px;
+    }
+
+    .sat-schedule-table th:nth-child(6),
+    .sat-schedule-table td:nth-child(6) {
+        width: 52px;
+    }
+}
+/* ================== 토요일 근무 목록 영역 ↑================== */

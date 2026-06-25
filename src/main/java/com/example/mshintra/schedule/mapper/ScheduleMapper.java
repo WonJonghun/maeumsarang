@@ -23,4 +23,6 @@ public interface ScheduleMapper {
     List<HolidayDto> selectHolidayList(HolidayDto searchDto);
 
     List<MonthDutyDto> selectMonthDutyList(ScheduleMenuDto searchDto);
+
+    List<SatScheduleDto> selectSatScheduleList(SatScheduleDto searchDto);
 }

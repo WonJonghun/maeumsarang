@@ -281,4 +281,35 @@
         ORDER BY TMP.Du_Date, H.Hc_Filter
         ]]>
     </select>
+
+    <select id="selectSatScheduleList"
+            parameterType="com.example.mshintra.schedule.dto.SatScheduleDto"
+            resultType="com.example.mshintra.schedule.dto.SatScheduleDto">
+        <![CDATA[
+            SELECT
+                guDate = CONVERT(CHAR(10), Gu_Date, 23),
+                ccDay = DATENAME(weekday, Gu_Date),
+                ccBuser = Bs_Name,
+                ccName = Ic_Name,
+                guFlag = Gu_Flag,
+                ccInTime = CASE
+                               WHEN ISNULL(Il_Intime, '') = '' THEN ''
+                               WHEN LEN(Il_Intime) = 4 THEN STUFF(Il_Intime, 3, 0, ':')
+                               ELSE Il_Intime
+                    END
+            FROM I_GunMu
+                     LEFT JOIN dbo.[GetInsacode](#{searchFromDate}, #{searchToDate}, '')
+            ON Ic_Code = Gu_Code1
+                LEFT JOIN I_InoutList
+                ON Il_Date = Gu_Date
+                AND Il_Code = Gu_Code1
+                LEFT JOIN P_Buser
+                ON Bs_Code = Ic_Buser
+            WHERE Gu_Date BETWEEN #{searchFromDate} AND #{searchToDate}
+              AND DATEPART(dw, Gu_Date) = 7
+              AND Gu_Flag = 'HD'
+              AND Ic_JikGub < '900'
+            ORDER BY Gu_Date, Bs_Name, Ic_Name
+            ]]>
+    </select>
 </mapper>
