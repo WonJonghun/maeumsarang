@@ -18,4 +18,9 @@ public class RepairService {
     public List<RepairDto> selectRepairList(RepairDto dto) {
         return repairMapper.selectRepairList(dto);
     }
+
+    @Transactional
+    public int updateRepairProcess(RepairDto dto) {
+        return repairMapper.updateRepairProcess(dto);
+    }
 }

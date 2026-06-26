@@ -61,8 +61,8 @@ $(document).on('click', '.alert-class', function () {
     alert('준비중입니다.');
 });
 
-// adminKey 마지막 2자리(6,7번째)가 Y 하나라도 있으면 Y 반환(=부서조건 없이 검색)
-function cmGetSearchBuserCd(adminKey) {
+// adminKey 마지막 2자리(6,7번째)가 Y 하나라도 있으면 Y 반환
+function cmGetAdminYn(adminKey) {
     const k = $.trim(adminKey || '');
     const ignore = (k.length >= 7 && (k.charAt(5) === 'Y' || k.charAt(6) === 'Y'));
     return ignore ? 'Y' : $.trim($('#loginBuser').val() || '');

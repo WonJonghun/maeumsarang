@@ -27,12 +27,14 @@ public class RepairDto extends SearchDto {
     private String rpReUserId;          // 접수자 ID
     private String reUserNm;            // 접수자명
     private LocalDate rpReDate;         // 처리일
+    private String rpReDateText;        // 처리예정일 수정용
     private String rpJobUserId;         // 작업자 ID
     private String jobUserNm;           // 작업자 ID
     private String rpReRemark;          // 처리내용
     private Integer rpReFlag;
     private Integer ccReFlag;
     private LocalDateTime rpExDate;
+    private String rpExDateText;        // 작업종료일 수정용
     private String rpExUserId;
     private String rpSign2;
     private LocalDateTime rpRegDate;    // 등록일시

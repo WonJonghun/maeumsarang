@@ -45,4 +45,27 @@
         ORDER BY Rp_Date DESC
     </select>
 
+    <update id="updateRepairProcess">
+        UPDATE I_Repair
+        SET
+            Rp_ReUserID = NULLIF(#{rpReUserId}, ''),
+            Rp_ReDate = CASE
+                            WHEN NULLIF(#{rpReDateText}, '') IS NULL THEN NULL
+                            ELSE CONVERT(date, #{rpReDateText})
+                END,
+            Rp_JobUserID = NULLIF(#{rpJobUserId}, ''),
+            Rp_ReRemark = #{rpReRemark},
+            Rp_ReFlag = #{rpReFlag},
+            Rp_Sign1 = NULLIF(#{rpSign1}, ''),
+            Rp_EXDate = CASE
+                            WHEN NULLIF(#{rpExDateText}, '') IS NULL THEN NULL
+                            ELSE CONVERT(datetime, #{rpExDateText})
+                END,
+            Rp_Sign2 = NULLIF(#{rpSign2}, '')
+        WHERE
+            Rp_Date = #{rpDate}
+          AND Rp_Number = #{rpNumber}
+          AND ISNULL(Rp_ReFlag, 1) = 1
+    </update>
+
 </mapper>

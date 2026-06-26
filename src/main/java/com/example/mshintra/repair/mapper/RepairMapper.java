@@ -9,4 +9,6 @@ import java.util.List;
 public interface RepairMapper {
 
     List<RepairDto> selectRepairList(RepairDto dto);
+
+    int updateRepairProcess(RepairDto dto);
 }
