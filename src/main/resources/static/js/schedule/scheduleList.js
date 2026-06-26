@@ -3,6 +3,7 @@ let weekStartDt = '';
 let weekEndDt = '';
 let resizeTimer;
 let scheduleList = [];
+let isInitialFocusDone = false;
 
 $(function () {
     setStickyOffsets();
@@ -43,37 +44,9 @@ function bindEvents() {
         applyDeptFilterAndRender($(this).val());
     });
 
-    //셀 클릭(십자 토글)
+    //셀 클릭
     $('#scheduleTbody').on('click', '.day-cell', function () {
-        const cellEl = $(this);
-        const trEl = cellEl.closest('.schedule-tr');
-        const colIdx = cellEl.index();
-
-        const prevCol = $('#scheduleTbody').data('selColIdx');
-        const prevRow = $('#scheduleTbody').data('selRowIdx');
-        const rowIdx = trEl.index();
-
-        const isSame = (prevCol === colIdx && prevRow === rowIdx);
-
-        $('.schedule-thead .day-col').removeClass('is-today is-selected-col');
-        $('#scheduleTbody .day-cell').removeClass('is-today is-selected-col');
-        $('#scheduleTbody .schedule-tr').removeClass('is-selected-row');
-
-        if (isSame) {
-            $('#scheduleTbody').removeData('selColIdx').removeData('selRowIdx');
-            return;
-        }
-
-        $('.schedule-thead .day-col').eq(colIdx).addClass('is-selected-col');
-
-        $('#scheduleTbody .schedule-tr').each(function () {
-            $(this).find('.td-days .day-cell').eq(colIdx).addClass('is-selected-col');
-        });
-
-        trEl.addClass('is-selected-row');
-
-        $('#scheduleTbody').data('selColIdx', colIdx);
-        $('#scheduleTbody').data('selRowIdx', rowIdx);
+        selectScheduleCell($(this));
     });
 
     //사람 클릭(팝업)
@@ -237,7 +210,7 @@ function loadHolidayList() {
     });
 }
 
-// 근무표 그리기
+//근무표 그리기
 function renderScheduleList(list, keyword) {
     const viewList = $.isArray(list) ? list : [];
     const k = $.trim(keyword == null ? '' : String(keyword));
@@ -249,6 +222,7 @@ function renderScheduleList(list, keyword) {
 
     if (!viewList.length) {
         scheduleBodyEl.append($('<div/>', { class: 'schedule-empty', text: '표시할 데이터가 없습니다.' }));
+        applyInitialScheduleSelection(viewList);
         return;
     }
 
@@ -270,7 +244,7 @@ function renderScheduleList(list, keyword) {
         const sa = String(row.icSaPhone == null ? '' : row.icSaPhone);
 
         const rawCode = String(row.icCode == null ? '' : row.icCode);
-        const afNum = $.trim(rawCode.replace(/\D/g, '')); // "96-20" -> "9620"
+        const afNum = $.trim(rawCode.replace(/\D/g, ''));
 
         const imgUrl = afNum ? ('/attach/thumbnailImageRequest.do?size=100&afNum=' + encodeURIComponent(afNum)) : defaultAvatarUrl;
         const imgEl = $('<img/>', {
@@ -324,16 +298,12 @@ function renderScheduleList(list, keyword) {
     }
 
     scheduleBodyEl.append(bodyEl);
-    applyTodayHighlight();
-    focusMyRowAndHighlight(viewList);
+    applyInitialScheduleSelection(viewList);
 }
 
-//내부서 + 검색(이름/부서/직급/휴대폰/직통)
+//내부서 + 검색
 function applyDeptFilterAndRender(keyword) {
-    $('.schedule-thead .day-col').removeClass('is-selected-col');
-    $('#scheduleTbody .day-cell').removeClass('is-selected-col');
-    $('#scheduleTbody .schedule-tr').removeClass('is-selected-row');
-    $('#scheduleTbody').removeData('selColIdx').removeData('selRowIdx');
+    clearScheduleSelection();
 
     const isMyDept = $('#chkMyDept').is(':checked');
     const loginBuser = String($('#loginBuser').val() == null ? '' : $('#loginBuser').val());
@@ -392,26 +362,126 @@ function setStickyOffsets() {
 
 //오늘 하이라이트
 function applyTodayHighlight() {
-    const todayDash = cmSubDays(cmGetToday(''), 0, '-');
-    const headCols = $('.schedule-thead .day-col');
+    $('.schedule-thead .day-col').removeClass('is-today');
+    $('#scheduleTbody .day-cell').removeClass('is-today');
 
-    headCols.removeClass('is-today');
-    $('#scheduleTbody .schedule-tr .td-days .day-cell').removeClass('is-today');
+    const todayColIdx = getTodayColIdx();
+    if (todayColIdx < 0) return;
 
-    let idx = -1;
-    for (let i = 0; i < 7; i++) {
-        const ymdDash = cmSubDays(currentMonYmd, -i, '-');
-        if (ymdDash === todayDash) {
-            idx = i;
-            break;
-        }
+    setScheduleColumn(todayColIdx, 'is-today');
+}
+
+//초기 선택
+function applyInitialScheduleSelection(viewList) {
+    clearScheduleSelection();
+
+    const todayColIdx = getTodayColIdx();
+    if (todayColIdx >= 0) setScheduleColumn(todayColIdx, 'is-today');
+
+    const myRowIdx = getMyRowIdx(viewList);
+    if (myRowIdx < 0) return;
+
+    const trEl = $('#scheduleTbody .schedule-tr').eq(myRowIdx);
+    if (!trEl.length) return;
+
+    trEl.addClass('is-selected-row');
+
+    if (todayColIdx >= 0) {
+        trEl.find('.td-days .day-cell').eq(todayColIdx).addClass('is-selected-cell');
+        $('#scheduleTbody').data('selColIdx', todayColIdx);
     }
-    if (idx < 0) return;
 
-    headCols.eq(idx).addClass('is-today');
+    $('#scheduleTbody').data('selRowIdx', myRowIdx);
+
+    if (!isInitialFocusDone) {
+        focusScheduleRow(trEl);
+        isInitialFocusDone = true;
+    }
+}
+
+//셀 선택
+function selectScheduleCell(cellEl) {
+    const trEl = cellEl.closest('.schedule-tr');
+    const colIdx = cellEl.index();
+
+    if (!trEl.length || colIdx < 0) return;
+
+    clearScheduleSelection();
+    setScheduleColumn(colIdx, 'is-selected-col');
+
+    trEl.addClass('is-selected-row');
+    cellEl.addClass('is-selected-cell');
+
+    $('#scheduleTbody').data('selColIdx', colIdx);
+    $('#scheduleTbody').data('selRowIdx', trEl.index());
+}
+
+//선택 초기화
+function clearScheduleSelection() {
+    $('.schedule-thead .day-col').removeClass('is-today is-selected-col');
+    $('#scheduleTbody .day-cell').removeClass('is-today is-selected-col is-selected-cell');
+    $('#scheduleTbody .schedule-tr').removeClass('is-selected-row');
+    $('#scheduleTbody').removeData('selColIdx').removeData('selRowIdx');
+}
+
+//컬럼 선택
+function setScheduleColumn(colIdx, className) {
+    $('.schedule-thead .day-col').eq(colIdx).addClass(className);
+
     $('#scheduleTbody .schedule-tr').each(function () {
-        $(this).find('.td-days .day-cell').eq(idx).addClass('is-today');
+        $(this).find('.td-days .day-cell').eq(colIdx).addClass(className);
     });
+}
+
+//오늘 컬럼
+function getTodayColIdx() {
+    const todayDash = cmSubDays(cmGetToday(''), 0, '-');
+
+    for (let i = 0; i < 7; i++) {
+        if (cmSubDays(currentMonYmd, -i, '-') === todayDash) return i;
+    }
+
+    return -1;
+}
+
+//내 행 번호
+function getMyRowIdx(viewList) {
+    const loginIcCode = String($('#loginIcCode').val() == null ? '' : $('#loginIcCode').val());
+    const myKey = loginIcCode.replace(/\D/g, '');
+    const rows = $.isArray(viewList) ? viewList : [];
+
+    if (!myKey) return -1;
+
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        if (!row) continue;
+
+        const rowKey = String(row.icCode == null ? '' : row.icCode).replace(/\D/g, '');
+        if (rowKey && rowKey === myKey) return i;
+    }
+
+    return -1;
+}
+
+//내 행 포커스
+function focusScheduleRow(trEl) {
+    const wrapEl = $('.schedule-list-wrap');
+    const trTop = trEl.position().top;
+    const wrapHeight = wrapEl.height();
+    const trHeight = trEl.outerHeight();
+
+    wrapEl.scrollTop(wrapEl.scrollTop() + trTop - (wrapHeight / 2) + (trHeight / 2));
+
+    const leftEl = trEl.find('.td-left');
+    if (!leftEl.length) return;
+
+    leftEl.attr('tabindex', '-1');
+
+    try {
+        leftEl[0].focus({ preventScroll: true });
+    } catch (e) {
+        leftEl[0].focus();
+    }
 }
 
 function showEmpPopup(anchorEl, emp) {
@@ -490,55 +560,4 @@ function buildNameHighlightHtml(name, keyword) {
     const after = nm.substring(idx + k.length);
 
     return escape(before) + '<span class="name-hit">' + escape(mid) + '</span>' + escape(after);
-}
-
-//내 사번 행 포커스 + 기존 셀클릭 하이라이트 재사용
-function focusMyRowAndHighlight(viewList) {
-    const loginIcCode = String($('#loginIcCode').val() == null ? '' : $('#loginIcCode').val());
-    const myKey = String(loginIcCode).replace(/\D/g, '');
-    if (!myKey) return;
-
-    const rows = $.isArray(viewList) ? viewList : [];
-    let myIdx = -1;
-
-    for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
-        if (!row) continue;
-
-        const rowKey = String(row.icCode == null ? '' : row.icCode).replace(/\D/g, '');
-        if (rowKey && rowKey === myKey) {
-            myIdx = i;
-            break;
-        }
-    }
-    if (myIdx < 0) return;
-
-    const trEl = $('#scheduleTbody .schedule-tr').eq(myIdx);
-    if (!trEl.length) return;
-
-    const todayDash = cmSubDays(cmGetToday(''), 0, '-');
-    let colIdx = -1;
-
-    for (let i = 0; i < 7; i++) {
-        const ymdDash = cmSubDays(currentMonYmd, -i, '-');
-        if (ymdDash === todayDash) {
-            colIdx = i;
-            break;
-        }
-    }
-
-    const cellEl = trEl.find('.td-days .day-cell').eq(colIdx < 0 ? 0 : colIdx);
-    if (cellEl.length) cellEl.trigger('click');
-
-    const wrapEl = $('.schedule-list-wrap');
-    const trTop = trEl.position().top;
-    const wrapHeight = wrapEl.height();
-    const trHeight = trEl.outerHeight();
-
-    wrapEl.scrollTop(wrapEl.scrollTop() + trTop - (wrapHeight / 2) + (trHeight / 2));
-
-    const leftEl = trEl.find('.td-left');
-    if (!leftEl.length) return;
-
-    const leftDom = leftEl[0];
 }

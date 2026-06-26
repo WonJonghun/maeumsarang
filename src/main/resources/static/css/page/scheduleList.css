@@ -1,10 +1,11 @@
 :root{--topbar-h:60px;--weekbar-h:52px}
 
-/* 이 페이지에서만 body 스크롤 금지 (scheduleList.css는 scheduleList 페이지에만 로드됨) */
+/* 이 페이지에서만 body 스크롤 금지 */
 body.notice-page{
     height:100vh;
     overflow:hidden;
 }
+
 body.notice-page .page-root{
     height:100vh;
     overflow:hidden;
@@ -15,11 +16,8 @@ body.notice-page .page-root{
     display:flex;
     flex-direction:column;
     min-height:0;
-
-    /* 여기만 스크롤 */
     overflow:auto;
     overscroll-behavior:contain;
-
     background:#fff;
 }
 
@@ -36,7 +34,7 @@ body.notice-page .page-root{
     border-bottom:1px solid rgba(0,0,0,.08);
     position:sticky;
     top:0;
-    z-index:9;
+    z-index:20;
     min-height:var(--weekbar-h);
     box-sizing:border-box;
 }
@@ -45,7 +43,6 @@ body.notice-page .page-root{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    /*gap:10px;*/
 }
 
 .week-nav{
@@ -53,7 +50,6 @@ body.notice-page .page-root{
     min-width:0;
     display:flex;
     align-items:center;
-    /*gap:6px;*/
     padding:0;
     background:transparent;
     border:0;
@@ -76,8 +72,21 @@ body.notice-page .page-root{
     padding:0;
     box-shadow:none;
 }
-.week-btn:active{transform:translateY(1px)}
-.week-btn:focus-visible{outline:0; box-shadow:none}
+
+.week-btn:active{
+    transform:translateY(1px);
+}
+
+.week-btn:focus-visible{
+    outline:0;
+    box-shadow:none;
+}
+
+.week-btn i{
+    font-size:14px;
+    font-weight:300;
+    line-height:1;
+}
 
 .week-range{
     flex:1 1 auto;
@@ -99,14 +108,14 @@ body.notice-page .page-root{
     box-shadow:none;
 }
 
-.week-btn i{
-    font-size:14px;
-    font-weight:300;
-    line-height:1;
+.week-range:active{
+    transform:translateY(1px);
 }
 
-.week-range:active{transform:translateY(1px)}
-.week-range:focus-visible{outline:0; box-shadow:none}
+.week-range:focus-visible{
+    outline:0;
+    box-shadow:none;
+}
 
 .week-range-text{
     flex:1 1 auto;
@@ -189,11 +198,9 @@ body.notice-page .page-root{
     display:flex;
     align-items:stretch;
     background:#fff;
-
-    /* 상단 컬럼 고정: 주 선택 바 아래에 붙음 */
     position:sticky;
     top:var(--weekbar-h);
-    z-index:8;
+    z-index:19;
 }
 
 .thead-left{
@@ -203,9 +210,9 @@ body.notice-page .page-root{
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    padding:6px 0;
+    padding:4px 0;
     background:#fff;
-    border-bottom:1px solid rgba(0, 0, 0, 0.05);
+    border-bottom:1px solid rgba(0,0,0,0.05);
     position:relative;
     z-index:2;
 }
@@ -236,7 +243,7 @@ body.notice-page .page-root{
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    padding:6px 0;
+    padding:4px 0;
     border-bottom:1px solid rgba(0,0,0,0.05);
     border-right:0;
 }
@@ -246,14 +253,14 @@ body.notice-page .page-root{
 }
 
 .dow{
-    font-size:13px;
+    font-size:12px;
     font-weight:600;
     color:rgba(0,0,0,.70);
 }
 
 .dom{
-    margin-top:3px;
-    font-size:13px;
+    margin-top:1px;
+    font-size:12px;
     font-weight:600;
     color:rgba(0,0,0,.45);
 }
@@ -286,19 +293,23 @@ body.notice-page .page-root{
     flex-direction:column;
     align-items:center;
     justify-content:flex-start;
-    padding:3px 0;
+    padding:2px 0;
     background:#fff;
     border-bottom:1px solid rgba(0,0,0,0.05);
     position:relative;
     z-index:1;
 }
 
+.schedule-td.td-left:focus{
+    outline:0;
+}
+
 .profile-circle{
-    width:32px;
-    height:32px;
+    width:28px;
+    height:28px;
     border-radius:50%;
     background:rgba(0,0,0,.08);
-    box-shadow:0 6px 14px rgba(0,0,0,0.14);
+    box-shadow:0 3px 8px rgba(0,0,0,0.10);
     overflow:hidden;
     object-fit:cover;
     display:flex;
@@ -306,13 +317,180 @@ body.notice-page .page-root{
     justify-content:center;
 }
 
-.profile-circle .schedule-profile-img {
-    width: 180%;
-    height: 180%;
-    padding-top: 10px;
-    object-fit: cover;
-    display: block;
+.profile-circle .schedule-profile-img{
+    width:180%;
+    height:180%;
+    padding-top:10px;
+    object-fit:cover;
+    display:block;
     box-shadow:0 2px 8px rgba(0,0,0,0.10);
+}
+
+.ic-name{
+    margin-top:1px;
+    font-size:12px;
+    font-weight:600;
+    color:rgba(0,0,0,.70);
+    text-align:center;
+    max-width:60px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.ic-name .name-hit{
+    color:#1f6feb;
+    font-weight:800;
+}
+
+.schedule-td.td-days{
+    flex:1 1 auto;
+    min-width:0;
+    display:grid;
+    grid-template-columns:repeat(7, 1fr);
+    background:#fff;
+}
+
+.day-cell{
+    min-height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-width:0;
+    overflow:hidden;
+    position:relative;
+    font-size:12px;
+    font-weight:600;
+    color:rgba(0,0,0,.72);
+    border-bottom:1px solid rgba(0,0,0,0.05);
+}
+
+.shift-tag{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:calc(100% - 16px);
+    max-width:calc(100% - 16px);
+    min-height:23px;
+    height:auto;
+    padding:4px 2px;
+    margin:0 8px;
+    box-sizing:border-box;
+    border-radius:3px;
+    font-size:11px;
+    font-weight:700;
+    line-height:1.15;
+    border:0;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.shift-d{
+    background:#dfece4;
+    color:#1e9c5a;
+}
+
+.shift-e{
+    background:#dfe9f6;
+    color:#2b73d2;
+}
+
+.shift-n{
+    background:#f5dfdf;
+    color:#e24b4b;
+}
+
+.shift-etc{
+    background:#e2e4e5;
+    color:#6b7280;
+}
+
+.shift-duty{
+    background:#f1e9ff;
+    color:#7c3aed;
+}
+
+/* ================== 선택 영역 ↓================== */
+
+.schedule-thead .day-col.is-today{
+    background:#fffaf3;
+    box-shadow:
+            inset 0 0 0 9999px rgba(255, 170, 0, 0.025),
+            inset 1px 0 0 rgba(255, 140, 0, 0.10),
+            inset -1px 0 0 rgba(255, 140, 0, 0.10);
+}
+
+.schedule-table .day-cell.is-today{
+    background:#fffaf3;
+    box-shadow:
+            inset 0 0 0 9999px rgba(255, 170, 0, 0.02),
+            inset 1px 0 0 rgba(255, 140, 0, 0.08),
+            inset -1px 0 0 rgba(255, 140, 0, 0.08);
+}
+
+.schedule-thead .day-col.is-selected-col{
+    background:#fffaf3;
+    box-shadow:
+            inset 0 0 0 9999px rgba(255, 170, 0, 0.025),
+            inset 1px 0 0 rgba(255, 140, 0, 0.10),
+            inset -1px 0 0 rgba(255, 140, 0, 0.10);
+}
+
+.schedule-table .day-cell.is-selected-col{
+    background:#fffaf3;
+}
+
+.schedule-table .day-cell.is-selected-col::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    box-shadow:
+            inset 0 0 0 9999px rgba(255, 170, 0, 0.02),
+            inset 1px 0 0 rgba(255, 140, 0, 0.08),
+            inset -1px 0 0 rgba(255, 140, 0, 0.08);
+}
+
+.schedule-tbody .schedule-tr.is-selected-row .td-left,
+.schedule-tbody .schedule-tr.is-selected-row .day-cell{
+    background:#fffaf4;
+}
+
+.schedule-tbody .schedule-tr.is-selected-row .td-left::after,
+.schedule-tbody .schedule-tr.is-selected-row .day-cell::after{
+    content:'';
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    box-shadow:
+            inset 0 1px 0 rgba(255, 140, 0, 0.08),
+            inset 0 -1px 0 rgba(255, 140, 0, 0.08);
+}
+
+.schedule-table .day-cell.is-selected-cell{
+    background:#fff5e9;
+    box-shadow:
+            inset 0 0 0 9999px rgba(255, 170, 0, 0.025),
+            inset 0 0 0 1px rgba(255, 140, 0, 0.12);
+}
+
+.schedule-table .day-cell.is-selected-cell::before,
+.schedule-table .day-cell.is-selected-cell::after{
+    box-shadow:none;
+}
+
+/* ================== 선택 영역 ↑================== */
+
+.emp-pop{
+    position:absolute;
+    z-index:9999;
+    min-width:220px;
+    max-width:260px;
+    background:#fff;
+    border-radius:10px;
+    padding:12px 20px;
+    box-shadow:0 8px 24px rgba(0,0,0,0.12);
 }
 
 .emp-pop-head{
@@ -337,159 +515,12 @@ body.notice-page .page-root{
     flex:1 1 auto;
 }
 
-.ic-name{
-    margin-top:2px;
-    font-size:13px;
-    font-weight:600;
-    color:rgba(0,0,0,.70);
-    text-align:center;
-    max-width:60px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-}
-
-.schedule-td.td-days{
-    flex:1 1 auto;
-    min-width:0;
-    display:grid;
-    grid-template-columns:repeat(7, 1fr);
-    background:#fff;
-}
-
-.day-cell{
-    min-height:54px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:12px;
-    font-weight:600;
-    color:rgba(0,0,0,.72);
-    border-bottom:1px solid rgba(0,0,0,0.05);
-}
-
-.schedule-table .day-cell{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    min-width:0;
-    overflow:hidden;
-}
-
-.shift-tag{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    width:100%;
-    max-width:100%;
-    height:55%;
-    padding:9px 10px;
-    margin:0 2px 0 2px;
-    border-radius:3px;
-    font-size:14px;
-    font-weight:700;
-    line-height:1;
-    border:0;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-}
-
-.shift-d{
-    background: #dfece4;
-    color:#1e9c5a;
-}
-
-.shift-e{
-    background: #dfe9f6;
-    color:#2b73d2;
-}
-
-.shift-n{
-    background: #f5dfdf;
-    color:#e24b4b;
-}
-
-.shift-etc{
-    background: #e2e4e5;
-    color:#6b7280;
-}
-
-.shift-duty{
-    background:#f1e9ff;
-    color:#7c3aed;
-}
-
-.schedule-thead .day-col.is-today{
-    background:#fdf3e4;
-    box-shadow: inset 0 0 0 9999px rgba(255, 170, 0, 0.06),
-    inset 1px 0 0 rgba(255, 140, 0, 0.22),
-    inset -1px 0 0 rgba(255, 140, 0, 0.22);
-}
-
-.schedule-table .day-cell.is-today{
-    background:#faf5ed;
-    box-shadow: inset 0 0 0 9999px rgba(255, 170, 0, 0.04),
-    inset 1px 0 0 rgba(255, 140, 0, 0.18),
-    inset -1px 0 0 rgba(255, 140, 0, 0.18);
-}
-
-.schedule-table .day-cell{
-    position:relative;
-}
-
-.schedule-thead .day-col.is-selected-col{
-    background:#faf5ed;
-    box-shadow: inset 0 0 0 9999px rgba(255, 170, 0, 0.06),
-    inset 1px 0 0 rgba(255, 140, 0, 0.14),
-    inset -1px 0 0 rgba(255, 140, 0, 0.14);
-}
-
-.schedule-table .day-cell.is-selected-col{
-    background: #faf5ed;
-}
-
-.schedule-table .day-cell.is-selected-col::before{
-    content:'';
-    position:absolute;
-    inset:0;
-    pointer-events:none;
-    box-shadow: inset 0 0 0 9999px rgba(255, 170, 0, 0.04),
-    inset 1px 0 0 rgba(255, 140, 0, 0.12),
-    inset -1px 0 0 rgba(255, 140, 0, 0.12);
-}
-
-.schedule-tbody .schedule-tr.is-selected-row .td-left,
-.schedule-tbody .schedule-tr.is-selected-row .day-cell{
-    background: #fdf6eb;
-}
-
-.schedule-tbody .schedule-tr.is-selected-row .td-left::after,
-.schedule-tbody .schedule-tr.is-selected-row .day-cell::after{
-    content:'';
-    position:absolute;
-    inset:0;
-    pointer-events:none;
-    box-shadow: inset 0 1px 0 rgba(255, 140, 0, 0.10),
-    inset 0 -1px 0 rgba(255, 140, 0, 0.10);
-}
-
-.emp-pop{
-    position:absolute;
-    z-index:9999;
-    min-width:220px;
-    max-width:260px;
-    background:#fff;
-    border-radius:10px;
-    padding:12px 20px;
-    box-shadow:0 8px 24px rgba(0,0,0,0.12);
-}
-
 .emp-pop-name{
     font-size:16px;
     font-weight:800;
     line-height:1.2;
     margin-bottom:4px;
+    color:#2b73d2;
 }
 
 .emp-pop-sub{
@@ -519,10 +550,6 @@ body.notice-page .page-root{
     white-space:nowrap;
 }
 
-.emp-pop-name{
-    color:#2b73d2;
-}
-
 .emp-pop-link{
     color:inherit;
     text-decoration:none;
@@ -533,19 +560,6 @@ body.notice-page .page-root{
     text-decoration:underline;
 }
 
-.ic-name .name-hit{
-    color:#1f6feb;
-    font-weight:800;
-}
-
 .topbar{
     z-index:100;
-}
-
-.schedule-weekbar{
-    z-index:20;
-}
-
-.schedule-thead{
-    z-index:19;
 }
