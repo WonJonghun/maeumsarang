@@ -55,13 +55,7 @@
                 END,
             Rp_JobUserID = NULLIF(#{rpJobUserId}, ''),
             Rp_ReRemark = #{rpReRemark},
-            Rp_ReFlag = #{rpReFlag},
-            Rp_Sign1 = NULLIF(#{rpSign1}, ''),
-            Rp_EXDate = CASE
-                            WHEN NULLIF(#{rpExDateText}, '') IS NULL THEN NULL
-                            ELSE CONVERT(datetime, #{rpExDateText})
-                END,
-            Rp_Sign2 = NULLIF(#{rpSign2}, '')
+            Rp_ReFlag = #{rpReFlag}
         WHERE
             Rp_Date = #{rpDate}
           AND Rp_Number = #{rpNumber}

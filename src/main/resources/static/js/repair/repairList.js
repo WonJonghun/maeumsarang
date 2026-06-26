@@ -138,6 +138,17 @@ function repairDetail(rowEl) {
     const d = $(rowEl).data();
     const editable = cmGetAdminYn($('#adminKey').val()) === 'Y' && Number(d.rpReFlag || 1) === 1;
 
+    const loginIcCode = $.trim($('#loginIcCode').val() || '');
+    const loginName = $.trim($('.user-name').first().text() || '');
+
+    const rpReUserId = $.trim(d.rpReUserId || '') || (editable ? loginIcCode : '');
+    const rpJobUserId = $.trim(d.rpJobUserId || '') || (editable ? loginIcCode : '');
+    const reUserNm = $.trim(d.reUserNm || '') || (editable ? loginName : '');
+    const jobUserNm = $.trim(d.jobUserNm || '') || (editable ? loginName : '');
+
+    const rawRpReRemark = d.rpReRemark == null ? '' : String(d.rpReRemark);
+    const rpReRemark = $.trim(rawRpReRemark) === '' && editable ? getRepairDefaultRemark() : rawRpReRemark;
+
     const rpRegDate = d.rpRegDate || '';
     const dateText = d.rpDate ? cmFormatYmd(d.rpDate, '.') : '';
     const timeText = rpRegDate ? String(rpRegDate).replace('T', ' ').substring(11, 16) : '';
@@ -197,9 +208,8 @@ function repairDetail(rowEl) {
 
     html += '  <div class="rd-grid">';
     html += '    <div class="rd-label">접수직원</div>';
-    html += editable
-        ? '    <input type="text" class="rd-input" id="rpReUserId" value="' + cmEscapeHtml($.trim(d.rpReUserId || '')) + '" placeholder="직원ID" />'
-        : '    <div class="rd-field">' + cmEscapeHtml($.trim(d.reUserNm || '')) + '</div>';
+    html += '    <div class="rd-field">' + cmEscapeHtml(reUserNm) + '</div>';
+    html += editable ? '    <input type="hidden" id="rpReUserId" value="' + cmEscapeHtml(rpReUserId) + '" />' : '';
 
     html += '    <div class="rd-label">처리예정일</div>';
     html += editable
@@ -207,9 +217,8 @@ function repairDetail(rowEl) {
         : '    <div class="rd-field">' + cmEscapeHtml(cmDateOnly(d.rpReDate || '')) + '</div>';
 
     html += '    <div class="rd-label">작업직원</div>';
-    html += editable
-        ? '    <input type="text" class="rd-input" id="rpJobUserId" value="' + cmEscapeHtml($.trim(d.rpJobUserId || '')) + '" placeholder="직원ID" />'
-        : '    <div class="rd-field">' + cmEscapeHtml($.trim(d.jobUserNm || '')) + '</div>';
+    html += '    <div class="rd-field">' + cmEscapeHtml(jobUserNm) + '</div>';
+    html += editable ? '    <input type="hidden" id="rpJobUserId" value="' + cmEscapeHtml(rpJobUserId) + '" />' : '';
     html += '  </div>';
 
     html += '  <div style="height:10px;"></div>';
@@ -217,8 +226,8 @@ function repairDetail(rowEl) {
     html += '  <div class="rd-grid">';
     html += '    <div class="rd-label rd-text-label">작업내용</div>';
     html += editable
-        ? '    <textarea class="rd-textarea" id="rpReRemark">' + cmEscapeHtml(d.rpReRemark || '') + '</textarea>'
-        : '    <div class="rd-text-area">' + cmNl2br(d.rpReRemark || '') + '</div>';
+        ? '    <textarea class="rd-textarea" id="rpReRemark">' + cmEscapeHtml(rpReRemark) + '</textarea>'
+        : '    <div class="rd-text-area">' + cmNl2br(rpReRemark) + '</div>';
     html += '  </div>';
 
     html += '  <div style="height:10px;"></div>';
@@ -231,25 +240,6 @@ function repairDetail(rowEl) {
     html += '      <label><input type="radio" name="rpReFlag" value="3"' + chk(d.rpReFlag, 3) + (editable ? '' : ' tabindex="-1"') + '><span class="text-red">수리불가</span></label>';
     html += '      <label><input type="radio" name="rpReFlag" value="4"' + chk(d.rpReFlag, 4) + (editable ? '' : ' tabindex="-1"') + '><span class="text-blue">AS신청</span></label>';
     html += '    </div>';
-    html += '  </div>';
-
-    html += '  <div class="rd-divider"></div>';
-
-    html += '  <div class="rd-grid">';
-    html += '    <div class="rd-label">담당팀장</div>';
-    html += editable
-        ? '    <input type="text" class="rd-input" id="rpSign1" value="' + cmEscapeHtml($.trim(d.rpSign1 || '')) + '" />'
-        : '    <div class="rd-field">' + cmEscapeHtml($.trim(d.rpSign1 || '')) + '</div>';
-
-    html += '    <div class="rd-label">작업종료</div>';
-    html += editable
-        ? '    <input type="date" class="rd-input" id="rpExDateText" value="' + cmEscapeHtml(cmDateOnly(d.rpExDate || '')) + '" />'
-        : '    <div class="rd-field">' + cmEscapeHtml(cmDateOnly(d.rpExDate || '')) + '</div>';
-
-    html += '    <div class="rd-label">작업확인</div>';
-    html += editable
-        ? '    <input type="text" class="rd-input" id="rpSign2" value="' + cmEscapeHtml($.trim(d.rpSign2 || '')) + '" />'
-        : '    <div class="rd-field">' + cmEscapeHtml($.trim(d.rpSign2 || '')) + '</div>';
     html += '  </div>';
 
     if (editable) {
@@ -268,14 +258,11 @@ function saveRepairDetail() {
     const data = {
         rpDate: $('#btnRepairSave').data('rp-date'),
         rpNumber: $('#btnRepairSave').data('rp-number'),
-        rpReUserId: $.trim($('#rpReUserId').val()),
+        rpReUserId: $('#rpReUserId').val(),
         rpReDateText: $('#rpReDateText').val(),
-        rpJobUserId: $.trim($('#rpJobUserId').val()),
+        rpJobUserId: $('#rpJobUserId').val(),
         rpReRemark: $('#rpReRemark').val(),
-        rpReFlag: $('input[name="rpReFlag"]:checked').val(),
-        rpSign1: $.trim($('#rpSign1').val()),
-        rpExDateText: $('#rpExDateText').val(),
-        rpSign2: $.trim($('#rpSign2').val())
+        rpReFlag: $('input[name="rpReFlag"]:checked').val()
     };
 
     if (!data.rpReFlag) {
@@ -313,4 +300,16 @@ function getRepairStatusInfo(rpReFlag) {
         default:
             return { code: 1, text: '진행중', className: 'text-yellow' };
     }
+}
+
+// 작업내용 기본값
+function getRepairDefaultRemark() {
+    const d = new Date();
+    const yy = String(d.getFullYear()).slice(-2);
+    const mm = ('0' + (d.getMonth() + 1)).slice(-2);
+    const dd = ('0' + d.getDate()).slice(-2);
+    const hh = ('0' + d.getHours()).slice(-2);
+    const mi = ('0' + d.getMinutes()).slice(-2);
+
+    return yy + '/' + mm + '/' + dd + ' ' + hh + ':' + mi + '\n\n';
 }

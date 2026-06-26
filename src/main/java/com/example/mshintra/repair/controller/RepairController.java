@@ -51,6 +51,14 @@ public class RepairController {
             return result;
         }
 
+        if (repairDto.getRpReUserId() == null || repairDto.getRpReUserId().isBlank()) {
+            repairDto.setRpReUserId(loginUser.getIcCode());
+        }
+
+        if (repairDto.getRpJobUserId() == null || repairDto.getRpJobUserId().isBlank()) {
+            repairDto.setRpJobUserId(loginUser.getIcCode());
+        }
+
         int cnt = repairService.updateRepairProcess(repairDto);
 
         if (cnt == 0) {
