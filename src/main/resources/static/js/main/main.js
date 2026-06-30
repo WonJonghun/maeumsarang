@@ -232,6 +232,7 @@ function loadPatientStatusByDate(dateStr) {
         });
 }
 
+//환자현황
 function renderPatientStatus(data) {
     const statusWrap = $('.patient-status-wrap');
 
@@ -249,8 +250,8 @@ function renderPatientStatus(data) {
     const cnt5 = parseInt(data.cnt5, 10) || 0;
     const cnt8 = parseInt(data.cnt8, 10) || 0;
     const cnt9 = parseInt(data.cnt9, 10) || 0;
+    const beds = parseInt(data.srTo, 10) || 0;
 
-    const beds = 560;
     const inHosPercent = beds > 0 ? Math.round(cnt1 * 100 / beds) : 0;
     const inoutDayTotal = cnt4 + cnt5;
     const inoutPercent = inoutDayTotal > 0 ? Math.round(cnt5 * 100 / inoutDayTotal) : 0;
