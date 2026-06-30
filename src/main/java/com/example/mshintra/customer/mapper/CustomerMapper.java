@@ -7,4 +7,6 @@ import org.apache.ibatis.annotations.Mapper;
 public interface CustomerMapper {
 
     CustomerDto selectCustomerDailyStats(CustomerDto searchDto);
+
+    CustomerDto selectCustomerBedCount(CustomerDto searchDto);
 }

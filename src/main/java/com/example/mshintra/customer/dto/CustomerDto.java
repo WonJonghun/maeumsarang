@@ -20,4 +20,5 @@ public class CustomerDto {
     private String cnt8;      // 외래접수
     private String cnt9;      // 진료완료
 
+    private String srTo;      // 허가병상
 }

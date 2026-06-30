@@ -16,4 +16,9 @@ public class CustomerService {
     public CustomerDto selectCustomerDailyStats(CustomerDto searchDto) {
         return customerMapper.selectCustomerDailyStats(searchDto);
     }
+
+    @Transactional(readOnly = true)
+    public CustomerDto selectCustomerBedCount(CustomerDto searchDto) {
+        return customerMapper.selectCustomerBedCount(searchDto);
+    }
 }

@@ -211,9 +211,16 @@
                 </div>
 
                 <div class="patient-status-wrap">
+                    <c:set var="permitBedCnt" value="${empty customerDailyStats.srTo ? 0 : customerDailyStats.srTo}"/>
+
                     <c:set var="inHosPercent" value="0"/>
-                    <c:if test="${not empty customerDailyStats.cnt1}">
-                        <fmt:formatNumber value="${customerDailyStats.cnt1 * 100 / 560}" type="number" maxFractionDigits="0" var="inHosPercent"/>
+                    <c:if test="${not empty customerDailyStats.cnt1 and permitBedCnt != 0}">
+                        <fmt:formatNumber value="${customerDailyStats.cnt1 * 100 / permitBedCnt}" type="number" maxFractionDigits="0" var="inHosPercent"/>
+                    </c:if>
+
+                    <c:set var="inoutPercent" value="0"/>
+                    <c:if test="${not empty customerDailyStats.cnt4 and not empty customerDailyStats.cnt5 and (customerDailyStats.cnt4 + customerDailyStats.cnt5) != 0}">
+                        <fmt:formatNumber value="${customerDailyStats.cnt5 * 100 / (customerDailyStats.cnt4 + customerDailyStats.cnt5)}" type="number" maxFractionDigits="0" var="inoutPercent"/>
                     </c:if>
 
                     <div class="patient-chart">
@@ -226,17 +233,11 @@
                         </div>
                         <div class="patient-tooltip">
                             <div class="patient-tooltip-inner">
-                                <p><c:out value="${customerDailyStats.cnt1}"/>명 / 560명</p>
+                                <p><c:out value="${customerDailyStats.cnt1}"/>명 / <c:out value="${permitBedCnt}"/>명</p>
                                 <p>(재원환자 / 허가병상)</p>
                             </div>
                         </div>
                     </div>
-
-                    <c:set var="inoutPercent" value="0"/>
-                    <c:if test="${(not empty customerDailyStats.cnt4 or not empty customerDailyStats.cnt5)
-                                 and (customerDailyStats.cnt4 + customerDailyStats.cnt5) != 0}">
-                        <fmt:formatNumber value="${customerDailyStats.cnt5 * 100 / (customerDailyStats.cnt4 + customerDailyStats.cnt5)}" type="number" maxFractionDigits="0" var="inoutPercent"/>
-                    </c:if>
 
                     <div class="patient-chart">
                         <p class="patient-chart-label">입/퇴원</p>

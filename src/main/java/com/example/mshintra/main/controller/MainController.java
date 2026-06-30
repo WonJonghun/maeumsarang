@@ -91,7 +91,14 @@ public class MainController {
         model.addAttribute("noticeList", noticeList);
         model.addAttribute("boardList", boardList);
         model.addAttribute("calendarList", scheduleService.selectTodayScheduleList(calendarDto));
-        model.addAttribute("customerDailyStats", customerService.selectCustomerDailyStats(customerDto));
+        CustomerDto customerDailyStats = customerService.selectCustomerDailyStats(customerDto);
+        CustomerDto customerBedCount = customerService.selectCustomerBedCount(customerDto);
+
+        if (customerDailyStats != null && customerBedCount != null) {
+            customerDailyStats.setSrTo(customerBedCount.getSrTo());
+        }
+
+        model.addAttribute("customerDailyStats", customerDailyStats);
         model.addAttribute("dayDutyList", scheduleService.selectDayDutyList(dayDutyDto));
         model.addAttribute("outDayDutyList", scheduleService.selectOutDayDutyList(dayDutyDto));
         model.addAttribute("birthdayList", birthdayList);

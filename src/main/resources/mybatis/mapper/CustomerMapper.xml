@@ -3,8 +3,16 @@
 
 <mapper namespace="com.example.mshintra.customer.mapper.CustomerMapper">
 
+    <resultMap id="customerBedCountResultMap" type="com.example.mshintra.customer.dto.CustomerDto">
+        <result column="sr_TO" property="srTo"/>
+    </resultMap>
+
     <select id="selectCustomerDailyStats" resultType="com.example.mshintra.customer.dto.CustomerDto" statementType="CALLABLE">
         { call dbo.Intranet_PurPose(#{baseDt}, '1') }
+    </select>
+
+    <select id="selectCustomerBedCount" resultMap="customerBedCountResultMap" statementType="CALLABLE">
+        { call dbo.Intranet_OCS_TO(#{baseDt}, '3') }
     </select>
 
 </mapper>
