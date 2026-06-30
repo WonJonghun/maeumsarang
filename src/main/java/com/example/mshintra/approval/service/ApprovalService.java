@@ -170,6 +170,10 @@ public class ApprovalService {
                 value = extractLeavePeriod(value);
             }
 
+            if ("OF".equals(dto.getCcFlag()) && seq == 20) {
+                title = extractOfLeaveType(title);
+            }
+
             ApprovalDetailItemDto item = new ApprovalDetailItemDto();
             item.setSeq(seq);
             item.setTitle(title);
@@ -201,6 +205,24 @@ public class ApprovalService {
         }
 
         return result.trim();
+    }
+
+    private String extractOfLeaveType(String value) {
+        if (CmUtil.isBlank(value)) {
+            return value;
+        }
+
+        int start = value.indexOf("연차");
+        if (start < 0) {
+            return value;
+        }
+
+        Matcher matcher = Pattern.compile("병가\\s*[□▣]").matcher(value.substring(start));
+        if (!matcher.find()) {
+            return value;
+        }
+
+        return value.substring(start, start + matcher.end()).trim();
     }
 
     @Transactional(readOnly = true)
