@@ -17,6 +17,13 @@ public class CustomerController {
 
     @GetMapping("/dailyStats.do")
     public CustomerDto selectCustomerDailyStats(@ModelAttribute CustomerDto searchDto) {
-        return customerService.selectCustomerDailyStats(searchDto);
+        CustomerDto customerDailyStats = customerService.selectCustomerDailyStats(searchDto);
+        CustomerDto customerBedCount = customerService.selectCustomerBedCount(searchDto);
+
+        if (customerDailyStats != null && customerBedCount != null) {
+            customerDailyStats.setSrTo(customerBedCount.getSrTo());
+        }
+
+        return customerDailyStats;
     }
 }
