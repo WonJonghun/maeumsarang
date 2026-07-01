@@ -4,10 +4,15 @@ import com.example.mshintra.approval.dto.*;
 import com.example.mshintra.approval.mapper.ApprovalMapper;
 import com.example.mshintra.common.service.CommonCodeService;
 import com.example.mshintra.common.util.CmUtil;
+import com.example.mshintra.login.dto.LoginUserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -217,12 +222,19 @@ public class ApprovalService {
             return value;
         }
 
-        Matcher matcher = Pattern.compile("병가\\s*[□▣]").matcher(value.substring(start));
-        if (!matcher.find()) {
-            return value;
+        String target = value.substring(start);
+
+        Matcher matcher = Pattern.compile("휴직\\s*[□▣]").matcher(target);
+        if (matcher.find()) {
+            return value.substring(start, start + matcher.end()).trim();
         }
 
-        return value.substring(start, start + matcher.end()).trim();
+        matcher = Pattern.compile("병가\\s*[□▣]").matcher(target);
+        if (matcher.find()) {
+            return value.substring(start, start + matcher.end()).trim();
+        }
+
+        return value;
     }
 
     @Transactional(readOnly = true)
@@ -428,5 +440,257 @@ public class ApprovalService {
         approvalMapper.receiveApprovalPaper(ymd, piSeq, saCd);
 
         return "OK";
+    }
+
+    @Transactional
+    public String insertOfApproval(ApprovalOfRequestDto requestDto, String saCd) {
+
+        try {
+            if (requestDto == null || CmUtil.isBlank(saCd)) {
+                return "INVALID";
+            }
+
+            LocalDate startDate = LocalDate.parse(CmUtil.trim(requestDto.getStartDate()));
+            LocalDate endDate = LocalDate.parse(CmUtil.trim(requestDto.getEndDate()));
+
+            if (startDate.isAfter(endDate)) {
+                return "INVALID";
+            }
+
+            String leaveType = CmUtil.trim(requestDto.getLeaveType());
+            String timeType = CmUtil.trim(requestDto.getTimeType());
+            String reason = CmUtil.trim(requestDto.getReason());
+
+            if (!isOfLeaveType(leaveType) || !isOfTimeType(timeType) || CmUtil.isBlank(reason)) {
+                return "INVALID";
+            }
+
+            BigDecimal dayCount = getOfDayCount(startDate, endDate, timeType);
+
+            if (dayCount.compareTo(BigDecimal.ZERO) <= 0) {
+                return "INVALID";
+            }
+
+            String code = approvalMapper.selectNextApprovalCode();
+
+            ApprovalOfSaveDto saveDto = buildOfSaveDto(code, saCd, startDate, endDate, leaveType, timeType, dayCount, reason);
+            applyLastOfApprovalLine(saveDto, saCd);
+
+            approvalMapper.insertApprovalSign(saveDto);
+            approvalMapper.insertApprovalOfDetail(saveDto);
+
+            return code;
+        } catch (Exception e) {
+            return "FAIL";
+        }
+    }
+
+    private ApprovalOfSaveDto buildOfSaveDto(String code,
+                                             String saCd,
+                                             LocalDate startDate,
+                                             LocalDate endDate,
+                                             String leaveType,
+                                             String timeType,
+                                             BigDecimal dayCount,
+                                             String reason) {
+
+        String leaveNm = getOfLeaveTypeNm(leaveType);
+
+        String leaveFlag = "연차 □    보상 □    공가 □    출산 □    병가 □    휴직 □";
+        leaveFlag = leaveFlag.replace(leaveNm + " □", leaveNm + " ▣");
+
+        String timeFlag = getOfTimeFlag(timeType);
+
+        String offData = buildOfData(startDate, endDate, leaveType, timeType);
+        String dayCountText = dayCount.stripTrailingZeros().toPlainString();
+
+        String wfData = saCd + "@" + dayCountText + ":" + reason + ";" + offData;
+        String periodText = buildOfPeriodText(startDate, endDate, leaveType, timeType, dayCount, dayCountText);
+        String eaRmk = wfData + "@2" + leaveFlag + "@3" + reason + "@4" + timeFlag + "@0" + periodText;
+
+        ApprovalOfSaveDto saveDto = new ApprovalOfSaveDto();
+        saveDto.setCode(code);
+        saveDto.setDate(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+        saveDto.setTitle("휴가신청서");
+        saveDto.setSaCd(saCd);
+        saveDto.setEaRmk(eaRmk);
+
+        saveDto.setSignCnt(1);
+        saveDto.setSign1(saCd);
+        saveDto.setSign2("");
+        saveDto.setSign3("");
+        saveDto.setSign4("");
+        saveDto.setSign5("");
+        saveDto.setSign6("");
+        saveDto.setSign7("");
+        saveDto.setSign8("");
+
+        saveDto.setHubJo1("");
+        saveDto.setHubJo2("");
+        saveDto.setHubJo3("");
+        saveDto.setHubJo4("");
+        saveDto.setHubJo5("");
+
+        return saveDto;
+    }
+
+    private void applyLastOfApprovalLine(ApprovalOfSaveDto saveDto, String saCd) {
+
+        Map<String, Object> row = approvalMapper.selectLastOfApprovalSign(saCd);
+
+        if (row == null) {
+            return;
+        }
+
+        Integer signCnt = CmUtil.toInt(CmUtil.getIgnoreCase(row, "signCnt"));
+
+        saveDto.setSignCnt(signCnt == null || signCnt < 1 ? 1 : signCnt);
+        saveDto.setSign2(CmUtil.str(CmUtil.getIgnoreCase(row, "sign2")));
+        saveDto.setSign3(CmUtil.str(CmUtil.getIgnoreCase(row, "sign3")));
+        saveDto.setSign4(CmUtil.str(CmUtil.getIgnoreCase(row, "sign4")));
+        saveDto.setSign5(CmUtil.str(CmUtil.getIgnoreCase(row, "sign5")));
+        saveDto.setSign6(CmUtil.str(CmUtil.getIgnoreCase(row, "sign6")));
+        saveDto.setSign7(CmUtil.str(CmUtil.getIgnoreCase(row, "sign7")));
+        saveDto.setSign8(CmUtil.str(CmUtil.getIgnoreCase(row, "sign8")));
+
+        saveDto.setHubJo1(CmUtil.str(CmUtil.getIgnoreCase(row, "hubJo1")));
+        saveDto.setHubJo2(CmUtil.str(CmUtil.getIgnoreCase(row, "hubJo2")));
+        saveDto.setHubJo3(CmUtil.str(CmUtil.getIgnoreCase(row, "hubJo3")));
+        saveDto.setHubJo4(CmUtil.str(CmUtil.getIgnoreCase(row, "hubJo4")));
+        saveDto.setHubJo5(CmUtil.str(CmUtil.getIgnoreCase(row, "hubJo5")));
+    }
+
+    private String buildOfData(LocalDate startDate, LocalDate endDate, String leaveType, String timeType) {
+
+        StringBuilder sb = new StringBuilder();
+
+        LocalDate date = startDate;
+        while (!date.isAfter(endDate)) {
+            if (!sb.isEmpty()) {
+                sb.append(",");
+            }
+
+            sb.append(date.format(DateTimeFormatter.BASIC_ISO_DATE))
+                    .append(leaveType)
+                    .append(timeType);
+
+            date = date.plusDays(1);
+        }
+
+        return sb.toString();
+    }
+
+    private String buildOfPeriodText(LocalDate startDate,
+                                     LocalDate endDate,
+                                     String leaveType,
+                                     String timeType,
+                                     BigDecimal dayCount,
+                                     String dayCountText) {
+
+        DateTimeFormatter periodFormatter = DateTimeFormatter.ofPattern("yyyy 년     MM 월     dd 일");
+
+        String result = startDate.format(periodFormatter)
+                + "부터\r\n"
+                + endDate.format(periodFormatter)
+                + "까지 ( "
+                + dayCountText
+                + " 일간)";
+
+        BigDecimal calendarDays = BigDecimal.valueOf(ChronoUnit.DAYS.between(startDate, endDate) + 1);
+
+        if (calendarDays.compareTo(dayCount) != 0) {
+            result += "\r\n" + buildOfPeriodDetail(startDate, endDate, leaveType, timeType);
+        }
+
+        return result;
+    }
+
+    private String buildOfPeriodDetail(LocalDate startDate, LocalDate endDate, String leaveType, String timeType) {
+
+        DateTimeFormatter detailFormatter = DateTimeFormatter.ofPattern("MM/dd");
+        StringBuilder sb = new StringBuilder("(");
+
+        LocalDate date = startDate;
+        while (!date.isAfter(endDate)) {
+            sb.append(date.format(detailFormatter))
+                    .append("_")
+                    .append(getOfLeaveTypeNm(leaveType));
+
+            if (!"0".equals(timeType)) {
+                sb.append("/")
+                        .append(getOfTimeTypeNm(timeType));
+            }
+
+            sb.append(" ");
+            date = date.plusDays(1);
+        }
+
+        return sb.toString().trim() + ")";
+    }
+
+    private BigDecimal getOfDayCount(LocalDate startDate, LocalDate endDate, String timeType) {
+
+        BigDecimal dayCount = BigDecimal.valueOf(ChronoUnit.DAYS.between(startDate, endDate) + 1);
+
+        if ("1".equals(timeType) || "2".equals(timeType)) {
+            return dayCount.multiply(new BigDecimal("0.5"));
+        }
+
+        if (timeType != null && timeType.length() == 2) {
+            return dayCount.multiply(new BigDecimal("0.25"));
+        }
+
+        return dayCount;
+    }
+
+    private boolean isOfLeaveType(String leaveType) {
+        return "1".equals(leaveType)
+                || "2".equals(leaveType)
+                || "3".equals(leaveType)
+                || "4".equals(leaveType)
+                || "5".equals(leaveType)
+                || "6".equals(leaveType);
+    }
+
+    private boolean isOfTimeType(String timeType) {
+        return "0".equals(timeType)
+                || "1".equals(timeType)
+                || "2".equals(timeType)
+                || "14".equals(timeType)
+                || "24".equals(timeType)
+                || "34".equals(timeType)
+                || "44".equals(timeType);
+    }
+
+    private String getOfLeaveTypeNm(String leaveType) {
+        if ("1".equals(leaveType)) return "연차";
+        if ("2".equals(leaveType)) return "보상";
+        if ("3".equals(leaveType)) return "병가";
+        if ("4".equals(leaveType)) return "공가";
+        if ("5".equals(leaveType)) return "출산";
+        if ("6".equals(leaveType)) return "휴직";
+        return "";
+    }
+
+    private String getOfTimeTypeNm(String timeType) {
+        if ("1".equals(timeType)) return "오전";
+        if ("2".equals(timeType)) return "오후";
+        if ("14".equals(timeType)) return "①④";
+        if ("24".equals(timeType)) return "②④";
+        if ("34".equals(timeType)) return "③④";
+        if ("44".equals(timeType)) return "④④";
+        return "종일";
+    }
+
+    private String getOfTimeFlag(String timeType) {
+
+        if (timeType != null && timeType.length() == 2) {
+            return "오전 □    오후 □    종일 □    시간 ▣";
+        }
+
+        String timeNm = getOfTimeTypeNm(timeType);
+        String timeFlag = "오전 □    오후 □    종일 □";
+
+        return timeFlag.replace(timeNm + " □", timeNm + " ▣");
     }
 }

@@ -4,6 +4,7 @@ import com.example.mshintra.approval.dto.ApprovalDetailFCDto;
 import com.example.mshintra.approval.dto.ApprovalDetailORDto;
 import com.example.mshintra.approval.dto.ApprovalDetailPLDto;
 import com.example.mshintra.approval.dto.ApprovalDto;
+import com.example.mshintra.approval.dto.ApprovalOfSaveDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,26 +20,48 @@ public interface ApprovalMapper {
 
     Map<String, Object> selectApprovalDetail(@Param("ccCode") String ccCode, @Param("ccFlag") String ccFlag);
 
-    List<ApprovalDetailFCDto> selectApprovalFcDetail(@Param("ccCode") String ccCode, @Param("ccFlag") String ccFlag,
-                                                     @Param("ymd") String ymd, @Param("fcNum") String fcNum, @Param("ccSeq") Integer ccSeq);
+    List<ApprovalDetailFCDto> selectApprovalFcDetail(@Param("ccCode") String ccCode,
+                                                     @Param("ccFlag") String ccFlag,
+                                                     @Param("ymd") String ymd,
+                                                     @Param("fcNum") String fcNum,
+                                                     @Param("ccSeq") Integer ccSeq);
 
-    List<ApprovalDetailORDto> selectApprovalOrDetail(@Param("ccCode") String ccCode, @Param("ccFlag") String ccFlag);
+    List<ApprovalDetailORDto> selectApprovalOrDetail(@Param("ccCode") String ccCode,
+                                                     @Param("ccFlag") String ccFlag);
 
-    Map<String, Object> selectApprovalSignNum(@Param("ccCode") String ccCode, @Param("ccFlag") String ccFlag);
+    Map<String, Object> selectApprovalSignNum(@Param("ccCode") String ccCode,
+                                              @Param("ccFlag") String ccFlag);
 
-    void signApproval(@Param("code") String code, @Param("saCd") String saCd, @Param("flag") String flag, @Param("rmk") String rmk);
+    void signApproval(@Param("code") String code,
+                      @Param("saCd") String saCd,
+                      @Param("flag") String flag,
+                      @Param("rmk") String rmk);
 
     Map<String, Object> selectApprovalSignLock(@Param("code") String code);
 
     List<ApprovalDto> selectApprovalPaperList(ApprovalDto searchDto);
 
-    ApprovalDetailPLDto selectApprovalPaperDetail(@Param("ymd") String ymd, @Param("piSeq") Integer piSeq);
+    ApprovalDetailPLDto selectApprovalPaperDetail(@Param("ymd") String ymd,
+                                                  @Param("piSeq") Integer piSeq);
 
-    Map<String, Object> selectApprovalPaperSign(@Param("ymd") String ymd, @Param("piSeq") Integer piSeq);
+    Map<String, Object> selectApprovalPaperSign(@Param("ymd") String ymd,
+                                                @Param("piSeq") Integer piSeq);
 
-    Map<String, Object> selectApprovalPaperSignNum(@Param("ymd") String ymd, @Param("piSeq") Integer piSeq);
+    Map<String, Object> selectApprovalPaperSignNum(@Param("ymd") String ymd,
+                                                   @Param("piSeq") Integer piSeq);
 
-    Map<String, Object> selectApprovalPaperLock(@Param("ymd") String ymd, @Param("piSeq") Integer piSeq);
+    Map<String, Object> selectApprovalPaperLock(@Param("ymd") String ymd,
+                                                @Param("piSeq") Integer piSeq);
 
-    void receiveApprovalPaper(@Param("ymd") String ymd, @Param("piSeq") Integer piSeq, @Param("saCd") String saCd);
+    void receiveApprovalPaper(@Param("ymd") String ymd,
+                              @Param("piSeq") Integer piSeq,
+                              @Param("saCd") String saCd);
+
+    String selectNextApprovalCode();
+
+    Map<String, Object> selectLastOfApprovalSign(@Param("saCd") String saCd);
+
+    void insertApprovalSign(ApprovalOfSaveDto saveDto);
+
+    void insertApprovalOfDetail(ApprovalOfSaveDto saveDto);
 }

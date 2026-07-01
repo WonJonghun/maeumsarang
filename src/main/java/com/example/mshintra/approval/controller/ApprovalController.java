@@ -276,4 +276,37 @@ public class ApprovalController {
         result.put("message", "접수되었습니다.");
         return result;
     }
+
+    @ResponseBody
+    @PostMapping("/insertOfApproval.do")
+    public Map<String, Object> insertOfApproval(@RequestBody ApprovalOfRequestDto requestDto,
+                                                @AuthenticationPrincipal LoginUserDto loginUser) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        if (loginUser == null) {
+            result.put("success", false);
+            result.put("message", "로그인 정보가 없습니다.");
+            return result;
+        }
+
+        String resultCode = approvalService.insertOfApproval(requestDto, loginUser.getIcCode());
+
+        if ("INVALID".equals(resultCode)) {
+            result.put("success", false);
+            result.put("message", "입력값을 확인해주세요.");
+            return result;
+        }
+
+        if ("FAIL".equals(resultCode)) {
+            result.put("success", false);
+            result.put("message", "휴가신청 저장 중 오류가 발생했습니다.");
+            return result;
+        }
+
+        result.put("success", true);
+        result.put("message", "휴가신청이 등록되었습니다.");
+        result.put("ccCode", resultCode);
+        return result;
+    }
 }

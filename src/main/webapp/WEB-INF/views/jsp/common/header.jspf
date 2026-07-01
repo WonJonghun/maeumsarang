@@ -3,15 +3,19 @@
 
 <%--
   페이지별 헤더 설정
-    headerMainYn    : Y/N (N이면 타이틀 표시)
-    headerSearchYn  : Y/N (Y이면 검색 상단바 활성)
-    headerDateYn    : Y/N (Y이면 달력 활성)
-    headerSelectBox : 숫자 (0이면 미사용, 1 이상이면 해당 개수만큼 select 생성)
+    headerMainYn           : Y/N (N이면 타이틀 표시)
+    headerSearchYn         : Y/N (Y이면 검색 상단바 활성)
+    headerDateYn           : Y/N (Y이면 달력 활성)
+    headerWriteYn          : Y/N (Y이면 글쓰기 버튼 표시)
+    headerSelectBox        : 숫자 (0이면 미사용, 1 이상이면 해당 개수만큼 select 생성)
+    headerDefaultRangeDays : 숫자 (기본 검색기간)
+    headerQrYn             : Y/N (Y이면 QR 버튼 표시)
 --%>
 <c:set var="headerMainYn" value="${empty headerMainYn ? 'Y' : headerMainYn}"/>
 <c:set var="headerTitle" value="${empty param.title ? menuAuth.menuName : param.title}"/>
 <c:set var="headerSearchYn" value="${empty headerSearchYn ? 'N' : headerSearchYn}"/>
 <c:set var="headerDateYn" value="${empty headerDateYn ? 'N' : headerDateYn}"/>
+<c:set var="headerWriteYn" value="${empty headerWriteYn ? 'N' : headerWriteYn}"/>
 <c:set var="headerSelectBox" value="${empty headerSelectBox ? 0 : headerSelectBox}"/>
 <c:set var="headerDefaultRangeDays" value="${empty headerDefaultRangeDays ? 365 : headerDefaultRangeDays}"/>
 <c:set var="headerQrYn" value="${empty headerQrYn ? 'N' : headerQrYn}"/>
@@ -20,6 +24,7 @@
         data-main-yn="<c:out value='${headerMainYn}'/>"
         data-search-yn="<c:out value='${headerSearchYn}'/>"
         data-date-yn="<c:out value='${headerDateYn}'/>"
+        data-write-yn="<c:out value='${headerWriteYn}'/>"
         data-select-box="<c:out value='${headerSelectBox}'/>"
         data-default-range-days="<c:out value='${headerDefaultRangeDays}'/>"
         data-title="<c:out value='${empty headerTitle ? menuAuth.menuName : headerTitle}'/>">
@@ -110,6 +115,15 @@
                     id="btnTopbarQr"
                     aria-label="QR스캔">
                 <i class="bi bi-qr-code-scan"></i>
+            </button>
+        </c:if>
+
+        <c:if test="${headerWriteYn eq 'Y'}">
+            <button type="button"
+                    class="icon-button topbar-write-btn"
+                    id="btnTopbarWrite"
+                    aria-label="글쓰기">
+                <i class="bi bi-pencil-square"></i>
             </button>
         </c:if>
 

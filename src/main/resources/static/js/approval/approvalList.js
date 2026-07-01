@@ -51,6 +51,28 @@ $(function () {
     $(document).on('click', '#approvalReceiveBtn', function () {
         receiveApprovalPaper();
     });
+
+    // 휴가신청 작성
+    $(document).on('click', '#btnTopbarWrite', function () {
+        if (getCcBaseKey() !== 'OF' && $.trim($('#ccFlag').val() || '') !== 'OF') return;
+        showApprovalOfWrite();
+    });
+
+    // 휴가신청 휴가일 목록 생성
+    $(document).on('change', '#ofStartDate,#ofEndDate', function () {
+        setApprovalOfPeriodValid(this.id);
+        renderApprovalOfDayList();
+    });
+
+    // 휴가신청 일수 계산
+    $(document).on('change', '.approval-of-time-type,.approval-of-leave-type', function () {
+        setApprovalOfDayCount();
+    });
+
+    // 휴가신청 저장
+    $(document).on('click', '#approvalOfSaveBtn', function () {
+        saveApprovalOfWrite();
+    });
 });
 
 let approvalListAll = [];
@@ -202,6 +224,328 @@ function approvalDetail(rowEl) {
         console.log('detail fail:', xhr);
         detailDrawerShow(headHtml + '<div style="padding:16px;">상세 조회 실패</div>', true);
     });
+}
+
+// 휴가신청 작성 화면
+function showApprovalOfWrite() {
+    if (!detailDrawerShow) return;
+
+    const today = cmGetToday('-');
+
+    let html = '';
+    html += '<div class="post-detail-head">';
+    html += '  <h3 class="post-detail-title">휴가신청서 작성</h3>';
+    html += '</div>';
+
+    html += '<div class="approval-of-form">';
+    html += '  <div class="approval-of-period-row">';
+    html += '    <div class="approval-of-date-field">';
+    html += '      <label for="ofStartDate">시작일</label>';
+    html += '      <input type="date" id="ofStartDate" value="' + cmEscapeHtml(today) + '">';
+    html += '    </div>';
+    html += '    <span class="approval-of-date-tilde">~</span>';
+    html += '    <div class="approval-of-date-field">';
+    html += '      <label for="ofEndDate">종료일</label>';
+    html += '      <input type="date" id="ofEndDate" value="' + cmEscapeHtml(today) + '">';
+    html += '    </div>';
+    html += '  </div>';
+
+    html += '  <input type="hidden" id="ofDayCount" value="1">';
+
+    html += '  <div class="approval-of-section">';
+    html += '    <div class="approval-of-section-title">';
+    html += '      <div>휴가일</div>';
+    html += '      <div>구분(시간)</div>';
+    html += '      <div>휴가종류</div>';
+    html += '    </div>';
+    html += '    <div id="approvalOfDayList" class="approval-of-day-list"></div>';
+    html += '  </div>';
+
+    html += '  <div class="approval-of-purpose-row">';
+    html += '    <label for="ofReason">휴가목적</label>';
+    html += '    <textarea id="ofReason" rows="2" maxlength="200" placeholder="휴가목적을 입력해주세요."></textarea>';
+    html += '  </div>';
+
+    html += '  <div class="approval-action-wrap">';
+    html += '    <button type="button" id="approvalOfSaveBtn" class="approval-action-btn approval-sign-btn">등록</button>';
+    html += '  </div>';
+    html += '</div>';
+
+    detailDrawerShow(html, true);
+    renderApprovalOfDayList();
+}
+
+// 휴가신청 기간 유효성 처리
+function setApprovalOfPeriodValid(changedId) {
+    const startDate = $('#ofStartDate').val();
+    const endDate = $('#ofEndDate').val();
+
+    if (!startDate && !endDate) return;
+
+    if (!startDate && endDate) {
+        $('#ofStartDate').val(endDate);
+        return;
+    }
+
+    if (startDate && !endDate) {
+        $('#ofEndDate').val(startDate);
+        return;
+    }
+
+    if (startDate > endDate) {
+        if (changedId === 'ofStartDate') {
+            $('#ofEndDate').val(startDate);
+        } else {
+            $('#ofStartDate').val(endDate);
+        }
+    }
+}
+
+// 휴가신청 휴가일 목록 생성
+function renderApprovalOfDayList() {
+    const startDate = $('#ofStartDate').val();
+    const endDate = $('#ofEndDate').val();
+    const dayListEl = $('#approvalOfDayList');
+
+    if (dayListEl.length === 0) return;
+
+    const selectedMap = getApprovalOfSelectedMap();
+
+    dayListEl.empty();
+
+    if (!startDate || !endDate) {
+        dayListEl.html('<div class="approval-of-empty">시작일과 종료일을 선택해주세요.</div>');
+        setApprovalOfDayCount();
+        return;
+    }
+
+    if (startDate > endDate) {
+        dayListEl.html('<div class="approval-of-empty">시작일은 종료일보다 늦을 수 없습니다.</div>');
+        setApprovalOfDayCount();
+        return;
+    }
+
+    const dates = getApprovalOfDateList(startDate, endDate);
+    let html = '';
+
+    for (let i = 0; i < dates.length; i++) {
+        const date = dates[i];
+        const selected = selectedMap[date] || {};
+
+        html += '<div class="approval-of-day-row" data-date="' + cmEscapeHtml(date) + '">';
+        html += '  <div class="approval-of-day-date">' + cmEscapeHtml(date) + ' ' + cmEscapeHtml(getApprovalOfDayName(date)) + '</div>';
+        html += '  <div class="approval-of-select-box">';
+        html += '    <select class="approval-of-time-type">';
+        html +=          getApprovalOfTimeOptions(selected.timeType || '0');
+        html += '    </select>';
+        html += '  </div>';
+        html += '  <div class="approval-of-select-box">';
+        html += '    <select class="approval-of-leave-type">';
+        html +=          getApprovalOfLeaveOptions(selected.leaveType || '1');
+        html += '    </select>';
+        html += '  </div>';
+        html += '</div>';
+    }
+
+    dayListEl.html(html);
+    setApprovalOfDayCount();
+}
+
+// 휴가신청 선택값 보관
+function getApprovalOfSelectedMap() {
+    const selectedMap = {};
+
+    $('.approval-of-day-row').each(function () {
+        const rowEl = $(this);
+        const date = $.trim(rowEl.data('date') || '');
+
+        if (!date) return;
+
+        selectedMap[date] = {
+            timeType: rowEl.find('.approval-of-time-type').val(),
+            leaveType: rowEl.find('.approval-of-leave-type').val()
+        };
+    });
+
+    return selectedMap;
+}
+
+// 휴가신청 구분 옵션
+function getApprovalOfTimeOptions(selectedValue) {
+    const list = [
+        { value: '0', text: '종일' },
+        { value: '1', text: '오전' },
+        { value: '2', text: '오후' },
+        { value: '14', text: '①④' },
+        { value: '24', text: '②④' },
+        { value: '34', text: '③④' },
+        { value: '44', text: '④④' }
+    ];
+
+    let html = '';
+
+    for (let i = 0; i < list.length; i++) {
+        html += '<option value="' + list[i].value + '"' + (list[i].value === selectedValue ? ' selected' : '') + '>' + list[i].text + '</option>';
+    }
+
+    return html;
+}
+
+// 휴가신청 휴가종류 옵션
+function getApprovalOfLeaveOptions(selectedValue) {
+    const list = [
+        { value: '1', text: '연차' },
+        { value: '2', text: '보상' },
+        { value: '4', text: '공가' },
+        { value: '5', text: '출산' },
+        { value: '3', text: '병가' },
+        { value: '6', text: '휴직' }
+    ];
+
+    let html = '';
+
+    for (let i = 0; i < list.length; i++) {
+        html += '<option value="' + list[i].value + '"' + (list[i].value === selectedValue ? ' selected' : '') + '>' + list[i].text + '</option>';
+    }
+
+    return html;
+}
+
+// 휴가신청 일수 계산
+function setApprovalOfDayCount() {
+    $('#ofDayCount').val(getApprovalOfDayCount());
+}
+
+// 휴가신청 일수
+function getApprovalOfDayCount() {
+    let dayCount = 0;
+
+    $('.approval-of-day-row').each(function () {
+        const timeType = $(this).find('.approval-of-time-type').val();
+
+        if (timeType === '1' || timeType === '2') {
+            dayCount += 0.5;
+        } else if (timeType && timeType.length === 2) {
+            dayCount += 0.25;
+        } else {
+            dayCount += 1;
+        }
+    });
+
+    return String(dayCount).replace(/\.0$/, '');
+}
+
+// 휴가신청 저장
+function saveApprovalOfWrite() {
+    const data = {
+        startDate: $('#ofStartDate').val(),
+        endDate: $('#ofEndDate').val(),
+        dayCount: getApprovalOfDayCount(),
+        reason: $.trim($('#ofReason').val() || ''),
+        days: getApprovalOfDays()
+    };
+
+    if (!data.startDate) {
+        customAlert('알림', '시작일을 입력해주세요.', 'WARN');
+        return;
+    }
+
+    if (!data.endDate) {
+        customAlert('알림', '종료일을 입력해주세요.', 'WARN');
+        return;
+    }
+
+    if (data.startDate > data.endDate) {
+        customAlert('알림', '시작일이 종료일보다 늦습니다.', 'WARN');
+        return;
+    }
+
+    if (data.days.length === 0) {
+        customAlert('알림', '휴가일을 확인해주세요.', 'WARN');
+        return;
+    }
+
+    if (!data.dayCount || Number(data.dayCount) <= 0) {
+        customAlert('알림', '휴가일을 확인해주세요.', 'WARN');
+        return;
+    }
+
+    if (!data.reason) {
+        customAlert('알림', '휴가목적을 입력해주세요.', 'WARN');
+        return;
+    }
+
+    customAlert('알림', '휴가신청을 등록하시겠습니까?', 'YN').then(function (ok) {
+        if (!ok) return;
+
+        $.ajax({
+            url: '/approval/insertOfApproval.do',
+            type: 'POST',
+            contentType: 'application/json; charset=UTF-8',
+            dataType: 'json',
+            data: JSON.stringify(data)
+        }).done(function (res) {
+            if (!res || res.success !== true) {
+                customAlert('경고', (res && res.message) || '등록 실패', 'WARN');
+                return;
+            }
+
+            customAlert('알림', '등록되었습니다.', 'CONFIRM').then(function () {
+                detailDrawerClose(true, true);
+                loadApprovalList();
+            });
+        }).fail(function () {
+            customAlert('경고', '등록 실패', 'WARN');
+        });
+    });
+}
+
+// 휴가신청 날짜별 데이터
+function getApprovalOfDays() {
+    const days = [];
+
+    $('.approval-of-day-row').each(function () {
+        const rowEl = $(this);
+
+        days.push({
+            date: $.trim(rowEl.data('date') || ''),
+            timeType: rowEl.find('.approval-of-time-type').val(),
+            leaveType: rowEl.find('.approval-of-leave-type').val()
+        });
+    });
+
+    return days;
+}
+
+// 휴가신청 날짜 목록
+function getApprovalOfDateList(startDate, endDate) {
+    const dates = [];
+    let date = new Date(startDate + 'T00:00:00');
+    const end = new Date(endDate + 'T00:00:00');
+
+    while (date <= end) {
+        dates.push(formatApprovalOfDate(date));
+        date.setDate(date.getDate() + 1);
+    }
+
+    return dates;
+}
+
+// 휴가신청 날짜 포맷
+function formatApprovalOfDate(date) {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+
+    return yyyy + '-' + mm + '-' + dd;
+}
+
+// 휴가신청 요일
+function getApprovalOfDayName(dateText) {
+    const date = new Date(dateText + 'T00:00:00');
+    const dayList = ['일', '월', '화', '수', '목', '금', '토'];
+
+    return dayList[date.getDay()];
 }
 
 // 검색 대상 문자열
@@ -440,12 +784,12 @@ function reloadApprovalDetail() {
 
         approvalDetailRow = row;
 
-        const $rowEl = $('#approvalList .approval-row').filter(function () {
+        const rowEl = $('#approvalList .approval-row').filter(function () {
             return String($(this).data('cc-code') || '') === String(ccCode || '');
         }).first();
 
-        if ($rowEl.length > 0) {
-            approvalDetail($rowEl[0]);
+        if (rowEl.length > 0) {
+            approvalDetail(rowEl[0]);
         } else {
             detailDrawerClose(true, true);
         }

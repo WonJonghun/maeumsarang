@@ -596,4 +596,147 @@
         #{saCd}
     ]]>
     </update>
+
+    <select id="selectNextApprovalCode" resultType="string">
+    <![CDATA[
+        SELECT CONVERT(VARCHAR(8), GETDATE(), 112)
+             + RIGHT('0000' + CONVERT(VARCHAR, ISNULL(MAX(CONVERT(INT, RIGHT(Es_Code, 4))), 0) + 1), 4)
+        FROM I_ElecSign WITH (UPDLOCK, HOLDLOCK)
+        WHERE Es_Code LIKE CONVERT(VARCHAR(8), GETDATE(), 112) + '%'
+    ]]>
+    </select>
+
+    <select id="selectLastOfApprovalSign" resultType="map">
+    <![CDATA[
+        SELECT TOP 1
+            signCnt = ISNULL(Es_SignCnt, 1),
+            sign2 = ISNULL(Es_Sign2, ''),
+            sign3 = ISNULL(Es_Sign3, ''),
+            sign4 = ISNULL(Es_Sign4, ''),
+            sign5 = ISNULL(Es_Sign5, ''),
+            sign6 = ISNULL(Es_Sign6, ''),
+            sign7 = ISNULL(Es_Sign7, ''),
+            sign8 = ISNULL(Es_Sign8, ''),
+            hubJo1 = ISNULL(Es_HubJo1, ''),
+            hubJo2 = ISNULL(Es_HubJo2, ''),
+            hubJo3 = ISNULL(Es_HubJo3, ''),
+            hubJo4 = ISNULL(Es_HubJo4, ''),
+            hubJo5 = ISNULL(Es_HubJo5, '')
+        FROM I_ElecSign
+        WHERE Es_Flag = 'OF'
+          AND CASE
+                WHEN LEN(ISNULL(Es_Sign1, '')) > 6 THEN SUBSTRING(Es_Sign1, 9, 10)
+                ELSE ISNULL(Es_Sign1, '')
+              END = #{saCd}
+        ORDER BY Es_Date DESC, Es_Code DESC
+    ]]>
+    </select>
+
+    <insert id="insertApprovalSign" parameterType="com.example.mshintra.approval.dto.ApprovalOfSaveDto">
+    <![CDATA[
+        INSERT INTO I_ElecSign (
+            Es_Code,
+            Es_Flag,
+            Es_Date,
+            Es_Title,
+            Es_SignCnt,
+            Es_Sign1,
+            Es_Sign2,
+            Es_Sign3,
+            Es_Sign4,
+            Es_Sign5,
+            Es_Sign6,
+            Es_Sign7,
+            Es_Sign8,
+            Es_SignDt1,
+            Es_SignDt2,
+            Es_SignDt3,
+            Es_SignDt4,
+            Es_SignDt5,
+            Es_SignDt6,
+            Es_SignDt7,
+            Es_SignDt8,
+            Es_HubJo1,
+            Es_HubJo2,
+            Es_HubJo3,
+            Es_HubJo4,
+            Es_HubJo5,
+            Es_RMK,
+            Es_ReRMK,
+            Es_ReSign,
+            Es_ReSignDt,
+            Es_UK,
+            Es_ImgNO,
+            Es_ImgNO2,
+            Es_SeFg
+        ) VALUES (
+            #{code},
+            'OF',
+            #{date},
+            #{title},
+            #{signCnt},
+            #{sign1},
+            #{sign2},
+            #{sign3},
+            #{sign4},
+            #{sign5},
+            #{sign6},
+            #{sign7},
+            #{sign8},
+            CONVERT(VARCHAR(16), GETDATE(), 120),
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            #{hubJo1},
+            #{hubJo2},
+            #{hubJo3},
+            #{hubJo4},
+            #{hubJo5},
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            '',
+            ''
+        )
+    ]]>
+    </insert>
+
+    <insert id="insertApprovalOfDetail" parameterType="com.example.mshintra.approval.dto.ApprovalOfSaveDto">
+    <![CDATA[
+        INSERT INTO I_ElecApproval (
+            Ea_Code,
+            Ea_Flag,
+            Ea_Seq,
+            Ea_Title,
+            Ea_RMK,
+            Ea_Font,
+            Ea_FontBold,
+            Ea_FontColor,
+            Ea_SignUK,
+            Ea_RegUID,
+            Ea_RegDt,
+            Ea_Use
+        ) VALUES (
+            #{code},
+            'OF',
+            10,
+            #{saCd},
+            #{eaRmk},
+            '',
+            '',
+            '',
+            '',
+            #{saCd},
+            GETDATE(),
+            'Y'
+        )
+    ]]>
+    </insert>
 </mapper>
