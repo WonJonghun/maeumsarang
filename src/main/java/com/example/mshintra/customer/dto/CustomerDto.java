@@ -21,4 +21,5 @@ public class CustomerDto {
     private String cnt9;      // 진료완료
 
     private String srTo;      // 허가병상
+    private String emergencyCnt; // 응급 재원환자수
 }

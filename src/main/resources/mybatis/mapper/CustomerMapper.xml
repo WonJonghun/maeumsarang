@@ -15,4 +15,11 @@
         { call dbo.Intranet_OCS_TO(#{baseDt}, '3') }
     </select>
 
+    <resultMap id="emergencyPatientCountResultMap" type="com.example.mshintra.customer.dto.CustomerDto">
+        <result column="CNT" property="emergencyCnt"/>
+    </resultMap>
+
+    <select id="selectEmergencyPatientCount" resultMap="emergencyPatientCountResultMap" statementType="CALLABLE">
+        { call dbo.Oracle_Emergency(#{baseDt}, #{baseDt}, '1') }
+    </select>
 </mapper>

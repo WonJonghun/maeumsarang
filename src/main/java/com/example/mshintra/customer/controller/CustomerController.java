@@ -19,9 +19,16 @@ public class CustomerController {
     public CustomerDto selectCustomerDailyStats(@ModelAttribute CustomerDto searchDto) {
         CustomerDto customerDailyStats = customerService.selectCustomerDailyStats(searchDto);
         CustomerDto customerBedCount = customerService.selectCustomerBedCount(searchDto);
+        CustomerDto emergencyPatientCount = customerService.selectEmergencyPatientCount(searchDto);
 
         if (customerDailyStats != null && customerBedCount != null) {
             customerDailyStats.setSrTo(customerBedCount.getSrTo());
+        }
+
+        if (customerDailyStats != null) {
+            customerDailyStats.setEmergencyCnt(
+                    emergencyPatientCount == null ? "0" : emergencyPatientCount.getEmergencyCnt()
+            );
         }
 
         return customerDailyStats;

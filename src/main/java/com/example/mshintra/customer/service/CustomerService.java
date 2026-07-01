@@ -21,4 +21,9 @@ public class CustomerService {
     public CustomerDto selectCustomerBedCount(CustomerDto searchDto) {
         return customerMapper.selectCustomerBedCount(searchDto);
     }
+
+    @Transactional(readOnly = true)
+    public CustomerDto selectEmergencyPatientCount(CustomerDto searchDto) {
+        return customerMapper.selectEmergencyPatientCount(searchDto);
+    }
 }

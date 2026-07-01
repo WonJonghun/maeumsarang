@@ -235,6 +235,8 @@ function loadPatientStatusByDate(dateStr) {
 //환자현황
 function renderPatientStatus(data) {
     const statusWrap = $('.patient-status-wrap');
+    const emergencyCnt = parseInt(data.emergencyCnt, 10) || 0;
+    const emergencyPercent = Math.round(emergencyCnt * 100 / 40);
 
     if (!statusWrap.length) return;
 
@@ -273,6 +275,22 @@ function renderPatientStatus(data) {
                 </div>
             </div>
         </div>
+        
+        <div class="patient-chart">
+            <p class="patient-chart-label">응급병상</p>
+            <div class="circle-chart" style="--value:${emergencyPercent}; --chart-color:#ff585b;">
+                <div class="circle-chart-inner">
+                    <span class="circle-chart-value">${emergencyCnt}명</span>
+                    <span class="circle-chart-caption">(${emergencyPercent}%)</span>
+                </div>
+            </div>
+            <div class="patient-tooltip">
+                <div class="patient-tooltip-inner">
+                    <p>${emergencyCnt}명 / 40명</p>
+                    <p>(재원환자 / 응급병상)</p>
+                </div>
+            </div>
+        </div>
 
         <div class="patient-chart">
             <p class="patient-chart-label">입/퇴원</p>
@@ -292,7 +310,7 @@ function renderPatientStatus(data) {
 
         <div class="patient-chart patient-chart-right">
             <p class="patient-chart-label">외래</p>
-            <div class="circle-chart" style="--value:${outPercent}; --chart-color:#43a047;">
+            <div class="circle-chart" style="--value:${outPercent}; --chart-color:#bf9d65;">
                 <div class="circle-chart-inner">
                     <span class="circle-chart-value">${cnt9}명</span>
                     <span class="circle-chart-caption">(${outPercent}%)</span>

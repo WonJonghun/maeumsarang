@@ -9,4 +9,6 @@ public interface CustomerMapper {
     CustomerDto selectCustomerDailyStats(CustomerDto searchDto);
 
     CustomerDto selectCustomerBedCount(CustomerDto searchDto);
+
+    CustomerDto selectEmergencyPatientCount(CustomerDto searchDto);
 }

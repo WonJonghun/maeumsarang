@@ -430,7 +430,7 @@
 
 .patient-chart {
     flex: 0 0 100%;
-    max-width: 30%;
+    max-width: 25%;
     text-align: center;
     padding: 8px 4px;
 }
@@ -445,8 +445,8 @@
 .circle-chart {
     --value: 0;
     --chart-color: #1976d2;
-    width: 90px;
-    height: 90px;
+    width: 70px;
+    height: 70px;
     margin: 0 auto 8px auto;
     border-radius: 50%;
     display: flex;
@@ -457,13 +457,13 @@
 }
 
 .inout_chart {
-    background: conic-gradient(var(--chart-color) 0 calc(var(--value) * 1%), #32b97c 0 100%);
+    background: conic-gradient(var(--chart-color) 0 calc(var(--value) * 1%), #8CC919 0 100%);
 }
 
 .circle-chart::before {
     content: "";
     position: absolute;
-    inset: 10px;
+    inset: 6px;
     border-radius: 50%;
     background: #ffffff;
 }
@@ -478,12 +478,12 @@
 }
 
 .circle-chart-value {
-    font-size: 18px;
+    font-size: 13px;
     font-weight: 600;
 }
 
 .circle-chart-caption {
-    font-size: 12px;
+    font-size: 10px;
     color: #777777;
     margin-top: 2px;
 }

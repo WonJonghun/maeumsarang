@@ -213,6 +213,10 @@
                 <div class="patient-status-wrap">
                     <c:set var="permitBedCnt" value="${empty customerDailyStats.srTo ? 0 : customerDailyStats.srTo}"/>
 
+                    <c:set var="emergencyCnt" value="${empty customerDailyStats.emergencyCnt ? 0 : customerDailyStats.emergencyCnt}"/>
+                    <fmt:formatNumber value="${emergencyCnt}" type="number" maxFractionDigits="0" var="emergencyCntText"/>
+                    <fmt:formatNumber value="${emergencyCnt * 100 / 40}" type="number" maxFractionDigits="0" var="emergencyPercent"/>
+
                     <c:set var="inHosPercent" value="0"/>
                     <c:if test="${not empty customerDailyStats.cnt1 and permitBedCnt != 0}">
                         <fmt:formatNumber value="${customerDailyStats.cnt1 * 100 / permitBedCnt}" type="number" maxFractionDigits="0" var="inHosPercent"/>
@@ -240,6 +244,22 @@
                     </div>
 
                     <div class="patient-chart">
+                        <p class="patient-chart-label">응급병상</p>
+                        <div class="circle-chart" style="--value:<c:out value='${emergencyPercent}'/>; --chart-color:#ff585b;">
+                            <div class="circle-chart-inner">
+                                <span class="circle-chart-value"><c:out value="${emergencyCntText}"/>명</span>
+                                <span class="circle-chart-caption">(<c:out value="${emergencyPercent}"/>%)</span>
+                            </div>
+                        </div>
+                        <div class="patient-tooltip">
+                            <div class="patient-tooltip-inner">
+                                <p><c:out value="${emergencyCntText}"/>명 / 40명</p>
+                                <p>(재원환자 / 응급병상)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="patient-chart">
                         <p class="patient-chart-label">입/퇴원</p>
                         <div class="circle-chart inout_chart" style="--value:<c:out value='${inoutPercent}'/>; --chart-color:#fda433;">
                             <div class="circle-chart-inner">
@@ -262,7 +282,7 @@
 
                     <div class="patient-chart patient-chart-right">
                         <p class="patient-chart-label">외래</p>
-                        <div class="circle-chart" style="--value:<c:out value='${outPercent}'/>; --chart-color:#43a047;">
+                        <div class="circle-chart" style="--value:<c:out value='${outPercent}'/>; --chart-color:#bf9d65;">
                             <div class="circle-chart-inner">
                                 <span class="circle-chart-value"><c:out value="${customerDailyStats.cnt9}"/>명</span>
                                 <span class="circle-chart-caption">(<c:out value="${outPercent}"/>%)</span>

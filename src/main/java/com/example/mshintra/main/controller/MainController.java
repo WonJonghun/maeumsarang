@@ -93,9 +93,16 @@ public class MainController {
         model.addAttribute("calendarList", scheduleService.selectTodayScheduleList(calendarDto));
         CustomerDto customerDailyStats = customerService.selectCustomerDailyStats(customerDto);
         CustomerDto customerBedCount = customerService.selectCustomerBedCount(customerDto);
+        CustomerDto emergencyPatientCount = customerService.selectEmergencyPatientCount(customerDto);
 
         if (customerDailyStats != null && customerBedCount != null) {
             customerDailyStats.setSrTo(customerBedCount.getSrTo());
+        }
+
+        if (customerDailyStats != null) {
+            customerDailyStats.setEmergencyCnt(
+                    emergencyPatientCount == null ? "0" : emergencyPatientCount.getEmergencyCnt()
+            );
         }
 
         model.addAttribute("customerDailyStats", customerDailyStats);
