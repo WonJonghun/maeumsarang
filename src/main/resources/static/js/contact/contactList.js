@@ -2,6 +2,7 @@ $(function () {
     // 초기 리스트 호출
     loadContactList();
     bindEvents();
+    initDeptSuggest();
 });
 
 let contactListAll = [];
@@ -14,6 +15,7 @@ function loadContactList() {
     cmAjax('/contact/list.do', 'GET', { baseDt: cmGetToday('-') }, true).done(function (list) {
         contactListAll = list || [];
         setView(currentView);
+        setDeptSuggest();
     });
 }
 
@@ -128,6 +130,90 @@ function bindEvents() {
         if (!phone) return;
         window.location.href = 'sms:' + String(phone).replace(/[^0-9+]/g, '');
     });
+}
+
+//부서명 연관검색어 초기화
+function initDeptSuggest() {
+    const searchField = $('.contact-page .topbar-search-field');
+    if (!searchField.length) return;
+
+    if (!$('#contactDeptSuggestToggle').length) {
+        searchField.append('<button type="button" id="contactDeptSuggestToggle" class="contact-dept-suggest-toggle" aria-label="부서명 목록"></button>');
+    }
+
+    if (!$('#contactDeptSuggest').length) {
+        searchField.append('<div id="contactDeptSuggest" class="contact-dept-suggest" style="display:none;"></div>');
+    }
+
+    $('#searchKeyword').off('focus.contactDeptSuggest').on('focus.contactDeptSuggest', function () {
+        showDeptSuggest();
+    });
+
+    $('#contactDeptSuggestToggle').off('mousedown.contactDeptSuggest').on('mousedown.contactDeptSuggest', function (e) {
+        e.preventDefault();
+    });
+
+    $('#contactDeptSuggestToggle').off('click.contactDeptSuggest').on('click.contactDeptSuggest', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if ($('#contactDeptSuggest').is(':visible')) {
+            hideDeptSuggest();
+            return false;
+        }
+
+        $('#searchKeyword').focus();
+        showDeptSuggest();
+        return false;
+    });
+
+    searchField.off('mousedown.contactDeptSuggest').on('mousedown.contactDeptSuggest', '.contact-dept-suggest-item', function (e) {
+        e.preventDefault();
+
+        $('#searchKeyword').val($(this).text()).trigger('input');
+        hideDeptSuggest();
+    });
+
+    $('#searchKeyword').off('blur.contactDeptSuggest').on('blur.contactDeptSuggest', function () {
+        setTimeout(function () {
+            hideDeptSuggest();
+        }, 120);
+    });
+}
+
+//부서명 연관검색어 세팅
+function setDeptSuggest() {
+    const deptMap = {};
+    let html = '';
+
+    (contactListAll || []).forEach(function (row) {
+        const dept = $.trim((row && row.icBuserNm) || '');
+        if (!dept || deptMap[dept]) return;
+
+        deptMap[dept] = true;
+        html += '<button type="button" class="contact-dept-suggest-item">' + cmEscapeHtml(dept) + '</button>';
+    });
+
+    $('#contactDeptSuggest').html(html);
+
+    if ($('#searchKeyword').is(':focus')) {
+        showDeptSuggest();
+    }
+}
+
+//부서명 연관검색어 열기
+function showDeptSuggest() {
+    const suggest = $('#contactDeptSuggest');
+    if (!suggest.length || !$.trim(suggest.html() || '')) return;
+
+    suggest.show();
+    $('#contactDeptSuggestToggle').addClass('is-open');
+}
+
+//부서명 연관검색어 닫기
+function hideDeptSuggest() {
+    $('#contactDeptSuggest').hide();
+    $('#contactDeptSuggestToggle').removeClass('is-open');
 }
 
 //간편조회 검색필터

@@ -10,6 +10,7 @@ $(function () {
     setWeek();
     loadScheduleList();
     bindEvents();
+    initScheduleDeptSuggest();
 
     $(window).on('resize', function () {
         if (resizeTimer) clearTimeout(resizeTimer);
@@ -87,6 +88,100 @@ function bindEvents() {
     });
 }
 
+//부서명 연관검색어 초기화
+function initScheduleDeptSuggest() {
+    const searchField = $('.topbar-search-field');
+    if (!searchField.length) return;
+
+    if (!$('#scheduleDeptSuggestToggle').length) {
+        searchField.append('<button type="button" id="scheduleDeptSuggestToggle" class="schedule-dept-suggest-toggle" aria-label="부서명 목록"></button>');
+    }
+
+    if (!$('#scheduleDeptSuggest').length) {
+        searchField.append('<div id="scheduleDeptSuggest" class="schedule-dept-suggest" style="display:none;"></div>');
+    }
+
+    $('#searchKeyword').off('focus.scheduleDeptSuggest').on('focus.scheduleDeptSuggest', function () {
+        showScheduleDeptSuggest();
+    });
+
+    $('#searchKeyword').off('blur.scheduleDeptSuggest').on('blur.scheduleDeptSuggest', function () {
+        setTimeout(function () {
+            hideScheduleDeptSuggest();
+        }, 120);
+    });
+
+    $('#scheduleDeptSuggestToggle').off('mousedown.scheduleDeptSuggest').on('mousedown.scheduleDeptSuggest', function (e) {
+        e.preventDefault();
+    });
+
+    $('#scheduleDeptSuggestToggle').off('click.scheduleDeptSuggest').on('click.scheduleDeptSuggest', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if ($('#scheduleDeptSuggest').is(':visible')) {
+            hideScheduleDeptSuggest();
+            return false;
+        }
+
+        $('#searchKeyword').focus();
+        showScheduleDeptSuggest();
+        return false;
+    });
+
+    searchField.off('mousedown.scheduleDeptSuggest').on('mousedown.scheduleDeptSuggest', '.schedule-dept-suggest-item', function (e) {
+        e.preventDefault();
+
+        $('#searchKeyword').val($(this).text()).trigger('input');
+        hideScheduleDeptSuggest();
+    });
+}
+
+//부서명 연관검색어 세팅
+function setScheduleDeptSuggest() {
+    const deptMap = {};
+    let html = '';
+
+    (scheduleList || []).forEach(function (row) {
+        const dept = $.trim((row && row.icBuserNm) || '');
+        if (!dept || deptMap[dept]) return;
+
+        deptMap[dept] = true;
+        html += '<button type="button" class="schedule-dept-suggest-item">' + scheduleEscapeHtml(dept) + '</button>';
+    });
+
+    $('#scheduleDeptSuggest').html(html);
+
+    if ($('#searchKeyword').is(':focus')) {
+        showScheduleDeptSuggest();
+    }
+}
+
+//부서명 연관검색어 열기
+function showScheduleDeptSuggest() {
+    const suggest = $('#scheduleDeptSuggest');
+    if (!suggest.length || !$.trim(suggest.html() || '')) return;
+
+    suggest.show();
+    $('#scheduleDeptSuggestToggle').addClass('is-open');
+}
+
+//부서명 연관검색어 닫기
+function hideScheduleDeptSuggest() {
+    $('#scheduleDeptSuggest').hide();
+    $('#scheduleDeptSuggestToggle').removeClass('is-open');
+}
+
+//문자 escape
+function scheduleEscapeHtml(text) {
+    return String(text == null ? '' : text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 //일자 설정
 function setWeek(monYmd) {
     let mon;
@@ -154,6 +249,7 @@ function loadScheduleList() {
 
     cmAjax('/schedule/scheduleWeekList.do', 'GET', scheduleParam, true).done(function (scheduleData) {
         scheduleList = $.isArray(scheduleData) ? scheduleData : [];
+        setScheduleDeptSuggest();
         applyDeptFilterAndRender();
     }).fail(function () {
         scheduleList = [];
@@ -407,6 +503,12 @@ function selectScheduleCell(cellEl) {
     if (!trEl.length || colIdx < 0) return;
 
     clearScheduleSelection();
+
+    const todayColIdx = getTodayColIdx();
+    if (todayColIdx >= 0) {
+        $('.schedule-thead .day-col').eq(todayColIdx).addClass('is-today');
+    }
+
     setScheduleColumn(colIdx, 'is-selected-col');
 
     trEl.addClass('is-selected-row');
@@ -484,6 +586,7 @@ function focusScheduleRow(trEl) {
     }
 }
 
+//직원 팝업
 function showEmpPopup(anchorEl, emp) {
     $('#empPopup').remove();
 
@@ -538,6 +641,7 @@ function showEmpPopup(anchorEl, emp) {
     });
 }
 
+//이름 하이라이트
 function buildNameHighlightHtml(name, keyword) {
     const k = $.trim(keyword == null ? '' : String(keyword));
     const escape = function (s) {
