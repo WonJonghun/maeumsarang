@@ -131,8 +131,8 @@
                 <a href="/approval/approvalList.do?ccHomeFlag=1&ccFlag=PL&ccBaseKey=PL&ccWinCode=w_paper_Inout&paperTab=등기"
                    class="profile-check-item is-color bg-3"
                    data-target="main">
-                    <span class="profile-check-badge" data-key="mail" style="display:none;">0</span>
-                    <i class="bi bi-envelope profile-check-ico"></i>
+                    <span class="profile-check-badge" data-key="post" style="display:none;">0</span>
+                    <i class="bi bi-mailbox profile-check-ico"></i>
                     <div class="profile-check-txt">우편</div>
                 </a>
 
