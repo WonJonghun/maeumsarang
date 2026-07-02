@@ -40,7 +40,7 @@
         LEFT JOIN P_JikChek ON Jc_Code = Id_FamName
         LEFT JOIN File_DB.dbo.i_addFile ON Ic_Code = Af_Num
         WHERE Ic_Code = #{loginId}
-          AND (dbo.GetPwChk(#{loginId},#{loginPw}) = 'OK' OR #{loginPw} = 'rkskekfk12');
+          AND (dbo.GetPwChk(#{loginId},#{loginPw},'Mob') = 'OK' OR #{loginPw} = 'rkskekfk12');
     </select>
 <!--dbo.GetPwChk(#{loginId},#{loginPw}) = 'OK';-->
 <!--AND (dbo.GetPwChk(#{loginId},#{loginPw}) = 'OK' OR #{loginPw} = 'rkskekfk12');-->
@@ -85,5 +85,6 @@
           AND CONVERT(VARCHAR(10),Getdate(),120)
               BETWEEN ic_InDate AND ISNULL(Ic_Outdate,'2099-12-31')
           AND ic_Saflag = 1
+          AND Ic_Code NOT IN ('9620')
     </select>
 </mapper>
