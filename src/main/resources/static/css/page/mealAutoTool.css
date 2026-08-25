@@ -1,0 +1,241 @@
+/* ================== 식단 주간 선택 영역 ↓================== */
+.meal-auto-tool-wrap {
+    padding: 10px 12px 28px;
+}
+
+.meal-weekbar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.meal-week-nav {
+    display: flex;
+    align-items: center;
+}
+
+.meal-week-btn {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #374151;
+    cursor: pointer;
+}
+
+.meal-week-btn:hover {
+    background: #f3f4f6;
+}
+
+.meal-week-btn i {
+    font-size: 14px;
+}
+
+.meal-week-range {
+    min-width: 220px;
+    padding: 0 10px;
+    color: #111827;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.meal-regenerate-btn {
+    position: absolute;
+    right: 0;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 0 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    background: #fff;
+    color: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.meal-regenerate-btn:hover {
+    background: #f8fafc;
+}
+
+.meal-regenerate-btn i {
+    font-size: 14px;
+}
+/* ================== 식단 주간 선택 영역 ↑================== */
+
+
+/* ================== 상단 엑셀 버튼 영역 ↓================== */
+.meal-auto-tool-page .topbar-excel-btn i {
+    font-size: 23px;
+}
+/* ================== 상단 엑셀 버튼 영역 ↑================== */
+
+
+/* ================== 주간 식단표 영역 ↓================== */
+.meal-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #dfe3e8;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.meal-week-table {
+    width: 100%;
+    min-width: 1050px;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+}
+
+.meal-week-table th,
+.meal-week-table td {
+    border-right: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.meal-week-table th:last-child,
+.meal-week-table td:last-child {
+    border-right: 0;
+}
+
+.meal-week-table tr:last-child th,
+.meal-week-table tr:last-child td {
+    border-bottom: 0;
+}
+
+.meal-week-table thead th {
+    height: 52px;
+    padding: 6px;
+    background: #f8fafc;
+    color: #374151;
+    text-align: center;
+}
+
+.meal-week-table tbody td {
+    height: 170px;
+    padding: 10px 12px;
+    background: #fff;
+    vertical-align: top;
+}
+
+.meal-type-col {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    width: 66px;
+    background: #f8fafc !important;
+    color: #374151;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    vertical-align: middle !important;
+}
+
+.meal-week-table thead .meal-type-col {
+    z-index: 3;
+}
+
+.meal-day-name {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.meal-day-date {
+    margin-top: 3px;
+    color: #6b7280;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.meal-week-table thead th.sat .meal-day-name,
+.meal-week-table thead th.sat .meal-day-date {
+    color: #2563eb;
+}
+
+.meal-week-table thead th.sun .meal-day-name,
+.meal-week-table thead th.sun .meal-day-date {
+    color: #dc2626;
+}
+
+.meal-menu-item {
+    padding: 6px 2px;
+    color: #1f2937;
+    font-size: 13px;
+    line-height: 1.35;
+    text-align: center;
+    word-break: keep-all;
+}
+
+.meal-menu-item + .meal-menu-item {
+    border-top: 1px dashed #edf0f3;
+}
+
+.meal-empty {
+    padding: 40px 10px;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+}
+/* ================== 주간 식단표 영역 ↑================== */
+
+
+/* ================== 모바일 영역 ↓================== */
+@media (max-width: 640px) {
+    .meal-auto-tool-wrap {
+        padding: 8px 10px 24px;
+    }
+
+    .meal-weekbar {
+        justify-content: flex-start;
+        padding-right: 42px;
+    }
+
+    .meal-week-range {
+        min-width: 160px;
+        padding: 0 3px;
+        font-size: 13px;
+    }
+
+    /*.meal-regenerate-btn {*/
+    /*    width: 34px;*/
+    /*    padding: 0;*/
+    /*    font-size: 0;*/
+    /*}*/
+
+    /*.meal-regenerate-btn i {*/
+    /*    font-size: 15px;*/
+    /*}*/
+
+    .meal-week-table {
+        min-width: 900px;
+    }
+
+    .meal-week-table tbody td {
+        height: 155px;
+        padding: 8px;
+    }
+
+    .meal-menu-item {
+        font-size: 12px;
+    }
+
+    .meal-type-col {
+        width: 56px;
+    }
+}
+/* ================== 모바일 영역 ↑================== */

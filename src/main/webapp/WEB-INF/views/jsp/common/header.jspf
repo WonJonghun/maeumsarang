@@ -10,6 +10,7 @@
     headerSelectBox        : 숫자 (0이면 미사용, 1 이상이면 해당 개수만큼 select 생성)
     headerDefaultRangeDays : 숫자 (기본 검색기간)
     headerQrYn             : Y/N (Y이면 QR 버튼 표시)
+    headerExcelYn          : Y/N (Y이면 엑셀 다운로드 버튼 표시)
 --%>
 <c:set var="headerMainYn" value="${empty headerMainYn ? 'Y' : headerMainYn}"/>
 <c:set var="headerTitle" value="${empty param.title ? menuAuth.menuName : param.title}"/>
@@ -19,6 +20,7 @@
 <c:set var="headerSelectBox" value="${empty headerSelectBox ? 0 : headerSelectBox}"/>
 <c:set var="headerDefaultRangeDays" value="${empty headerDefaultRangeDays ? 365 : headerDefaultRangeDays}"/>
 <c:set var="headerQrYn" value="${empty headerQrYn ? 'N' : headerQrYn}"/>
+<c:set var="headerExcelYn" value="${empty headerExcelYn ? 'N' : headerExcelYn}"/>
 
 <header class="topbar"
         data-main-yn="<c:out value='${headerMainYn}'/>"
@@ -124,6 +126,16 @@
                     id="btnTopbarWrite"
                     aria-label="글쓰기">
                 <i class="bi bi-pencil-square"></i>
+            </button>
+        </c:if>
+
+        <c:if test="${headerExcelYn eq 'Y'}">
+            <button type="button"
+                    class="icon-button topbar-excel-btn"
+                    id="btnTopbarExcel"
+                    aria-label="엑셀 다운로드"
+                    title="엑셀 다운로드">
+                <i class="bi bi-download"></i>
             </button>
         </c:if>
 

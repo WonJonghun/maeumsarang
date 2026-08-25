@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.mshintra.foodMenu.mapper.MealAutoToolMapper">
+
+    <select id="selectRecipeTagList"
+            resultType="com.example.mshintra.foodMenu.dto.MealRecipeTagDto">
+
+        SELECT r.Re_Code,
+               r.Re_Flag,
+               r.Re_Name,
+               r.Re_Remark,
+               fc.Fc_Code,
+               fc.Fc_Name,
+               rc.Rc_ServSize1,
+               rc.Rc_ServSize2,
+               rc.Rc_ServSize3,
+               ft.Tag_Code,
+               ft.Tag_Type,
+               ft.Tag_Name
+        FROM F_Recipe r
+                 INNER JOIN F_RecipeCode rc
+                            ON rc.Rc_ReCode = r.Re_Code
+                 INNER JOIN F_FoodCode fc
+                            ON fc.Fc_Code = rc.Rc_FcCode
+                 LEFT JOIN F_FoodTagMap ftm
+                           ON ftm.Fc_Code = fc.Fc_Code
+                 LEFT JOIN F_FoodTag ft
+                           ON ft.Tag_Code = ftm.Tag_Code
+                               AND ft.Use_Yn = 'Y'
+        WHERE r.Re_Code = #{reCode}
+        ORDER BY rc.Rc_Seq,
+                 ft.Tag_Type,
+                 ft.Tag_Code
+
+    </select>
+
+    <select id="selectRecipeTagAllList"
+            resultType="com.example.mshintra.foodMenu.dto.MealRecipeTagDto">
+
+        SELECT r.Re_Code,
+               r.Re_Flag,
+               r.Re_Name,
+               r.Re_Remark,
+               fc.Fc_Code,
+               fc.Fc_Name,
+               rc.Rc_ServSize1,
+               rc.Rc_ServSize2,
+               rc.Rc_ServSize3,
+               ft.Tag_Code,
+               ft.Tag_Type,
+               ft.Tag_Name
+        FROM F_Recipe r
+                 INNER JOIN F_RecipeCode rc
+                            ON rc.Rc_ReCode = r.Re_Code
+                 INNER JOIN F_FoodCode fc
+                            ON fc.Fc_Code = rc.Rc_FcCode
+                 LEFT JOIN F_FoodTagMap ftm
+                           ON ftm.Fc_Code = fc.Fc_Code
+                 LEFT JOIN F_FoodTag ft
+                           ON ft.Tag_Code = ftm.Tag_Code
+                               AND ft.Use_Yn = 'Y'
+        ORDER BY r.Re_Code,
+                 rc.Rc_Seq,
+                 ft.Tag_Type,
+                 ft.Tag_Code
+
+    </select>
+</mapper>
