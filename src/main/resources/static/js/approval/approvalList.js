@@ -69,6 +69,11 @@ $(function () {
         setApprovalOfDayCount();
     });
 
+    // 휴가신청 휴가일 제외/활성화
+    $(document).on('click', '.approval-of-toggle-btn', function () {
+        toggleApprovalOfDay(this);
+    });
+
     // 휴가신청 저장
     $(document).on('click', '#approvalOfSaveBtn', function () {
         saveApprovalOfWrite();
@@ -257,6 +262,7 @@ function showApprovalOfWrite() {
     html += '      <div>휴가일</div>';
     html += '      <div>구분(시간)</div>';
     html += '      <div>휴가종류</div>';
+    html += '      <div></div>';
     html += '    </div>';
     html += '    <div id="approvalOfDayList" class="approval-of-day-list"></div>';
     html += '  </div>';
@@ -331,19 +337,24 @@ function renderApprovalOfDayList() {
     for (let i = 0; i < dates.length; i++) {
         const date = dates[i];
         const selected = selectedMap[date] || {};
+        const disabledYn = selected.disabledYn === 'Y';
+        const disabledAttr = disabledYn ? ' disabled' : '';
 
-        html += '<div class="approval-of-day-row" data-date="' + cmEscapeHtml(date) + '">';
+        html += '<div class="approval-of-day-row' + (disabledYn ? ' is-disabled' : '') + '" data-date="' + cmEscapeHtml(date) + '">';
         html += '  <div class="approval-of-day-date">' + cmEscapeHtml(date) + ' ' + cmEscapeHtml(getApprovalOfDayName(date)) + '</div>';
         html += '  <div class="approval-of-select-box">';
-        html += '    <select class="approval-of-time-type">';
+        html += '    <select class="approval-of-time-type"' + disabledAttr + '>';
         html +=          getApprovalOfTimeOptions(selected.timeType || '0');
         html += '    </select>';
         html += '  </div>';
         html += '  <div class="approval-of-select-box">';
-        html += '    <select class="approval-of-leave-type">';
+        html += '    <select class="approval-of-leave-type"' + disabledAttr + '>';
         html +=          getApprovalOfLeaveOptions(selected.leaveType || '1');
         html += '    </select>';
         html += '  </div>';
+        html += '  <button type="button" class="approval-of-toggle-btn" aria-label="' + (disabledYn ? '휴가일 활성화' : '휴가일 제외') + '">';
+        html +=        disabledYn ? '✓' : '×';
+        html += '  </button>';
         html += '</div>';
     }
 
@@ -363,11 +374,27 @@ function getApprovalOfSelectedMap() {
 
         selectedMap[date] = {
             timeType: rowEl.find('.approval-of-time-type').val(),
-            leaveType: rowEl.find('.approval-of-leave-type').val()
+            leaveType: rowEl.find('.approval-of-leave-type').val(),
+            disabledYn: rowEl.hasClass('is-disabled') ? 'Y' : 'N'
         };
     });
 
     return selectedMap;
+}
+
+// 휴가신청 휴가일 제외/활성화
+function toggleApprovalOfDay(btnEl) {
+    const rowEl = $(btnEl).closest('.approval-of-day-row');
+    const disabledYn = !rowEl.hasClass('is-disabled');
+
+    rowEl.toggleClass('is-disabled', disabledYn);
+    rowEl.find('.approval-of-time-type,.approval-of-leave-type').prop('disabled', disabledYn);
+
+    $(btnEl)
+        .text(disabledYn ? '✓' : '×')
+        .attr('aria-label', disabledYn ? '휴가일 활성화' : '휴가일 제외');
+
+    setApprovalOfDayCount();
 }
 
 // 휴가신청 구분 옵션
@@ -421,6 +448,8 @@ function getApprovalOfDayCount() {
     let dayCount = 0;
 
     $('.approval-of-day-row').each(function () {
+        if ($(this).hasClass('is-disabled')) return;
+
         const timeType = $(this).find('.approval-of-time-type').val();
 
         if (timeType === '1' || timeType === '2') {
@@ -506,6 +535,8 @@ function getApprovalOfDays() {
 
     $('.approval-of-day-row').each(function () {
         const rowEl = $(this);
+
+        if (rowEl.hasClass('is-disabled')) return;
 
         days.push({
             date: $.trim(rowEl.data('date') || ''),
