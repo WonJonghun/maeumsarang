@@ -85,6 +85,6 @@
           AND CONVERT(VARCHAR(10),Getdate(),120)
               BETWEEN ic_InDate AND ISNULL(Ic_Outdate,'2099-12-31')
           AND ic_Saflag = 1
-          AND Ic_Code NOT IN ('9620')
+          --AND Ic_Code NOT IN ('9620')
     </select>
 </mapper>

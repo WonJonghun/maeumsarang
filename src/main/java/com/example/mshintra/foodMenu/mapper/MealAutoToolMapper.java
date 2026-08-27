@@ -12,4 +12,6 @@ public interface MealAutoToolMapper {
     List<MealRecipeTagDto> selectRecipeTagList(@Param("reCode") String reCode);
 
     List<MealRecipeTagDto> selectRecipeTagAllList();
+
+    List<String> selectBreakfastRecipeCodeList();
 }

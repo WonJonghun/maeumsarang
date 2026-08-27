@@ -67,4 +67,14 @@
                  ft.Tag_Code
 
     </select>
+
+    <select id="selectBreakfastRecipeCodeList"
+            resultType="java.lang.String">
+
+        SELECT DISTINCT Fm_Code
+        FROM F_FoodMenu
+        WHERE Fm_Flag = 1
+          AND Fm_Code IS NOT NULL
+
+    </select>
 </mapper>
