@@ -1,4 +1,6 @@
 (function (global) {
+    let loadingCount = 0;
+
     function cmAjaxRequest(option) {
         const config = $.extend({
             url: '',
@@ -14,7 +16,14 @@
             complete: null
         }, option || {});
 
-        if (config.loading && typeof global.cmShowLdg === 'function') { global.cmShowLdg(); }
+        if (config.loading) {
+            loadingCount++;
+
+            if (loadingCount === 1
+                && typeof global.cmShowLdg === 'function') {
+                global.cmShowLdg();
+            }
+        }
 
         return $.ajax({
             url: config.url,
@@ -27,14 +36,32 @@
             beforeSend: function (xhr) {
                 const token = $('meta[name="_csrf"]').attr('content');
                 const header = $('meta[name="_csrf_header"]').attr('content');
-                if (token && header) xhr.setRequestHeader(header, token);
+
+                if (token && header) {
+                    xhr.setRequestHeader(header, token);
+                }
             },
             success: function (response) {
-                if (typeof config.success === 'function') { config.success(response); }
+                if (typeof config.success === 'function') {
+                    config.success(response);
+                }
             },
             complete: function (xhr) {
-                if (config.loading && typeof global.cmCloseLdg === 'function') { global.cmCloseLdg(); }
-                if (typeof config.complete === 'function') { config.complete(xhr); }
+                if (config.loading) {
+                    loadingCount--;
+
+                    if (loadingCount <= 0) {
+                        loadingCount = 0;
+
+                        if (typeof global.cmCloseLdg === 'function') {
+                            global.cmCloseLdg();
+                        }
+                    }
+                }
+
+                if (typeof config.complete === 'function') {
+                    config.complete(xhr);
+                }
             },
             error: function (xhr) {
                 try {
@@ -47,15 +74,18 @@
                 } catch (e) {
                     console.error('cmAjax error (log fail)', e);
                 }
-                if (typeof config.error === 'function') { config.error(xhr); }
+
+                if (typeof config.error === 'function') {
+                    config.error(xhr);
+                }
             }
         });
-
     }
 
     //기본
     global.cmAjax = function (url, type, jsonData, loading) {
         const data = (jsonData === undefined || jsonData === null) ? {} : jsonData;
+
         return cmAjaxRequest({
             url: url,
             type: type,
@@ -67,6 +97,7 @@
     //HTML 응답
     global.cmAjaxHtml = function (url, type, paramData, loading) {
         const data = (paramData === undefined || paramData === null) ? {} : paramData;
+
         return cmAjaxRequest({
             url: url,
             type: type,
@@ -81,6 +112,7 @@
     //JSON Body
     global.cmAjaxBody = function (url, type, jsonData, loading) {
         const body = (jsonData === undefined || jsonData === null) ? {} : jsonData;
+
         return cmAjaxRequest({
             url: url,
             type: type,
@@ -95,6 +127,7 @@
     //POST + JSON Body + JSON 응답
     global.cmAjaxJson = function (url, jsonData, loading) {
         const body = (jsonData === undefined || jsonData === null) ? {} : jsonData;
+
         return cmAjaxRequest({
             url: url,
             type: 'POST',

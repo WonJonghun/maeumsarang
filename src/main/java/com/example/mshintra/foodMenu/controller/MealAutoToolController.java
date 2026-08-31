@@ -88,4 +88,14 @@ public class MealAutoToolController {
         response.getOutputStream().write(excel);
         response.getOutputStream().flush();
     }
+
+    @ResponseBody
+    @GetMapping("/createWeeklyMealPlanProcedure.do")
+    public WeeklyMealPlanDto createWeeklyMealPlanProcedure(
+            @RequestParam
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate) {
+
+        return mealAutoToolService
+                .createWeeklyMealPlanProcedure(startDate);
+    }
 }

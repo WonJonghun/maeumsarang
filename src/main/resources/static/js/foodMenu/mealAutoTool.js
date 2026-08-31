@@ -28,18 +28,42 @@ function loadWeeklyMealPlan() {
         startDate: currentWeekStart
     }, true).done(function (data) {
         currentWeeklyMealPlan = data;
-        renderWeeklyMealPlan(data);
+        renderWeeklyMealPlan(
+            data,
+            '#mealAutoToolList'
+        );
+
+        $('#mealWeekRange').text(
+            formatWeekDate(data.startDate)
+            + ' ~ '
+            + formatWeekDate(data.endDate)
+        );
     }).fail(function () {
         $('#mealAutoToolList').html(`
             <div class="meal-empty">
-                식단 생성에 실패했습니다.
+                Java 식단 생성에 실패했습니다.
+            </div>
+        `);
+    });
+
+    cmAjax('/foodMenu/createWeeklyMealPlanProcedure.do', 'GET', {
+        startDate: currentWeekStart
+    }, true).done(function (data) {
+        renderWeeklyMealPlan(
+            data,
+            '#mealAutoToolProcedureList'
+        );
+    }).fail(function () {
+        $('#mealAutoToolProcedureList').html(`
+            <div class="meal-empty">
+                프로시저 식단 생성에 실패했습니다.
             </div>
         `);
     });
 }
 
 //주간식단렌더
-function renderWeeklyMealPlan(data) {
+function renderWeeklyMealPlan(data, target) {
     const dayList = data.dayList;
     let html = `
         <div class="meal-table-wrap">
@@ -107,13 +131,7 @@ function renderWeeklyMealPlan(data) {
         </div>
     `;
 
-    $('#mealAutoToolList').html(html);
-
-    $('#mealWeekRange').text(
-        formatWeekDate(data.startDate)
-        + ' ~ '
-        + formatWeekDate(data.endDate)
-    );
+    $(target).html(html);
 }
 
 //주설정
@@ -122,9 +140,13 @@ function setWeek() {
     const monday = new Date(today);
     const day = today.getDay();
 
-    monday.setDate(today.getDate() - (day === 0 ? 6 : day - 1));
+    monday.setDate(
+        today.getDate()
+        - (day === 0 ? 6 : day - 1)
+    );
 
-    currentWeekStart = cmFormatYmd(monday, '-');
+    currentWeekStart =
+        cmFormatYmd(monday, '-');
 }
 
 //주이동
@@ -153,19 +175,32 @@ function downloadWeeklyMealPlanExcel() {
             responseType: 'blob'
         },
         beforeSend: function (xhr) {
-            const token = $('meta[name="_csrf"]').attr('content');
-            const header = $('meta[name="_csrf_header"]').attr('content');
+            const token =
+                $('meta[name="_csrf"]')
+                    .attr('content');
+
+            const header =
+                $('meta[name="_csrf_header"]')
+                    .attr('content');
 
             if (token && header) {
-                xhr.setRequestHeader(header, token);
+                xhr.setRequestHeader(
+                    header,
+                    token
+                );
             }
         },
         success: function (data) {
-            const url = window.URL.createObjectURL(data);
-            const link = document.createElement('a');
+            const url =
+                window.URL.createObjectURL(data);
+
+            const link =
+                document.createElement('a');
 
             link.href = url;
-            link.download = '주간식단표_'
+
+            link.download =
+                '주간식단표_'
                 + currentWeeklyMealPlan.startDate
                 + '_'
                 + currentWeeklyMealPlan.endDate
@@ -184,12 +219,18 @@ function downloadWeeklyMealPlanExcel() {
 function getMonthDay(date) {
     const value = date.split('-');
 
-    return Number(value[1]) + '/' + Number(value[2]);
+    return Number(value[1])
+        + '/'
+        + Number(value[2]);
 }
 
 //주간날짜표시
 function formatWeekDate(date) {
     const value = date.split('-');
 
-    return value[0] + '.' + value[1] + '.' + value[2];
+    return value[0]
+        + '.'
+        + value[1]
+        + '.'
+        + value[2];
 }

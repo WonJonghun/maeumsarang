@@ -76,6 +76,18 @@
 }
 /* ================== 식단 주간 선택 영역 ↑================== */
 
+/* ================== 식단 비교 영역 ↓================== */
+.meal-result-section + .meal-result-section {
+    margin-top: 28px;
+}
+
+.meal-result-title {
+    margin-bottom: 8px;
+    color: #374151;
+    font-size: 14px;
+    font-weight: 700;
+}
+/* ================== 식단 비교 영역 ↑================== */
 
 /* ================== 상단 엑셀 버튼 영역 ↓================== */
 .meal-auto-tool-page .topbar-excel-btn i {

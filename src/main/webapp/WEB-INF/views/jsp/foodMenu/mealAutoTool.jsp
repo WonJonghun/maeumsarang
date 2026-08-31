@@ -43,7 +43,15 @@
             </button>
         </div>
 
-        <div id="mealAutoToolList"></div>
+        <div class="meal-result-section">
+            <div class="meal-result-title">Java Service</div>
+            <div id="mealAutoToolList"></div>
+        </div>
+
+        <div class="meal-result-section">
+            <div class="meal-result-title">DB Procedure</div>
+            <div id="mealAutoToolProcedureList"></div>
+        </div>
     </main>
 </div>
 

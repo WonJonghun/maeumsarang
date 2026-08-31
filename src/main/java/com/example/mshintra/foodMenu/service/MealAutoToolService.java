@@ -198,6 +198,85 @@ public class MealAutoToolService {
         return result;
     }
 
+    //프로시저 주간 식단 생성
+    @Transactional(readOnly = true)
+    public WeeklyMealPlanDto createWeeklyMealPlanProcedure(
+            LocalDate startDate) {
+
+        List<MealAutoProcedureDto> list =
+                mealAutoToolMapper.selectWeeklyMealPlanProcedure(
+                        startDate
+                );
+
+        WeeklyMealPlanDto result =
+                WeeklyMealPlanDto.builder()
+                        .startDate(startDate)
+                        .endDate(startDate.plusDays(6))
+                        .build();
+
+        Map<LocalDate, DailyMealPlanDto> dayMap =
+                new LinkedHashMap<>();
+
+        Map<String, MealPlanDto> mealMap =
+                new HashMap<>();
+
+        for (MealAutoProcedureDto item : list) {
+            DailyMealPlanDto day =
+                    dayMap.get(item.getUseDate());
+
+            if (day == null) {
+                day = DailyMealPlanDto.builder()
+                        .date(item.getUseDate())
+                        .dayName(item.getDayName())
+                        .build();
+
+                dayMap.put(
+                        item.getUseDate(),
+                        day
+                );
+
+                result.getDayList().add(day);
+            }
+
+            String mealKey =
+                    item.getUseDate()
+                            + ":"
+                            + item.getMealFlag();
+
+            MealPlanDto meal =
+                    mealMap.get(mealKey);
+
+            if (meal == null) {
+                meal = MealPlanDto.builder()
+                        .mealFlag(item.getMealFlag())
+                        .mealName(item.getMealName())
+                        .build();
+
+                mealMap.put(
+                        mealKey,
+                        meal
+                );
+
+                day.getMealList().add(meal);
+            }
+
+            meal.getMenuList().add(
+                    MealRecipeAnalysisDto.builder()
+                            .reCode(item.getReCode())
+                            .reFlag(item.getReFlag())
+                            .reFlagName(
+                                    getReFlagName(
+                                            item.getReFlag()
+                                    )
+                            )
+                            .reName(item.getReName())
+                            .build()
+            );
+        }
+
+        return result;
+    }
+
     //생성 식단 검증
     @Transactional(readOnly = true)
     public MealPlanValidationDto validateGeneratedWeeklyMealPlan(

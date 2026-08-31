@@ -77,4 +77,12 @@
           AND Fm_Code IS NOT NULL
 
     </select>
+
+    <select id="selectWeeklyMealPlanProcedure"
+            resultType="com.example.mshintra.foodMenu.dto.MealAutoProcedureDto">
+
+        EXEC dbo.usp_GetWeeklyAutoMealPlan
+        @StartDate = #{startDate, jdbcType=DATE}
+
+    </select>
 </mapper>
