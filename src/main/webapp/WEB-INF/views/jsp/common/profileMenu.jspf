@@ -5,16 +5,19 @@
 <script type="text/template" id="profileMenuTemplate">
     <div class="profile-drawer">
         <div class="profile-drawer-head">
-            <div class="profile-drawer-avatar">
-                <c:choose>
-                    <c:when test="${not empty user.afContent}">
-                        <img class="profile-drawer-img" src="<c:url value='/attach/profileImage.do'/>" alt="프로필 이미지"/>
-                    </c:when>
-                    <c:otherwise>
-                        <i class="bi bi-person-circle profile-icon" style="font-size:44px;"></i>
-                    </c:otherwise>
-                </c:choose>
-            </div>
+            <c:url var="profileDrawerImageUrl" value="/attach/profileView.do">
+            <c:param name="afNum" value="${user.icCode}"/>
+            <c:param name="afSeq" value="1"/>
+        </c:url>
+
+        <div class="profile-drawer-avatar">
+            <img class="profile-drawer-img"
+                 src="${profileDrawerImageUrl}"
+                 alt="프로필 이미지"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='inline-block';"/>
+            <i class="bi bi-person-circle profile-icon"
+               style="display:none;font-size:44px;"></i>
+        </div>
 
             <div class="profile-drawer-headtext">
                 <div class="profile-drawer-name"><c:out value="${user.icName}"/></div>

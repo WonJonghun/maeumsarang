@@ -40,6 +40,15 @@ public class AttachFileController {
     }
 
     //메인 프로필 이미지 호출
+    @GetMapping("/profileView.do")
+    public ResponseEntity<Resource> profileView(
+            @RequestParam String afNum,
+            @RequestParam int afSeq
+    ) throws Exception {
+        return attachFileService.profileView(afNum, afSeq);
+    }
+
+    //메인 프로필 이미지 호출 blob 버전
     @GetMapping(value = "/profileImage.do", produces = MediaType.IMAGE_JPEG_VALUE)
     public @ResponseBody byte[] profileImage(@AuthenticationPrincipal LoginUserDto loginUser) {
         if (loginUser == null || loginUser.getAfContent() == null || loginUser.getAfContent().length == 0)

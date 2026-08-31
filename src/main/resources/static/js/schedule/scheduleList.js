@@ -342,7 +342,9 @@ function renderScheduleList(list, keyword) {
         const rawCode = String(row.icCode == null ? '' : row.icCode);
         const afNum = $.trim(rawCode.replace(/\D/g, ''));
 
-        const imgUrl = afNum ? ('/attach/thumbnailImageRequest.do?size=100&afNum=' + encodeURIComponent(afNum)) : defaultAvatarUrl;
+        const imgUrl = afNum
+            ? '/attach/profileView.do?afNum=' + encodeURIComponent(afNum) + '&afSeq=1'
+            : defaultAvatarUrl;
         const imgEl = $('<img/>', {
             class: 'schedule-profile-img',
             alt: '',

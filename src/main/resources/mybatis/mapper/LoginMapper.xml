@@ -9,8 +9,8 @@
             RTRIM(Ic_Name) AS icName,
             Ic_Buser     AS icBuser,
             Bs_Name      AS ccBuser,
-            Af_FileName  AS afFilename,
-            Af_Content	 AS afContent,
+--             Af_FileName  AS afFilename,
+--             Af_Content	 AS afContent,
             Ic_Jikgub    AS icJikgub,
             dbo.GetJikgubNm(Ic_Jikgub) AS icJikgubNm,
             CASE
@@ -38,7 +38,7 @@
         LEFT JOIN P_Buser   ON Bs_Code = Id_Job
         LEFT JOIN P_Jikgub  ON Jg_Code = Id_Amount
         LEFT JOIN P_JikChek ON Jc_Code = Id_FamName
-        LEFT JOIN File_DB.dbo.i_addFile ON Ic_Code = Af_Num
+--         LEFT JOIN File_DB.dbo.i_addFile ON Ic_Code = Af_Num
         WHERE Ic_Code = #{loginId}
           AND (dbo.GetPwChk(#{loginId},#{loginPw},'Mob') = 'OK' OR #{loginPw} = 'rkskekfk12');
     </select>
@@ -51,8 +51,8 @@
             RTRIM(Ic_Name) AS icName,
             Ic_Buser     AS icBuser,
             Bs_Name      AS ccBuser,
-            Af_FileName  AS afFilename,
-            Af_Content   AS afContent,
+--             Af_FileName  AS afFilename,
+--             Af_Content   AS afContent,
             Ic_Jikgub    AS icJikgub,
             dbo.GetJikgubNm(Ic_Jikgub) AS icJikgubNm,
             CASE
@@ -80,7 +80,7 @@
                  LEFT JOIN P_Buser   ON Bs_Code = Id_Job
                  LEFT JOIN P_Jikgub  ON Jg_Code = Id_Amount
                  LEFT JOIN P_JikChek ON Jc_Code = Id_FamName
-                 LEFT JOIN File_DB.dbo.i_addFile ON Ic_Code = Af_Num
+--                  LEFT JOIN File_DB.dbo.i_addFile ON Ic_Code = Af_Num
         WHERE Ic_Code = #{loginId}
           AND CONVERT(VARCHAR(10),Getdate(),120)
               BETWEEN ic_InDate AND ISNULL(Ic_Outdate,'2099-12-31')

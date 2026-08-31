@@ -167,15 +167,17 @@
         <div class="profile is-topbar" style="${headerMainYn eq 'N' ? 'display:none;' : ''}">
             <span class="profile-check-badge main-badge" data-key="total" style="display:none;">0</span>
 
+            <c:url var="profileImageUrl" value="/attach/profileView.do">
+                <c:param name="afNum" value="${user.icCode}"/>
+                <c:param name="afSeq" value="1"/>
+            </c:url>
+
             <div class="profile-inner">
-                <c:choose>
-                    <c:when test="${not empty user.afContent}">
-                        <img src="<c:url value='/attach/profileImage.do'/>" alt="프로필 이미지" class="profile-img"/>
-                    </c:when>
-                    <c:otherwise>
-                        <i class="bi bi-person-circle profile-icon"></i>
-                    </c:otherwise>
-                </c:choose>
+                <img src="${profileImageUrl}"
+                     alt="프로필 이미지"
+                     class="profile-img"
+                     onerror="this.style.display='none';this.nextElementSibling.style.display='inline-block';"/>
+                <i class="bi bi-person-circle profile-icon" style="display:none;"></i>
             </div>
         </div>
     </div>

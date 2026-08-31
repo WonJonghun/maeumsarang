@@ -71,6 +71,51 @@ public class AttachFileService {
                 .header("X-Content-Type-Options", "nosniff").body(t.resource);
     }
 
+    @Transactional(readOnly = true)
+    public ResponseEntity<Resource> profileView(String afNum, int afSeq) throws Exception {
+        if (afNum == null || afNum.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
+        AttachFileDto dto = attachFileMapper.selectAttachOne(afNum, afSeq);
+        if (dto == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
+        String storedName = afNum + "." + String.format("%02d", afSeq);
+
+        Path base = Paths.get(nasBaseDir, "insa").normalize();
+        Path path = Paths.get(nasBaseDir, "insa", storedName).normalize();
+
+        if (!path.startsWith(base)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
+        if (!Files.exists(path)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
+        String orgName = dto.getAfFileName();
+        if (!isImageFileName(orgName)) {
+            throw new ResponseStatusException(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+        }
+
+        Resource resource = new UrlResource(path.toUri());
+
+        String probe = Files.probeContentType(path);
+        MediaType contentType = probe == null
+                ? MediaType.APPLICATION_OCTET_STREAM
+                : MediaType.parseMediaType(probe);
+
+        contentType = refineContentType(contentType, orgName);
+
+        return ResponseEntity.ok()
+                .contentType(contentType)
+                .contentLength(Files.size(path))
+                .header("X-Content-Type-Options", "nosniff")
+                .body(resource);
+    }
+
     private DownloadTarget resolveTarget(String afNum, int afSeq) throws Exception {
         if (afNum == null || afNum.isBlank()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         AttachFileDto dto = attachFileMapper.selectAttachOne(afNum, afSeq);

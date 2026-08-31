@@ -34,8 +34,9 @@
                         <div class="approval-sign-box">
                             <div class="approval-sign-mark">
                                 <c:if test="${not empty sign.signNo}">
-                                    <c:url var="signImgUrl" value="/attach/blobImageRequest.do">
+                                    <c:url var="signImgUrl" value="/attach/view.do">
                                         <c:param name="afNum" value="${sign.signNo}" />
+                                        <c:param name="afSeq" value="1" />
                                     </c:url>
 
                                     <img class="detail-image-no-border"

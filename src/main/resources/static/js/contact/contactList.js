@@ -456,9 +456,10 @@ function contactList(list, keyword) {
         const saRaw = row.icSaphone || row.icTel || '';
 
         const afNum = $.trim(row.icCode || ''); // 사번
-        const photoUrl = afNum ? ('/attach/blobImageRequest.do?afNum=' + encodeURIComponent(afNum)) : '';
-        const thumbUrl = afNum ? ('/attach/thumbnailImageRequest.do?size=90&afNum=' + encodeURIComponent(afNum)) : '';
-        const imgUrl = thumbUrl ? thumbUrl : defaultAvatarUrl;
+        const photoUrl = afNum
+            ? '/attach/profileView.do?afNum=' + encodeURIComponent(afNum) + '&afSeq=1'
+            : '';
+        const imgUrl = photoUrl ? photoUrl : defaultAvatarUrl;
 
         const name = kwHighlight(nameRaw, keyword);
         const rank = kwHighlight(rankRaw, keyword);
@@ -477,7 +478,8 @@ function contactList(list, keyword) {
             + '             src="' + imgUrl + '"'
             + '             data-thumb="' + imgUrl + '"'
             + '             data-origin="' + photoUrl + '"'
-            + '             data-default="' + defaultAvatarUrl + '" />'
+            + '             data-default="' + defaultAvatarUrl + '"'
+            + '             onerror="this.onerror=null;this.src=\'' + defaultAvatarUrl + '\';" />'
             + '        <div class="contact-body">'
             + '          <div class="contact-card">'
             + '            <div class="contact-info">'
