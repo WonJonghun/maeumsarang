@@ -74,12 +74,12 @@ public class AttachFileService {
     @Transactional(readOnly = true)
     public ResponseEntity<Resource> profileView(String afNum, int afSeq) throws Exception {
         if (afNum == null || afNum.isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            return emptyProfileImage();
         }
 
         AttachFileDto dto = attachFileMapper.selectAttachOne(afNum, afSeq);
         if (dto == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            return emptyProfileImage();
         }
 
         String storedName = afNum + "." + String.format("%02d", afSeq);
@@ -92,12 +92,12 @@ public class AttachFileService {
         }
 
         if (!Files.exists(path)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            return emptyProfileImage();
         }
 
         String orgName = dto.getAfFileName();
         if (!isImageFileName(orgName)) {
-            throw new ResponseStatusException(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+            return emptyProfileImage();
         }
 
         Resource resource = new UrlResource(path.toUri());
@@ -113,6 +113,16 @@ public class AttachFileService {
                 .contentType(contentType)
                 .contentLength(Files.size(path))
                 .header("X-Content-Type-Options", "nosniff")
+                .body(resource);
+    }
+
+    private ResponseEntity<Resource> emptyProfileImage() throws IOException {
+        ClassPathResource resource = new ClassPathResource("static/images/emptyUser.png");
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_PNG)
+                .contentLength(resource.contentLength())
+                .cacheControl(CacheControl.maxAge(30, TimeUnit.DAYS).cachePublic())
                 .body(resource);
     }
 
