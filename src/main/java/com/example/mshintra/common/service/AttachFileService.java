@@ -84,8 +84,8 @@ public class AttachFileService {
 
         String storedName = afNum + "." + String.format("%02d", afSeq);
 
-        Path base = Paths.get(nasBaseDir, "insa").normalize();
-        Path path = Paths.get(nasBaseDir, "insa", storedName).normalize();
+        Path base = Paths.get(nasBaseDir, "Insa").normalize();
+        Path path = Paths.get(nasBaseDir, "Insa", storedName).normalize();
 
         if (!path.startsWith(base)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
