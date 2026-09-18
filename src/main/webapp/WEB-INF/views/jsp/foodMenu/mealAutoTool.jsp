@@ -26,15 +26,15 @@
     <main class="meal-auto-tool-wrap">
         <div class="meal-weekbar">
             <div class="meal-week-nav">
-                <button type="button" id="btnWeekPrev" class="meal-week-btn" aria-label="이전 주">
-                    <i class="bi bi-caret-left-fill"></i>
-                </button>
+<%--                <button type="button" id="btnWeekPrev" class="meal-week-btn" aria-label="이전 주">--%>
+<%--                    <i class="bi bi-caret-left-fill"></i>--%>
+<%--                </button>--%>
 
-                <div id="mealWeekRange" class="meal-week-range"></div>
+<%--                <div id="mealWeekRange" class="meal-week-range"></div>--%>
 
-                <button type="button" id="btnWeekNext" class="meal-week-btn" aria-label="다음 주">
-                    <i class="bi bi-caret-right-fill"></i>
-                </button>
+<%--                <button type="button" id="btnWeekNext" class="meal-week-btn" aria-label="다음 주">--%>
+<%--                    <i class="bi bi-caret-right-fill"></i>--%>
+<%--                </button>--%>
             </div>
 
             <button type="button" id="btnMealRegenerate" class="meal-regenerate-btn">

@@ -90,6 +90,30 @@ public class MealAutoToolService {
         Map<Integer, List<MealRecipeAnalysisDto>> breakfastRecipePool =
                 getBreakfastRecipePool(recipePool, breakfastRecipeCodes);
 
+        for (int attempt = 0; attempt < 100; attempt++) {
+            WeeklyMealPlanDto plan = createWeeklyMealPlanOnce(
+                    startDate,
+                    recipePool,
+                    breakfastRecipePool
+            );
+
+            if (validateWeeklyMealPlan(plan)
+                    .getErrorList()
+                    .isEmpty()) {
+                return plan;
+            }
+        }
+
+        throw new IllegalStateException(
+                "조건을 만족하는 주간 식단을 생성하지 못했습니다."
+        );
+    }
+
+    //주간 식단 1회 생성
+    private WeeklyMealPlanDto createWeeklyMealPlanOnce(
+            LocalDate startDate,
+            Map<Integer, List<MealRecipeAnalysisDto>> recipePool,
+            Map<Integer, List<MealRecipeAnalysisDto>> breakfastRecipePool) {
         WeeklyMealPlanDto result = WeeklyMealPlanDto.builder()
                 .startDate(startDate)
                 .endDate(startDate.plusDays(6))
@@ -104,7 +128,6 @@ public class MealAutoToolService {
         proteinUseCount.put("PORK", 0);
         proteinUseCount.put("BEEF", 0);
         proteinUseCount.put("CHICKEN", 0);
-        proteinUseCount.put("DUCK", 0);
         proteinUseCount.put("FISH", 0);
         proteinUseCount.put("SEAFOOD", 0);
 
@@ -299,6 +322,7 @@ public class MealAutoToolService {
         validateMealCount(plan, result);
         validateDuplicateMenu(plan, result);
         validateMealProtein(plan, result);
+        validateDailyProtein(plan, result);
         validatePreviousProtein(plan, result);
         validateProteinDetail(plan, result);
         validateIngredient(plan, result);
@@ -798,12 +822,18 @@ public class MealAutoToolService {
                 continue;
             }
 
-            if ("PROTEIN".equals(item.getTagType())
-                    && !result.getProteinTypes()
-                    .contains(item.getTagCode())) {
+            if ("PROTEIN".equals(item.getTagType())) {
+                String proteinType =
+                        "DUCK".equals(item.getTagCode())
+                                ? "CHICKEN"
+                                : item.getTagCode();
 
-                result.getProteinTypes()
-                        .add(item.getTagCode());
+                if (!result.getProteinTypes()
+                        .contains(proteinType)) {
+
+                    result.getProteinTypes()
+                            .add(proteinType);
+                }
             }
 
             if ("PROTEIN_DETAIL".equals(item.getTagType())
@@ -941,18 +971,14 @@ public class MealAutoToolService {
                 )
         );
 
-        if (todayProteins != null && !todayProteins.isEmpty()) {
-            List<MealRecipeAnalysisDto> filtered =
-                    candidates.stream()
-                            .filter(item ->
-                                    item.getProteinTypes().stream()
-                                            .noneMatch(todayProteins::contains)
-                            )
-                            .toList();
+        //같은 날 앞 끼니 단백질 강제 제외
+        if (todayProteins != null
+                && !todayProteins.isEmpty()) {
 
-            if (!filtered.isEmpty()) {
-                candidates = new ArrayList<>(filtered);
-            }
+            candidates.removeIf(item ->
+                    item.getProteinTypes().stream()
+                            .anyMatch(todayProteins::contains)
+            );
         }
 
         if (candidates.isEmpty()) {
@@ -1089,33 +1115,30 @@ public class MealAutoToolService {
             }
         }
 
-        List<MealRecipeAnalysisDto> proteinCandidates =
-                candidates.stream()
-                        .filter(item ->
-                                !item.getProteinTypes().isEmpty()
-                        )
-                        .toList();
-
-        if (!proteinCandidates.isEmpty()) {
-            candidates =
-                    new ArrayList<>(proteinCandidates);
-        }
-
+        //같은 날 앞 끼니 단백질 강제 제외
+        //단백질 우선 후보를 만들기 전에 제외해야
+        //허용 가능한 무단백질 부반찬까지 같이 사라지지 않는다.
         if (todayProteins != null
                 && !todayProteins.isEmpty()) {
 
-            List<MealRecipeAnalysisDto> filtered =
+            candidates.removeIf(item ->
+                    item.getProteinTypes().stream()
+                            .anyMatch(todayProteins::contains)
+            );
+        }
+
+        //주반찬은 단백질 메뉴 우선
+        if (!sideDish) {
+            List<MealRecipeAnalysisDto> proteinCandidates =
                     candidates.stream()
                             .filter(item ->
-                                    item.getProteinTypes()
-                                            .stream()
-                                            .noneMatch(todayProteins::contains)
+                                    !item.getProteinTypes().isEmpty()
                             )
                             .toList();
 
-            if (!filtered.isEmpty()) {
+            if (!proteinCandidates.isEmpty()) {
                 candidates =
-                        new ArrayList<>(filtered);
+                        new ArrayList<>(proteinCandidates);
             }
         }
 
@@ -1254,21 +1277,14 @@ public class MealAutoToolService {
                 )
         );
 
+        //같은 날 앞 끼니 단백질 강제 제외
         if (todayProteins != null
                 && !todayProteins.isEmpty()) {
 
-            List<MealRecipeAnalysisDto> filtered =
-                    candidates.stream()
-                            .filter(item ->
-                                    item.getProteinTypes().stream()
-                                            .noneMatch(todayProteins::contains)
-                            )
-                            .toList();
-
-            if (!filtered.isEmpty()) {
-                candidates =
-                        new ArrayList<>(filtered);
-            }
+            candidates.removeIf(item ->
+                    item.getProteinTypes().stream()
+                            .anyMatch(todayProteins::contains)
+            );
         }
 
         if (candidates.isEmpty()) {
@@ -1303,6 +1319,11 @@ public class MealAutoToolService {
                                         previousProteins == null
                                                 || item.getProteinTypes().stream()
                                                 .noneMatch(previousProteins::contains)
+                                )
+                                .filter(item ->
+                                        todayProteins == null
+                                                || item.getProteinTypes().stream()
+                                                .noneMatch(todayProteins::contains)
                                 )
                                 .filter(item ->
                                         mealProteins == null
@@ -1423,21 +1444,14 @@ public class MealAutoToolService {
                 )
         );
 
+        //같은 날 앞 끼니 단백질 강제 제외
         if (todayProteins != null
                 && !todayProteins.isEmpty()) {
 
-            List<MealRecipeAnalysisDto> filtered =
-                    candidates.stream()
-                            .filter(item ->
-                                    item.getProteinTypes().stream()
-                                            .noneMatch(todayProteins::contains)
-                            )
-                            .toList();
-
-            if (!filtered.isEmpty()) {
-                candidates =
-                        new ArrayList<>(filtered);
-            }
+            candidates.removeIf(item ->
+                    item.getProteinTypes().stream()
+                            .anyMatch(todayProteins::contains)
+            );
         }
 
         if (candidates.isEmpty()) {
@@ -1823,7 +1837,7 @@ public class MealAutoToolService {
                 "오리불고기",
                 "오리슬라이스"
         )) {
-            addProteinType(recipe, "DUCK");
+            addProteinType(recipe, "CHICKEN");
         }
 
         if (containsAny(
@@ -1921,7 +1935,7 @@ public class MealAutoToolService {
 
         if (!name.contains("오리엔탈")
                 && name.contains("오리")) {
-            addProteinType(recipe, "DUCK");
+            addProteinType(recipe, "CHICKEN");
         }
 
         if (containsAny(
@@ -2566,6 +2580,40 @@ public class MealAutoToolService {
             case "SEAFOOD" -> "해산물";
             default -> protein;
         };
+    }
+
+    //같은 날 끼니 간 단백질 중복
+    private void validateDailyProtein(
+            WeeklyMealPlanDto plan,
+            MealPlanValidationDto result) {
+
+        for (DailyMealPlanDto day
+                : plan.getDayList()) {
+
+            Set<String> usedProteins = new HashSet<>();
+
+            for (MealPlanDto meal
+                    : day.getMealList()) {
+
+                Set<String> currentProteins =
+                        getMealProteinTypes(meal);
+
+                for (String protein : currentProteins) {
+                    if (!usedProteins.add(protein)) {
+                        addValidationError(
+                                result,
+                                day.getDate(),
+                                meal.getMealFlag(),
+                                "DAILY_PROTEIN_DUPLICATE",
+                                null,
+                                "같은 날 다른 끼니와 "
+                                        + getProteinName(protein)
+                                        + " 단백질군이 중복됩니다."
+                        );
+                    }
+                }
+            }
+        }
     }
 
     //전날 같은 끼니 단백질

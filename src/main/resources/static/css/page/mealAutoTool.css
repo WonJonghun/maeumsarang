@@ -15,6 +15,7 @@
 .meal-week-nav {
     display: flex;
     align-items: center;
+    min-height: 30px;
 }
 
 .meal-week-btn {
