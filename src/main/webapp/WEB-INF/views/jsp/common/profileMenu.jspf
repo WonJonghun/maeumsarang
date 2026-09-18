@@ -20,7 +20,10 @@
         </div>
 
             <div class="profile-drawer-headtext">
-                <div class="profile-drawer-name"><c:out value="${user.icName}"/></div>
+                <div class="profile-drawer-name">
+                    <c:out value="${user.icName}"/>
+                    <span class="profile-drawer-sub"><c:out value="${user.icCode}"/></span>
+                </div>
                 <div class="profile-drawer-sub"><c:out value="${user.icJikgubNm}"/> · <c:out value="${user.ccBuser}"/></div>
                 <a href="<c:url value='/profile/myInfo.do'/>" class="profile-myinfo-link">내 정보 관리 <i class="bi bi-chevron-right" aria-hidden="true"></i></a>
             </div>

@@ -467,6 +467,7 @@ function contactList(list, keyword) {
 
         const hp = kwHighlight(hpRaw, keyword);
         const sa = kwHighlight(saRaw, keyword);
+        const employeeNo = cmEscapeHtml(afNum);
 
         const actionPhone = cmEscapeHtml(hpRaw);
         const ext = String(saRaw || '').replace(/[^0-9]/g, '');
@@ -490,8 +491,8 @@ function contactList(list, keyword) {
             + '          </div>'
             + '          <div class="contact-expand" style="display:none;">'
             + '            <div class="contact-expand-inner">'
-
             + '              <div class="contact-phone-lines">'
+            + '                <div class="contact-phone-line"><span class="contact-phone-label">사&nbsp;&nbsp;&nbsp;번</span><span class="contact-phone-sep"> | </span><span class="contact-phone-val">' + employeeNo + '</span></div>'
             + '                <div class="contact-phone-line"><span class="contact-phone-label">휴대폰</span><span class="contact-phone-sep"> | </span><span class="contact-phone-val">' + hp + '</span></div>'
             + '                <div class="contact-phone-line"><span class="contact-phone-label">직&nbsp;&nbsp;&nbsp;통</span><span class="contact-phone-sep"> | </span><span class="contact-phone-val contact-ext-call" data-ext="' + ext + '">' + sa + '</span></div>'
             + '              </div>'
