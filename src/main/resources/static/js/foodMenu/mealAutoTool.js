@@ -1,5 +1,6 @@
 let currentWeekStart = '';
 let currentWeeklyMealPlan = null;
+let currentProcedureWeeklyMealPlan = null;
 
 $(function () {
     setWeek();
@@ -24,10 +25,14 @@ $(function () {
 
 //주간식단조회
 function loadWeeklyMealPlan() {
+    currentWeeklyMealPlan = null;
+    currentProcedureWeeklyMealPlan = null;
+
     cmAjax('/foodMenu/createWeeklyMealPlan.do', 'GET', {
         startDate: currentWeekStart
     }, true).done(function (data) {
         currentWeeklyMealPlan = data;
+
         renderWeeklyMealPlan(
             data,
             '#mealAutoToolList'
@@ -49,6 +54,8 @@ function loadWeeklyMealPlan() {
     cmAjax('/foodMenu/createWeeklyMealPlanProcedure.do', 'GET', {
         startDate: currentWeekStart
     }, true).done(function (data) {
+        currentProcedureWeeklyMealPlan = data;
+
         renderWeeklyMealPlan(
             data,
             '#mealAutoToolProcedureList'
@@ -162,7 +169,7 @@ function moveWeek(week) {
 
 //엑셀다운로드
 function downloadWeeklyMealPlanExcel() {
-    if (!currentWeeklyMealPlan) {
+    if (!currentWeeklyMealPlan || !currentProcedureWeeklyMealPlan) {
         return;
     }
 
@@ -170,7 +177,10 @@ function downloadWeeklyMealPlanExcel() {
         url: '/foodMenu/downloadWeeklyMealPlanExcel.do',
         type: 'POST',
         contentType: 'application/json; charset=UTF-8',
-        data: JSON.stringify(currentWeeklyMealPlan),
+        data: JSON.stringify({
+            javaPlan: currentWeeklyMealPlan,
+            procedurePlan: currentProcedureWeeklyMealPlan
+        }),
         xhrFields: {
             responseType: 'blob'
         },

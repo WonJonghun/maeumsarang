@@ -4,6 +4,7 @@ import com.example.mshintra.foodMenu.dto.*;
 import com.example.mshintra.foodMenu.mapper.MealAutoToolMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -3132,7 +3133,8 @@ public class MealAutoToolService {
 
     //주간식단 엑셀
     public byte[] createWeeklyMealPlanExcel(
-            WeeklyMealPlanDto plan)
+            WeeklyMealPlanDto javaPlan,
+            WeeklyMealPlanDto procedurePlan)
             throws IOException {
 
         try (Workbook workbook =
@@ -3146,133 +3148,40 @@ public class MealAutoToolService {
                     );
 
             CellStyle headerStyle =
-                    createExcelHeaderStyle(workbook);
+                    createExcelHeaderStyle(
+                            workbook
+                    );
 
             CellStyle mealStyle =
-                    createExcelMealStyle(workbook);
+                    createExcelMealStyle(
+                            workbook
+                    );
 
             CellStyle menuStyle =
-                    createExcelMenuStyle(workbook);
+                    createExcelMenuStyle(
+                            workbook
+                    );
 
-            Row headerRow =
-                    sheet.createRow(0);
-
-            Cell typeHeader =
-                    headerRow.createCell(0);
-
-            typeHeader.setCellValue("구분");
-            typeHeader.setCellStyle(
-                    headerStyle
-            );
-
-            for (int i = 0;
-                 i < plan.getDayList().size();
-                 i++) {
-
-                DailyMealPlanDto day =
-                        plan.getDayList().get(i);
-
-                Cell cell =
-                        headerRow.createCell(i + 1);
-
-                cell.setCellValue(
-                        day.getDayName()
-                                + "\n"
-                                + day.getDate()
-                                .getMonthValue()
-                                + "/"
-                                + day.getDate()
-                                .getDayOfMonth()
-                );
-
-                cell.setCellStyle(
-                        headerStyle
-                );
-            }
-
-            for (int mealFlag = 1;
-                 mealFlag <= 3;
-                 mealFlag++) {
-
-                int currentMealFlag =
-                        mealFlag;
-
-                Row row =
-                        sheet.createRow(
-                                currentMealFlag
-                        );
-
-                Cell mealCell =
-                        row.createCell(0);
-
-                mealCell.setCellValue(
-                        getMealName(
-                                currentMealFlag
-                        )
-                );
-
-                mealCell.setCellStyle(
-                        mealStyle
-                );
-
-                for (int dayIndex = 0;
-                     dayIndex < plan
-                             .getDayList()
-                             .size();
-                     dayIndex++) {
-
-                    DailyMealPlanDto day =
-                            plan.getDayList()
-                                    .get(dayIndex);
-
-                    MealPlanDto meal =
-                            day.getMealList()
-                                    .stream()
-                                    .filter(item ->
-                                            Integer.valueOf(
-                                                    currentMealFlag
-                                            ).equals(
-                                                    item.getMealFlag()
-                                            )
-                                    )
-                                    .findFirst()
-                                    .orElse(null);
-
-                    Cell cell =
-                            row.createCell(
-                                    dayIndex + 1
-                            );
-
-                    cell.setCellStyle(
+            int nextRow =
+                    writeWeeklyMealPlan(
+                            sheet,
+                            javaPlan,
+                            "Java Service",
+                            0,
+                            headerStyle,
+                            mealStyle,
                             menuStyle
                     );
 
-                    if (meal == null) {
-                        continue;
-                    }
-
-                    StringBuilder menuText =
-                            new StringBuilder();
-
-                    for (MealRecipeAnalysisDto menu
-                            : meal.getMenuList()) {
-
-                        if (menuText.length() > 0) {
-                            menuText.append("\n");
-                        }
-
-                        menuText.append(
-                                menu.getReName()
-                        );
-                    }
-
-                    cell.setCellValue(
-                            menuText.toString()
-                    );
-                }
-
-                row.setHeightInPoints(110);
-            }
+            writeWeeklyMealPlan(
+                    sheet,
+                    procedurePlan,
+                    "DB Procedure",
+                    nextRow + 1,
+                    headerStyle,
+                    mealStyle,
+                    menuStyle
+            );
 
             sheet.setColumnWidth(
                     0,
@@ -3286,12 +3195,191 @@ public class MealAutoToolService {
                 );
             }
 
-            sheet.createFreezePane(1, 1);
+            sheet.createFreezePane(
+                    1,
+                    2
+            );
 
-            workbook.write(outputStream);
+            workbook.write(
+                    outputStream
+            );
 
             return outputStream.toByteArray();
         }
+    }
+
+    //엑셀 식단표 작성
+    private int writeWeeklyMealPlan(
+            Sheet sheet,
+            WeeklyMealPlanDto plan,
+            String title,
+            int startRow,
+            CellStyle headerStyle,
+            CellStyle mealStyle,
+            CellStyle menuStyle) {
+
+        Row titleRow =
+                sheet.createRow(
+                        startRow
+                );
+
+        for (int i = 0; i <= 7; i++) {
+            Cell titleCell =
+                    titleRow.createCell(i);
+
+            titleCell.setCellStyle(
+                    headerStyle
+            );
+        }
+
+        titleRow.getCell(0)
+                .setCellValue(title);
+
+        titleRow.setHeightInPoints(
+                24
+        );
+
+        sheet.addMergedRegion(
+                new CellRangeAddress(
+                        startRow,
+                        startRow,
+                        0,
+                        7
+                )
+        );
+
+        Row headerRow =
+                sheet.createRow(
+                        startRow + 1
+                );
+
+        Cell typeHeader =
+                headerRow.createCell(0);
+
+        typeHeader.setCellValue(
+                "구분"
+        );
+
+        typeHeader.setCellStyle(
+                headerStyle
+        );
+
+        for (int i = 0;
+             i < plan.getDayList().size();
+             i++) {
+
+            DailyMealPlanDto day =
+                    plan.getDayList().get(i);
+
+            Cell cell =
+                    headerRow.createCell(
+                            i + 1
+                    );
+
+            cell.setCellValue(
+                    day.getDayName()
+                            + "\n"
+                            + day.getDate()
+                            .getMonthValue()
+                            + "/"
+                            + day.getDate()
+                            .getDayOfMonth()
+            );
+
+            cell.setCellStyle(
+                    headerStyle
+            );
+        }
+
+        for (int mealFlag = 1;
+             mealFlag <= 3;
+             mealFlag++) {
+
+            int currentMealFlag =
+                    mealFlag;
+
+            Row row =
+                    sheet.createRow(
+                            startRow
+                                    + 1
+                                    + currentMealFlag
+                    );
+
+            Cell mealCell =
+                    row.createCell(0);
+
+            mealCell.setCellValue(
+                    getMealName(
+                            currentMealFlag
+                    )
+            );
+
+            mealCell.setCellStyle(
+                    mealStyle
+            );
+
+            for (int dayIndex = 0;
+                 dayIndex < plan
+                         .getDayList()
+                         .size();
+                 dayIndex++) {
+
+                DailyMealPlanDto day =
+                        plan.getDayList()
+                                .get(dayIndex);
+
+                MealPlanDto meal =
+                        day.getMealList()
+                                .stream()
+                                .filter(item ->
+                                        Integer.valueOf(
+                                                currentMealFlag
+                                        ).equals(
+                                                item.getMealFlag()
+                                        )
+                                )
+                                .findFirst()
+                                .orElse(null);
+
+                Cell cell =
+                        row.createCell(
+                                dayIndex + 1
+                        );
+
+                cell.setCellStyle(
+                        menuStyle
+                );
+
+                if (meal == null) {
+                    continue;
+                }
+
+                StringBuilder menuText =
+                        new StringBuilder();
+
+                for (MealRecipeAnalysisDto menu
+                        : meal.getMenuList()) {
+
+                    if (menuText.length() > 0) {
+                        menuText.append("\n");
+                    }
+
+                    menuText.append(
+                            menu.getReName()
+                    );
+                }
+
+                cell.setCellValue(
+                        menuText.toString()
+                );
+            }
+
+            row.setHeightInPoints(
+                    110
+            );
+        }
+
+        return startRow + 5;
     }
 
     //엑셀 헤더 스타일

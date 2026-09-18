@@ -71,21 +71,32 @@ public class MealAutoToolController {
 
     @PostMapping("/downloadWeeklyMealPlanExcel.do")
     public void downloadWeeklyMealPlanExcel(
-            @RequestBody WeeklyMealPlanDto weeklyMealPlan,
+            @RequestBody Map<String, WeeklyMealPlanDto> request,
             HttpServletResponse response) throws IOException {
 
-        byte[] excel = mealAutoToolService.createWeeklyMealPlanExcel(weeklyMealPlan);
+        byte[] excel =
+                mealAutoToolService.createWeeklyMealPlanExcel(
+                        request.get("javaPlan"),
+                        request.get("procedurePlan")
+                );
 
         response.setContentType(
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         );
+
         response.setHeader(
                 "Content-Disposition",
                 "attachment; filename=\"weeklyMealPlan.xlsx\""
         );
-        response.setContentLength(excel.length);
 
-        response.getOutputStream().write(excel);
+        response.setContentLength(
+                excel.length
+        );
+
+        response.getOutputStream().write(
+                excel
+        );
+
         response.getOutputStream().flush();
     }
 
