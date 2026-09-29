@@ -173,56 +173,14 @@ function downloadWeeklyMealPlanExcel() {
         return;
     }
 
-    $.ajax({
-        url: '/foodMenu/downloadWeeklyMealPlanExcel.do',
-        type: 'POST',
-        contentType: 'application/json; charset=UTF-8',
-        data: JSON.stringify({
-            javaPlan: currentWeeklyMealPlan,
-            procedurePlan: currentProcedureWeeklyMealPlan
-        }),
-        xhrFields: {
-            responseType: 'blob'
-        },
-        beforeSend: function (xhr) {
-            const token =
-                $('meta[name="_csrf"]')
-                    .attr('content');
-
-            const header =
-                $('meta[name="_csrf_header"]')
-                    .attr('content');
-
-            if (token && header) {
-                xhr.setRequestHeader(
-                    header,
-                    token
-                );
-            }
-        },
-        success: function (data) {
-            const url =
-                window.URL.createObjectURL(data);
-
-            const link =
-                document.createElement('a');
-
-            link.href = url;
-
-            link.download =
-                '주간식단표_'
-                + currentWeeklyMealPlan.startDate
-                + '_'
-                + currentWeeklyMealPlan.endDate
-                + '.xlsx';
-
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-
-            window.URL.revokeObjectURL(url);
-        }
-    });
+    cmAjaxDownload('/foodMenu/downloadWeeklyMealPlanExcel.do', {
+        javaPlan: currentWeeklyMealPlan,
+        procedurePlan: currentProcedureWeeklyMealPlan
+    }, '주간식단표_'
+        + currentWeeklyMealPlan.startDate
+        + '_'
+        + currentWeeklyMealPlan.endDate
+        + '.xlsx', true);
 }
 
 //날짜표시

@@ -10,6 +10,7 @@
             dataType: 'json',
             processData: true,
             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+            xhrFields: null,
             loading: false,
             success: null,
             error: null,
@@ -31,6 +32,7 @@
             data: config.data,
             async: config.async,
             dataType: config.dataType,
+            xhrFields: config.xhrFields,
             processData: config.processData,
             contentType: config.contentType,
             beforeSend: function (xhr) {
@@ -151,4 +153,35 @@
             contentType: false
         });
     };
+
+    //파일다운로드(POST + JSON Body)
+    global.cmAjaxDownload = function (url, jsonData, fileName, loading) {
+        const body = (jsonData === undefined || jsonData === null) ? {} : jsonData;
+
+        return cmAjaxRequest({
+            url: url,
+            type: 'POST',
+            data: JSON.stringify(body),
+            loading: (loading !== false),
+            dataType: null,
+            processData: true,
+            contentType: 'application/json; charset=UTF-8',
+            xhrFields: {
+                responseType: 'blob'
+            }
+        }).done(function (data) {
+            const url = window.URL.createObjectURL(data);
+            const link = document.createElement('a');
+
+            link.href = url;
+            link.download = fileName;
+
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+
+            window.URL.revokeObjectURL(url);
+        });
+    };
+
 })(window);
