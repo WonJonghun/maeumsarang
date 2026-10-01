@@ -7,6 +7,7 @@
     --pc-login-orange: #fe7d19;
     --pc-login-surface: #f3faf1;
     --pc-login-green-text: #287c36;
+    --pc-login-red-text: #d85a62;
     --pc-login-text: #172b4d;
     --pc-login-muted: #596579;
     --pc-login-border: #cdd5df;
@@ -42,9 +43,9 @@
 
 .pc-login-card {
     display: grid;
-    grid-template-columns: 480px 1fr;
+    grid-template-columns: 400px 1fr;
     width: 100%;
-    max-width: 1240px;
+    max-width: 1286px;
     min-height: 760px;
     overflow: hidden;
     background: var(--white);
@@ -70,7 +71,7 @@
 
 .pc-login-form-wrap {
     margin: auto 0;
-    padding: 48px 0 32px;
+    padding: 0 0 32px;
 }
 
 .pc-login-eyebrow {
@@ -131,7 +132,7 @@
     width: 100%;
     min-width: 0;
     height: 50px;
-    padding: 0 48px 0 36px;
+    padding: 0 16px 0 36px;
     border: 0;
     border-bottom: 2px solid var(--pc-login-border);
     border-radius: 0;
@@ -242,16 +243,36 @@
 
 /* ================== 로그인 안내 영역 ↓================== */
 .pc-login-visual {
+    position: relative;
+    isolation: isolate;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 28px;
+    gap: 18px;
     min-width: 0;
-    padding: 40px;
+    padding: 20px 40px;
     overflow: hidden;
     border-left: 1px solid #e2ebdd;
-    background: var(--pc-login-surface);
+    background:
+        radial-gradient(ellipse at 100% 0%, rgba(82, 179, 53, .24), transparent 55%),
+        radial-gradient(ellipse at 0% 100%, rgba(35, 172, 68, .13), transparent 60%),
+        radial-gradient(ellipse at 100% 100%, rgba(254, 125, 25, .1), transparent 48%),
+        linear-gradient(145deg, #fcfef9, var(--pc-login-surface) 45%, #eaf5e5);
     color: var(--pc-login-primary);
+}
+
+.pc-login-visual::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: -170px;
+    right: -190px;
+    width: 420px;
+    height: 420px;
+    border: 1px solid rgba(255, 255, 255, .65);
+    border-radius: 50%;
+    box-shadow: 0 0 0 40px rgba(255, 255, 255, .18), 0 0 0 80px rgba(255, 255, 255, .12);
+    pointer-events: none;
 }
 
 .pc-login-mission {
@@ -279,7 +300,16 @@
     letter-spacing: 0;
 }
 
-.pc-login-mission h2 {
+.pc-login-philosophy-title {
+    margin: 0 0 12px;
+    font-size: 33px;
+    line-height: 1.4;
+    font-weight: 700;
+    color: black;
+}
+
+.pc-login-mission-copy {
+    color: var(--pc-login-green-text);
     margin: 0;
     position: relative;
     z-index: 1;
@@ -289,12 +319,12 @@
     font-weight: 500;
 }
 
-.pc-login-mission h2 > span {
+.pc-login-mission-copy > span {
     font-size: 26px;
 }
 
-.pc-login-mission h2 strong {
-    color: var(--pc-login-green-text);
+.pc-login-mission-copy strong {
+    color: var(--pc-login-red-text);
     font-size: 42px;
     font-weight: 700;
     letter-spacing: -2px;
@@ -345,15 +375,17 @@
     display: flex;
     align-items: baseline;
     gap: 12px;
-    margin: 0 0 14px;
-    font-size: 16px;
+    margin: 0 0 8px;
+    font-size: 24px;
     font-weight: 700;
 }
 
 .pc-login-visual h3 > span {
     color: var(--pc-login-visual-muted);
-    font-size: 11px;
-    font-weight: 400;
+    border-left: 1px solid #cbdcc6;
+    padding-left: 12px;
+    font-size: 20px;
+    font-weight: 500;
     letter-spacing: 1px;
 }
 
@@ -364,15 +396,20 @@
 
 .pc-login-purpose h3 {
     margin-bottom: 8px;
-    font-size: 14px;
+    font-size: 18px;
 }
 
 .pc-login-purpose p {
     margin: 0;
     color: var(--pc-login-visual-muted);
-    font-size: 13px;
+    font-size: 17px;
     line-height: 1.75;
     word-break: keep-all;
+}
+
+.pc-login-vision {
+    padding-top: 12px;
+    border-top: 1px solid #d7e5d0;
 }
 
 .pc-login-vision ol {
@@ -388,47 +425,40 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 16px;
+    padding: 8px 16px;
     border: 1px solid #e0eada;
     border-radius: 12px;
     background: var(--white);
 }
 
-.pc-login-vision-icon {
+.pc-login-vision-number {
     display: inline-flex;
-    flex: 0 0 36px;
+    flex: 0 0 30px;
     align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: #edf6e8;
-    color: var(--pc-login-green-text);
-    font-size: 20px;
-}
-
-.pc-login-vision li:nth-child(2) .pc-login-vision-icon,
-.pc-login-vision li:nth-child(3) .pc-login-vision-icon {
-    background: #fff1e6;
-    color: #ba560c;
+    height: 28px;
+    border-right: 1px solid #d7e5d0;
+    color: var(--pc-login-primary);
+    font-size: 17px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
 }
 
 .pc-login-vision p {
     margin: 0;
     color: var(--pc-login-visual-muted);
-    font-size: 12px;
+    font-size: 15px;
     line-height: 1.7;
     word-break: keep-all;
 }
 
 .pc-login-vision strong {
     color: var(--pc-login-primary);
-    font-size: 14px;
+    font-size: 18px;
     font-weight: 700;
 }
 
 .pc-login-values {
-    padding-top: 24px;
+    padding-top: 12px;
     border-top: 1px solid #d7e5d0;
 }
 
@@ -453,16 +483,16 @@
 }
 
 .pc-login-values dt {
-    font-size: 14px;
+    font-size: 17px;
     font-weight: 700;
 }
 
 .pc-login-values dt > span {
     display: block;
-    min-height: 34px;
+    min-height: 2.8em;
     margin-top: 4px;
     color: var(--pc-login-green-text);
-    font-size: 11px;
+    font-size: 15px;
     font-weight: 400;
     line-height: 1.4;
 }
@@ -470,7 +500,12 @@
 .pc-login-values dd {
     margin: 8px 0 0;
     color: var(--pc-login-visual-muted);
-    font-size: 12px;
+    font-size: 15px;
     line-height: 1.7;
     word-break: keep-all;
+}
+
+#pcLoginTitle {
+    font-size: 33px;
+    color: black;
 }

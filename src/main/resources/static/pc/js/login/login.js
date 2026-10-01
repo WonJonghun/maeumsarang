@@ -30,12 +30,12 @@ $(function () {
         $(this).attr('aria-busy', 'true');
     });
 
-    $('#pcPasswordToggle').on('click', function () {
-        const showPassword = $('#pcLoginPw').attr('type') === 'password';
-        $('#pcLoginPw').attr('type', showPassword ? 'text' : 'password');
-        $(this).attr('aria-pressed', String(showPassword)).attr('aria-label', showPassword ? '비밀번호 숨기기' : '비밀번호 표시');
-        $(this).find('i').toggleClass('bi-eye', !showPassword).toggleClass('bi-eye-slash', showPassword);
-    });
+    // $('#pcPasswordToggle').on('click', function () {
+    //     const showPassword = $('#pcLoginPw').attr('type') === 'password';
+    //     $('#pcLoginPw').attr('type', showPassword ? 'text' : 'password');
+    //     $(this).attr('aria-pressed', String(showPassword)).attr('aria-label', showPassword ? '비밀번호 숨기기' : '비밀번호 표시');
+    //     $(this).find('i').toggleClass('bi-eye', !showPassword).toggleClass('bi-eye-slash', showPassword);
+    // });
 
     $('#pcLoginId, #pcLoginPw').on('input', function () {
         $(this).removeAttr('aria-invalid');

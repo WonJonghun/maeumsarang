@@ -42,10 +42,10 @@
                         <i class="bi bi-lock" aria-hidden="true"></i>
                         <input type="password" id="pcLoginPw" name="loginPw" autocomplete="current-password"
                                placeholder="비밀번호를 입력해 주세요" aria-describedby="pcLoginError" required>
-                        <button type="button" id="pcPasswordToggle" class="pc-login-password-toggle"
-                                aria-label="비밀번호 표시" aria-controls="pcLoginPw" aria-pressed="false">
-                            <i class="bi bi-eye" aria-hidden="true"></i>
-                        </button>
+<%--                        <button type="button" id="pcPasswordToggle" class="pc-login-password-toggle"--%>
+<%--                                aria-label="비밀번호 표시" aria-controls="pcLoginPw" aria-pressed="false">--%>
+<%--                            <i class="bi bi-eye" aria-hidden="true"></i>--%>
+<%--                        </button>--%>
                     </div>
                 </div>
 
@@ -72,31 +72,33 @@
         <p class="pc-login-copyright">© Maeumsarang Hospital</p>
     </section>
 
-    <aside class="pc-login-visual" aria-labelledby="pcLoginVisualTitle">
+    <aside class="pc-login-visual" aria-labelledby="pcPhilosophyTitle">
         <header class="pc-login-mission">
-            <p class="pc-login-visual-label">MISSION <span>마음사랑의 약속</span></p>
-            <h2 id="pcLoginVisualTitle"><span>최상의 의료서비스로</span><br><strong>인간사랑</strong>을 구현합니다.</h2>
+            <h2 id="pcPhilosophyTitle" class="pc-login-philosophy-title">병원이념</h2>
+            <h3 id="pcMissionTitle">사명 <span>MISSION</span></h3>
+<%--            <p class="pc-login-visual-label">MISSION <span>마음사랑의 약속</span></p>--%>
+            <p class="pc-login-mission-copy"><span>최상의 의료서비스로</span><br><strong>인간사랑 </strong>을 구현합니다.</p>
             <div class="pc-login-leaves" aria-hidden="true"><span></span><span></span><span></span></div>
         </header>
 
         <section class="pc-login-purpose" aria-labelledby="pcPurposeTitle">
-            <h3 id="pcPurposeTitle">환자와 가족의 행복, 더 건강한 지역사회</h3>
-            <p>최고의 의술과 최선의 봉사로써 환자와 그 가족에게 최대의 행복을 제공하고,
-                나아가 지역사회 정신건강에 이바지하기 위함입니다.</p>
+            <h3 id="pcPurposeTitle">설립목적</h3>
+            <p>최고의 의술과 최선의 봉사로써 환자와 그 가족에게 최대의 행복을 제공하고,</p>
+            <p>나아가 지역사회 정신건강에 이바지하기 위함입니다.</p>
         </section>
 
         <section class="pc-login-vision" aria-labelledby="pcVisionTitle">
-            <h3 id="pcVisionTitle">우리가 만들어가는 병원 <span>OUR VISION</span></h3>
+            <h3 id="pcVisionTitle">비전 <span>VISION</span></h3>
             <ol>
-                <li><span class="pc-login-vision-icon" aria-hidden="true"><i class="bi bi-shield-check"></i></span><p>전문성 있는 진료로<br><strong>신뢰받는 병원</strong></p></li>
-                <li><span class="pc-login-vision-icon" aria-hidden="true"><i class="bi bi-heart"></i></span><p>사랑실천으로<br><strong>고객이 행복한 병원</strong></p></li>
-                <li><span class="pc-login-vision-icon" aria-hidden="true"><i class="bi bi-stars"></i></span><p>창의적인 인재양성으로<br><strong>신바람 나게 일하는 병원</strong></p></li>
-                <li><span class="pc-login-vision-icon" aria-hidden="true"><i class="bi bi-people"></i></span><p>지역사회의 건강과<br><strong>행복한 삶에 기여하는 병원</strong></p></li>
+                <li><span class="pc-login-vision-number" aria-hidden="true">01</span><p>전문성 있는 진료로<br><strong>신뢰받는 병원</strong></p></li>
+                <li><span class="pc-login-vision-number" aria-hidden="true">02</span><p>사랑실천으로<br><strong>고객이 행복한 병원</strong></p></li>
+                <li><span class="pc-login-vision-number" aria-hidden="true">03</span><p>창의적인 인재양성으로<br><strong>신바람 나게 일하는 병원</strong></p></li>
+                <li><span class="pc-login-vision-number" aria-hidden="true">04</span><p>지역사회의 건강과<br><strong>행복한 삶에 기여하는 병원</strong></p></li>
             </ol>
         </section>
 
         <section class="pc-login-values" aria-labelledby="pcValuesTitle">
-            <h3 id="pcValuesTitle">함께 지키는 행동규범 <span>5C VALUES</span></h3>
+            <h3 id="pcValuesTitle">행동규범 <span>5C</span></h3>
             <dl>
                 <div><dt>고객만족 <span>Customer Satisfaction</span></dt><dd>최고의 의료서비스로 고객만족 극대화에 이바지한다.</dd></div>
                 <div><dt>최고성과 <span>Championship</span></dt><dd>맡은 일에 최고의 성과를 내기 위하여 노력한다.</dd></div>
