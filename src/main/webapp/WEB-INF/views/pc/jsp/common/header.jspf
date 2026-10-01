@@ -1,0 +1,29 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<header class="pc-topbar">
+    <div class="pc-topbar-left">
+        <button type="button" id="pcMenuToggle" class="pc-icon-button pc-menu-toggle"
+                aria-label="업무 메뉴 열기" aria-controls="pcSidebar" aria-expanded="false">
+            <i class="bi bi-list" aria-hidden="true"></i>
+        </button>
+        <a class="pc-brand" href="<c:url value='/pc/main.do'/>" aria-label="마음사랑병원 인트라넷 홈">
+            <img src="<c:url value='/images/mainLogo.png'/>" alt="마음사랑병원" class="pc-brand-image">
+        </a>
+    </div>
+
+    <div class="pc-user">
+        <div class="topbar-user-text">
+            <p class="user-name"><c:out value="${user.icName}"/></p>
+            <p class="user-team"><c:out value="${user.ccBuser}"/></p>
+        </div>
+        <c:url var="pcProfileImageUrl" value="/attach/profileView.do">
+            <c:param name="afNum" value="${user.icCode}"/>
+            <c:param name="afSeq" value="1"/>
+        </c:url>
+        <div class="profile pc-profile" aria-label="프로필 사진">
+            <i class="bi bi-person-fill pc-profile-fallback" aria-hidden="true"></i>
+            <img id="pcProfileImage" src="<c:out value='${pcProfileImageUrl}'/>"
+                 alt="" class="profile-img">
+        </div>
+    </div>
+</header>

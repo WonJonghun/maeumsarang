@@ -1,0 +1,38 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title><c:out value='${menuAuth.menuName}'/></title>
+    <%@ include file="../common/common-inc.jspf" %>
+
+    <link rel="stylesheet" href="<c:url value='/mobile/css/repair/repairList.css'/>">
+</head>
+
+<body class="repair-page">
+<div class="page-root">
+    <c:set var="headerMainYn" value="N"/>
+    <c:set var="headerSearchYn" value="Y"/>
+    <c:set var="headerDateYn" value="Y"/>
+    <c:set var="headerDefaultRangeDays" value="30"/>
+    <%@ include file="../common/header.jspf" %>
+
+    <main class="repair-list-wrap">
+        <div class="repair-tab-wrap">
+            <button type="button" class="repair-tab active" data-tab="all">전체</button>
+            <button type="button" class="repair-tab" data-tab="1">진행중</button>
+            <button type="button" class="repair-tab" data-tab="2">처리완료</button>
+            <button type="button" class="repair-tab" data-tab="3">수리불가</button>
+            <button type="button" class="repair-tab" data-tab="4">AS신청</button>
+        </div>
+
+        <div id="repairList"></div>
+    </main>
+</div>
+
+<%@ include file="../common/detailDrawer.jspf" %>
+<script src="<c:url value='/mobile/js/repair/repairList.js'/>"></script>
+</body>
+</html>

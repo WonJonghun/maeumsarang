@@ -1,0 +1,806 @@
+/* ================== 자산재고조사 트리 영역 ↓================== */
+.property-look-wrap {
+    padding: 10px 12px 28px;
+    background: transparent;
+}
+
+#property-look-list {
+    width: 100%;
+}
+
+.property-area-group {
+    margin-bottom: 8px;
+}
+
+.property-tree-node {
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 10px;
+    border-radius: 9px;
+    background: transparent;
+    color: #1f2937;
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.property-tree-node:hover {
+    background: #f5f7fb;
+}
+
+.property-tree-node.is-open {
+    background: #dbeafe;
+}
+
+.property-tree-node.is-open:hover {
+    background: #dbeafe;
+}
+
+.property-area-title.is-open {
+    background: #dbeafe;
+}
+
+.property-area-title.is-open:hover {
+    background: #dbeafe;
+}
+
+.property-item-title.is-open {
+    border-radius: 10px 10px 0 0;
+    background: #e8f1ff;
+}
+
+.property-item-title.is-open:hover {
+    background: #e8f1ff;
+}
+
+.property-tree-toggle {
+    width: 16px;
+    flex: 0 0 16px;
+    color: #64748b;
+    font-size: 16px;
+    line-height: 1;
+    text-align: center;
+    transition: transform .15s;
+}
+
+.property-tree-node.is-open .property-tree-toggle {
+    transform: rotate(90deg);
+}
+
+.property-tree-name {
+    min-width: 0;
+    flex: 1;
+    color: #1f2937;
+    font-size: 12px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.property-area-title .property-tree-name {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.property-item-title .property-tree-name {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.property-tree-count {
+    min-width: 54px;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    color: #111827;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: normal;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.property-area-body {
+    margin-left: 24px;
+    padding: 3px 0 5px;
+}
+
+.property-item-group {
+    margin: 4px 0;
+    border-radius: 10px;
+}
+
+.property-item-title {
+    min-height: 36px;
+    padding: 0 10px;
+    border-radius: 9px;
+    background: transparent;
+}
+
+.property-item-title:hover {
+    background: #f5f7fb;
+}
+
+.property-item-body {
+    margin: 0;
+    padding: 4px 6px 6px 6px;
+    border-radius: 0 0 10px 10px;
+    background: #e8f1ff;
+}
+
+.property-item-title.is-open + .property-item-body {
+    background: #e8f1ff;
+}
+
+.property-tree-branch {
+    display: none;
+}
+
+.property-look-row {
+    min-height: 36px;
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.5fr) 54px;
+    align-items: center;
+    column-gap: 8px;
+    margin: 3px 0;
+    padding: 0 0 0 12px;
+    border-radius: 9px;
+    background: transparent;
+    color: #1f2937;
+    cursor: pointer;
+}
+
+.property-look-row:hover {
+    background: transparent;
+}
+
+.property-item-body .property-look-row {
+    padding-left: 12px;
+    background: transparent;
+}
+
+.property-item-body .property-look-row:hover {
+    background: transparent;
+}
+
+.property-row-name {
+    min-width: 0;
+    color: #1f2937;
+    font-size: 13px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+}
+
+.property-row-model {
+    min-width: 0;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.property-row-status {
+    width: 54px;
+    box-sizing: border-box;
+    justify-self: end;
+    margin-left: 0;
+    padding: 2px 0;
+    border-radius: 3px;
+    background: #f9fafb;
+    color: #374151;
+    border: 1px solid #cccccc;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.property-row-status.text-yellow {
+    color: #b45309;
+    background: #fdfaf0;
+    border-color: #ffc564;
+}
+
+.property-detail-status-chip.text-green {
+    color: #15803d;
+    background: #dcfce7;
+    border-color: #59e08a;
+}
+
+.property-detail-status-chip.text-red {
+    color: #b91c1c;
+    background: #fee2e2;
+    border-color: #e84267;
+}
+
+.property-row-qty {
+    display: none;
+}
+
+.property-look-empty {
+    padding: 24px 4px;
+    text-align: center;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+@media (max-width: 640px) {
+    .property-look-wrap {
+        padding: 8px 10px 24px;
+    }
+
+    .property-area-body {
+        margin-left: 16px;
+    }
+
+    .property-item-body {
+        margin-left: 0;
+    }
+
+    .property-look-row {
+        grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.5fr) 48px;
+        column-gap: 6px;
+        padding-left: 10px;
+    }
+
+    .property-item-body .property-look-row {
+        padding-left: 29px;
+    }
+
+    .property-tree-count {
+        min-width: 48px;
+        font-size: 11px;
+    }
+
+    .property-area-title .property-tree-name {
+        font-size: 13px;
+    }
+
+    .property-row-name,
+    .property-tree-name {
+        font-size: 12px;
+    }
+
+    .property-row-model {
+        font-size: 12px;
+    }
+
+    .property-row-status {
+        width: 48px;
+        padding: 2px 0;
+        font-size: 10px;
+    }
+}
+/* ================== 자산재고조사 트리 영역 ↑================== */
+
+
+/* ================== 자산재고조사 상세 영역 ↓================== */
+.property-look-page .post-detail-head {
+    padding-bottom: 12px;
+    border-bottom: 1px solid #dfe6ef;
+}
+
+.property-look-page .post-detail-title {
+    color: #111827;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.property-look-page .post-detail-head > div {
+    margin-top: 8px;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.property-detail-sub-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.property-detail-sub-left {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.property-detail-status-chip {
+    margin-left: 0;
+    padding: 2px 8px;
+    border-radius: 3px;
+    background: #f9fafb;
+    color: #374151;
+    border: 1px solid #cccccc;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.property-detail-status-chip.text-yellow {
+    color: #b45309;
+    background: #fdfaf0;
+    border-color: #ffc564;
+}
+
+.property-row-status.text-green {
+    color: #15803d;
+    background: #dcfce7;
+    border-color: #59e08a;
+}
+
+.property-row-status.text-red {
+    color: #b91c1c;
+    background: #fee2e2;
+    border-color: #e84267;
+}
+
+.property-look-page table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    background: #ffffff;
+}
+
+.property-detail-th-col {
+    width: 86px;
+}
+
+.property-detail-qty-th-col {
+    width: 62px;
+}
+
+.property-detail-qty-col {
+    width: 56px;
+}
+
+.property-look-page th,
+.property-look-page td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #edf2f7;
+    border-right: 1px solid #edf2f7;
+    font-size: 13px;
+    box-sizing: border-box;
+}
+
+.property-look-page tr:first-child th,
+.property-look-page tr:first-child td {
+    border-top: 1px solid #dfe6ef;
+}
+
+.property-look-page th {
+    width: 86px;
+    padding-left: 12px;
+    background: #eef4fb;
+    color: #334155;
+    font-weight: 700;
+    text-align: left;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.property-look-page td {
+    background: #fcfdff;
+    color: #0f172a;
+    font-weight: 600;
+    text-align: left;
+    word-break: break-word;
+    vertical-align: middle;
+}
+
+.property-look-page .property-detail-sub-th {
+    width: 62px;
+    padding-left: 12px;
+    padding-right: 8px;
+    text-align: left;
+}
+
+.property-detail-money {
+    padding-left: 12px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.property-detail-qty {
+    width: 56px;
+    padding-left: 8px;
+    padding-right: 12px;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.property-look-page tr > *:last-child {
+    border-right: none;
+}
+
+.property-look-page tr:last-child th,
+.property-look-page tr:last-child td {
+    border-bottom: 1px solid #dfe6ef;
+}
+
+.property-look-page td:empty::before {
+    content: "-";
+    color: #cbd5e1;
+    font-weight: 500;
+}
+
+@media (max-width: 640px) {
+    .property-detail-th-col {
+        width: 82px;
+    }
+
+    .property-detail-qty-th-col {
+        width: 54px;
+    }
+
+    .property-detail-qty-col {
+        width: 48px;
+    }
+
+    .property-look-page th {
+        width: 82px;
+        padding: 9px 6px 9px 10px;
+        font-size: 12px;
+    }
+
+    .property-look-page td {
+        padding: 9px 7px 9px 10px;
+        font-size: 12px;
+    }
+
+    .property-look-page .property-detail-sub-th {
+        width: 54px;
+        padding-left: 10px;
+        padding-right: 6px;
+    }
+
+    .property-detail-money {
+        padding-left: 10px;
+    }
+
+    .property-detail-qty {
+        width: 48px;
+        padding-left: 6px;
+        padding-right: 10px;
+        text-align: right;
+    }
+}
+/* ================== 자산재고조사 상세 영역 ↑================== */
+
+
+/* ================== QR 스캔 영역 ↓================== */
+.topbar-qr-btn i {
+    font-size: 23px;
+    color: var(--gray-6b7280);
+}
+
+.property-qr-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    background: rgba(15, 23, 42, 0.55);
+}
+
+.property-qr-box {
+    width: 100%;
+    max-width: 480px;
+    overflow: hidden;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
+}
+
+.property-qr-head {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.property-qr-head strong {
+    color: #111827;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.property-qr-close {
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #4b5563;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.property-qr-close:hover {
+    background: #f3f4f6;
+}
+
+.property-qr-video-wrap {
+    position: relative;
+    margin: 14px;
+    overflow: hidden;
+    border-radius: 14px;
+    background: #000000;
+}
+
+.property-qr-video-wrap::before {
+    content: "";
+    position: absolute;
+    inset: 16%;
+    z-index: 1;
+    border: 3px solid #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 0 0 999px rgba(0, 0, 0, 0.28);
+    pointer-events: none;
+}
+
+#propertyQrVideo {
+    width: 100%;
+    height: 360px;
+    display: block;
+    object-fit: cover;
+}
+
+.property-qr-guide {
+    margin: 0;
+    padding: 0 14px 16px;
+    color: #64748b;
+    font-size: 13px;
+    text-align: center;
+}
+
+@media (max-width: 640px) {
+    .property-qr-layer {
+        padding: 10px;
+    }
+
+    .property-qr-box {
+        max-width: 100%;
+    }
+
+    #propertyQrVideo {
+        height: clamp(320px, 62vh, 460px);
+    }
+
+    .property-qr-video-wrap::before {
+        inset: 14%;
+    }
+}
+/* ================== QR 스캔 영역 ↑================== */
+
+
+/* ================== 상세 탭 영역 ↓================== */
+.property-detail-wrap {
+    padding-top: 10px;
+}
+
+.property-detail-tab-wrap {
+    display: flex;
+    align-items: flex-end;
+    gap: 0;
+    margin: 0;
+    border-bottom: 1px solid #cccccc;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.property-detail-tab {
+    position: relative;
+    min-width: 82px;
+    height: 34px;
+    padding: 0 14px;
+    margin-right: -1px;
+    border: 1px solid #cccccc;
+    border-bottom: none;
+    border-radius: 9px 9px 0 0;
+    background: #f1f1f1;
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.property-detail-tab:hover {
+    background: #eef4ff;
+    color: #2563eb;
+}
+
+.property-detail-tab.active {
+    z-index: 2;
+    height: 38px;
+    background: #ffffff;
+    color: #2563eb;
+    font-weight: 700;
+}
+
+.property-detail-tab.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: #ffffff;
+}
+
+.property-detail-tab-panel {
+    width: 100%;
+}
+
+.property-detail-empty-tab {
+    padding: 34px 12px;
+    border: 1px solid #edf2f7;
+    border-radius: 8px;
+    background: #fcfdff;
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+}
+
+@media (max-width: 640px) {
+    .property-detail-tab-wrap {
+        justify-content: center;
+    }
+
+    .property-detail-tab {
+        min-width: 80px;
+        height: 32px;
+        padding: 0 10px;
+        font-size: 12px;
+    }
+
+    .property-detail-tab.active {
+        height: 36px;
+    }
+}
+/* ================== 상세 탭 영역 ↑================== */
+
+/* ================== 상세 공통 테이블 영역 ↓================== */
+.property-detail-wrap,
+.property-detail-tab-panel {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.property-detail-tab-panel {
+    overflow-x: hidden;
+}
+
+.property-history-table {
+    width: 100%;
+    max-width: 100%;
+    table-layout: fixed;
+}
+
+.property-history-table th,
+.property-history-table td {
+    /*width: auto;*/
+    min-width: 0;
+    padding: 8px 5px;
+    text-align: left;
+    white-space: normal;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+    vertical-align: middle;
+    box-sizing: border-box;
+}
+
+.property-history-table th {
+    padding-left: 5px;
+    background: #eef4fb;
+    color: #334155;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.property-history-table td {
+    font-size: 13px;
+}
+
+.property-history-date-col {
+    width: 70px;
+}
+
+.property-history-provider-col {
+    width: 22%;
+}
+
+.property-history-item-col {
+    width: 18%;
+}
+
+.property-history-amount-col {
+    width: 64px;
+}
+
+.property-history-remark-col {
+    width: auto;
+}
+
+.property-history-table .property-detail-money {
+    padding-left: 5px;
+    text-align: right;
+    white-space: normal;
+    word-break: break-all;
+}
+
+.property-history-type-col {
+    width: 60px;
+}
+
+.property-history-user-col {
+    width: 80px;
+}
+
+.property-history-place-col {
+    width: auto;
+}
+
+@media (max-width: 640px) {
+    .property-history-table th,
+    .property-history-table td {
+        padding: 7px 3px;
+        font-size: 12px;
+    }
+
+    .property-history-table th {
+        padding-left: 3px;
+        font-size: 12px;
+        letter-spacing: -0.5px;
+    }
+
+    .property-history-date-col {
+        width: 72px;
+    }
+
+    .property-history-provider-col {
+        width: 21%;
+    }
+
+    .property-history-item-col {
+        width: 17%;
+    }
+
+    .property-history-amount-col {
+        width: 54px;
+    }
+
+    .property-history-table .property-detail-money {
+        padding-left: 3px;
+    }
+
+    .property-history-type-col {
+        width: 48px;
+    }
+
+    .property-history-user-col {
+        width: 64px;
+    }
+}
+/* ================== 상세 공통 테이블 영역 ↑================== */

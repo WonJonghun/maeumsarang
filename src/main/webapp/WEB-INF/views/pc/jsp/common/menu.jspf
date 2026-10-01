@@ -1,0 +1,20 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<aside id="pcSidebar" class="pc-sidebar" aria-label="업무 메뉴"
+       data-menu-url="<c:url value='/menu/tree.do'/>">
+    <nav class="pc-menu-rail" aria-label="대메뉴">
+        <ul id="pcMenuRoots" class="pc-menu-roots"></ul>
+    </nav>
+    <section class="pc-menu-panel" aria-labelledby="pcMenuTitle">
+        <div class="pc-menu-heading">
+            <h2 id="pcMenuTitle">업무 메뉴</h2>
+            <button type="button" id="pcMenuClose" class="pc-icon-button pc-menu-close" aria-label="업무 메뉴 닫기">
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
+        </div>
+        <nav id="pcMenuTree" class="pc-menu-tree" aria-labelledby="pcMenuTitle" aria-busy="true"></nav>
+        <p id="pcMenuStatus" class="pc-menu-status" role="status">메뉴를 불러오는 중입니다.</p>
+        <button type="button" id="pcMenuRetry" class="pc-menu-retry" hidden>다시 불러오기</button>
+    </section>
+</aside>
+<button type="button" id="pcMenuBackdrop" class="pc-menu-backdrop" aria-label="업무 메뉴 닫기" tabindex="-1"></button>

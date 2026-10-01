@@ -1,0 +1,51 @@
+/* ================== 에러 페이지 영역 ↓================== */
+body.error-page {
+    margin: 0;
+    background: var(--gray-f9fafb);
+    color: var(--gray-333333);
+}
+
+.error-wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.error-box {
+    width: 100%;
+    max-width: 420px;
+    padding: 32px;
+    border-radius: 12px;
+    background: var(--white);
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10);
+    box-sizing: border-box;
+}
+
+.error-code {
+    font-size: 42px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.error-msg {
+    font-size: 16px;
+    margin-bottom: 24px;
+}
+
+.error-btn {
+    display: inline-block;
+    padding: 10px 18px;
+    border-radius: 6px;
+    background: var(--blue-007bff);
+    color: var(--white);
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.error-btn:active {
+    background: var(--blue-2563eb);
+}
+/* ================== 에러 페이지 영역 ↑================== */

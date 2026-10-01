@@ -1,0 +1,2 @@
+<%@ include file="/WEB-INF/views/common/jsp/common-inc.jspf" %>
+<script src="<c:url value='/mobile/js/common/detailDrawer.js'/>"></script>

@@ -1,0 +1,23 @@
+/* ================== 로그인 화면 이동 영역 ↓================== */
+.login-redirect-page {
+    display: grid;
+    place-items: center;
+    min-height: 100dvh;
+    padding: 24px;
+    color: var(--gray-4b5563);
+    text-align: center;
+    line-height: 1.5;
+}
+
+.login-redirect-page a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin: 0 8px;
+    color: var(--blue-003399);
+}
+
+.login-redirect-page a:focus-visible {
+    outline: 3px solid var(--blue-2563eb);
+    outline-offset: 3px;
+}

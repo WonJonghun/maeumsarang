@@ -1,0 +1,19 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<div id="detailDrawerBackdrop" class="detail-drawer-backdrop"></div>
+
+<aside id="detailDrawer" class="detail-drawer" aria-hidden="true">
+    <div class="detail-drawer-head">
+        <button type="button" class="detail-drawer-close" aria-label="닫기">&times;</button>
+    </div>
+
+    <div id="detailDrawerBody" class="detail-drawer-body">
+        <div id="detailDrawerContent"></div>
+
+        <div id="detailImagePreview" class="detail-image-preview" style="display:none;"></div>
+
+        <div id="detailAttachArea" class="detail-attach-area" style="display:none;">
+            <div class="detail-attach-title">첨부파일</div>
+            <ul id="detailAttachList" class="detail-attach-list"></ul>
+        </div>
+    </div>
+</aside>

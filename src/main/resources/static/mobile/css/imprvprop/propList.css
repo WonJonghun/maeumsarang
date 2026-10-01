@@ -1,0 +1,168 @@
+/* ================== 개선제안 목록 영역 ↓================== */
+.prop-list-wrap {
+    padding: 0 16px 24px;
+}
+
+.prop-row {
+    display: flex;
+    gap: 12px;
+    padding: 10px 6px 10px 6px;
+    border-bottom: 1px solid var(--gray-e3e3e3);
+    cursor: pointer;
+}
+
+.prop-row-last {
+    border-bottom: none;
+}
+
+.prop-text {
+    flex: 1;
+    width: 90%;
+    min-width: 0;
+    padding: 0 5px 0 5px;
+}
+
+.prop-title {
+    margin: 0 4px 4px 0;
+    font-size: 15px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+}
+
+.prop-sub-title {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    color: var(--gray-6b7280);
+}
+
+.prop-sub-left {
+    min-width: 0;
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.prop-status {
+    margin-left: 0;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    border: 1px solid var(--gray-cccccc);
+    background: var(--gray-f9fafb);
+    text-align: center;
+    width: 58px;
+}
+
+.prop-status.text-yellow {
+    background: rgba(245, 158, 11, 0.10);
+    border-color: rgba(245, 158, 11, 0.25);
+}
+
+.prop-status.text-green {
+    background: rgba(22, 163, 74, 0.10);
+    border-color: rgba(22, 163, 74, 0.25);
+}
+
+.prop-status.text-red {
+    background: rgba(225, 29, 72, 0.10);
+    border-color: rgba(225, 29, 72, 0.25);
+}
+
+.prop-status.text-blue {
+    background: rgba(102, 132, 252, 0.1);
+    border-color: rgba(29, 45, 225, 0.25);
+}
+
+.prop-empty {
+    padding: 16px 4px;
+    text-align: center;
+    color: var(--gray-6b7280);
+    font-weight: 600;
+}
+/* ================== 개선제안 목록 영역 ↑================== */
+
+/* ================== 개선제안 상세 영역 ↓================== */
+.prop-detail-divider {
+    height: 1px;
+    background: #e6e6e6;
+    margin: 12px 0;
+}
+
+.prop-detail-wrap {
+    padding: 0 16px 16px;
+}
+
+.prop-detail-section {
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--gray-cccccc);
+}
+
+.prop-detail-section:last-child {
+    border-bottom: 0;
+}
+
+.prop-detail-subtitle {
+    font-size: 14px;
+    margin: 0 0 6px 0;
+    font-weight: 700;
+    color: var(--blue-003399);
+}
+
+.prop-detail-body {
+    font-size: 14px;
+    line-height: 1.8;
+    letter-spacing : 0.04em;
+    word-break: break-word;
+    font-weight: 400;
+    padding: 0 7px 0 7px;
+}
+
+.prop-detail-sub-line {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.prop-detail-sub-left {
+    min-width: 0;
+    font-size: 14px;
+    color: var(--gray-6b7280);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.prop-type-chip {
+    margin-left: 0;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    border: 1px solid var(--gray-cccccc);
+    background: var(--gray-f9fafb);
+    text-align: center;
+    width: 58px;
+}
+
+.prop-type-chip.text-blue {
+    background: rgba(102, 132, 252, 0.1);
+    border-color: rgba(29, 45, 225, 0.25);
+}
+
+.prop-type-chip.text-green {
+    background: rgba(22, 163, 74, 0.10);
+    border-color: rgba(22, 163, 74, 0.25);
+}
+/* ================== 개선제안 상세 영역 ↑================== */
