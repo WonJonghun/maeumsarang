@@ -20,7 +20,7 @@ public class MonthReportController {
 
     @GetMapping("/cashFlow.do")
     public String cashFlow() {
-        return "jsp/monthReport/cashFlow";
+        return "mobile/jsp/monthReport/cashFlow";
     }
 
     @ResponseBody

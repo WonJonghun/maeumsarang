@@ -25,7 +25,7 @@ public class MealAutoToolController {
 
     @GetMapping("/mealAutoTool.do")
     public String mealAutoTool() {
-        return "jsp/foodMenu/mealAutoTool";
+        return "mobile/jsp/foodMenu/mealAutoTool";
     }
 
     @ResponseBody

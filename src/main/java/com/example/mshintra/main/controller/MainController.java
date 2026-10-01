@@ -34,6 +34,16 @@ public class MainController {
     private final CustomerService customerService;
     private final MainService mainService;
 
+    @GetMapping("/")
+    public String index() {
+        return "redirect:/login/login.do";
+    }
+
+    @GetMapping("/pc/main.do")
+    public String pcMainPage() {
+        return "pc/jsp/main/main";
+    }
+
     @GetMapping("/main.do")
     public String mainPage(@AuthenticationPrincipal LoginUserDto loginUser, Model model) {
         String today = DateUtil.getTodayYmd("-");
@@ -114,7 +124,7 @@ public class MainController {
         model.addAttribute("lunchList", lunchList);
         model.addAttribute("dinnerList", dinnerList);
 
-        return "jsp/main/main";
+        return "mobile/jsp/main/main";
     }
 
     @ResponseBody

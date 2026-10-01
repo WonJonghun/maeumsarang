@@ -25,7 +25,7 @@ public class ApprovalController {
 
     @GetMapping("/approvalHome.do")
     public String approvalHome() {
-        return "jsp/approval/approvalHome";
+        return "mobile/jsp/approval/approvalHome";
     }
 
     @GetMapping("/approvalList.do")
@@ -101,7 +101,7 @@ public class ApprovalController {
         model.addAttribute("approvalDocTypeJson", new ObjectMapper().writeValueAsString(approvalDocTypeMap));
         model.addAttribute("ccBaseKey", ccBaseKey);
 
-        return "jsp/approval/approvalList";
+        return "mobile/jsp/approval/approvalList";
     }
 
     @ResponseBody
@@ -155,7 +155,7 @@ public class ApprovalController {
             }
         }
 
-        String bodyPage = "/WEB-INF/views/jsp/approval/detail/approvalDetail.jsp";
+        String bodyPage = "/WEB-INF/views/mobile/jsp/approval/detail/approvalDetail.jsp";
 
         //전자결재 분기처리
         if ("OF".equals(flag)
@@ -163,7 +163,7 @@ public class ApprovalController {
                 || "OR".equals(flag)
                 || "FC".equals(flag)
                 || "PL".equals(flag)) {
-            bodyPage = "/WEB-INF/views/jsp/approval/detail/approval" + flag + ".jsp";
+            bodyPage = "/WEB-INF/views/mobile/jsp/approval/detail/approval" + flag + ".jsp";
         }
 
         model.addAttribute("detail", detail);
@@ -171,7 +171,7 @@ public class ApprovalController {
         model.addAttribute("ccFlag", flag);
         model.addAttribute("bodyPage", bodyPage);
 
-        return "jsp/approval/detail/approvalDetailLayout";
+        return "mobile/jsp/approval/detail/approvalDetailLayout";
     }
 
     @ResponseBody

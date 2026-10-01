@@ -39,7 +39,7 @@ public class ProfileController {
 
     @GetMapping("/movePassChange.do")
     public String passChangePage() {
-        return "jsp/profile/passChange";
+        return "mobile/jsp/profile/passChange";
     }
 
     @ResponseBody

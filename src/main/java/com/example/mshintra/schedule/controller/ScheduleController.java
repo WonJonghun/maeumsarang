@@ -22,7 +22,7 @@ public class ScheduleController {
     public String workSchedule(MenuDto menuDto, Model model) {
         model.addAttribute("baseKey", menuDto.getCcBaseKey());
         model.addAttribute("menuName", menuDto.getCcMenuName());
-        return "jsp/schedule/scheduleList";
+        return "mobile/jsp/schedule/scheduleList";
     }
 
     //월단위 근무일정
@@ -65,7 +65,7 @@ public class ScheduleController {
 
     @GetMapping("/satSchedule.do")
     public String satSchedule() {
-        return "jsp/schedule/satScheduleList";
+        return "mobile/jsp/schedule/satScheduleList";
     }
 
     @ResponseBody

@@ -49,6 +49,6 @@ public class NoticeController {
 
         model.addAttribute("baseKey", menuDto.getCcBaseKey());
         model.addAttribute("menuName", menuDto.getCcMenuName());
-        return "jsp/notice/noticeList";
+        return "mobile/jsp/notice/noticeList";
     }
 }

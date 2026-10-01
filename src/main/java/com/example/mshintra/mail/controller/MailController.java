@@ -20,7 +20,7 @@ public class MailController {
 
     @GetMapping("/mailList.do")
     public String payStub() {
-        return "jsp/mail/mailList";
+        return "mobile/jsp/mail/mailList";
     }
 
     @ResponseBody

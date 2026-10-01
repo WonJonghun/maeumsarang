@@ -21,7 +21,7 @@ public class ItemRequestController {
 
     @GetMapping("/itemRequestList.do")
     public String itemRequestList() {
-        return "jsp/itemrequest/itemRequestList";
+        return "mobile/jsp/itemrequest/itemRequestList";
     }
 
     @ResponseBody

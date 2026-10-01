@@ -18,7 +18,7 @@ public class PayStubController {
 
     @GetMapping("/payStub.do")
     public String payStub() {
-        return "jsp/paystub/payStub";
+        return "mobile/jsp/paystub/payStub";
     }
 
     @ResponseBody

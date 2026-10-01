@@ -16,24 +16,24 @@ public class CommonErrorController implements ErrorController {
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
 
         if (status == null) {
-            return "jsp/error/error500";
+            return "common/jsp/error/error500";
         }
 
         int statusCode = Integer.parseInt(status.toString());
 
         if (statusCode == 404) {
-            return "jsp/error/error404";
+            return "common/jsp/error/error404";
         }
 
         if (statusCode == 403) {
-            return "jsp/error/error403";
+            return "common/jsp/error/error403";
         }
 
-        return "jsp/error/error500";
+        return "common/jsp/error/error500";
     }
 
     @GetMapping("/403.do")
     public String error403() {
-        return "jsp/error/error403";
+        return "common/jsp/error/error403";
     }
 }

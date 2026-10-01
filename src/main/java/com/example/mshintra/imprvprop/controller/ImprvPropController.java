@@ -21,7 +21,7 @@ public class ImprvPropController {
     public String imprvPropList(@RequestParam(value = "baseKey", required = false) String baseKey, Model model)  {
 
         model.addAttribute("baseKey", baseKey);
-        return "jsp/imprvprop/propList";
+        return "mobile/jsp/imprvprop/propList";
     }
 
     @ResponseBody

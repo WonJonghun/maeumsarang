@@ -17,10 +17,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(menuAuthInterceptor)
                 .addPathPatterns("/**")
                 .excludePathPatterns(
+                        "/",
                         "/login/**",
                         "/logout.do",
-                        "/css/**",
-                        "/js/**",
+                        "/common/css/**",
+                        "/pc/css/**",
+                        "/mobile/css/**",
+                        "/common/js/**",
+                        "/pc/js/**",
+                        "/mobile/js/**",
                         "/images/**",
                         "/favicon.ico",
                         "/manifest.json",

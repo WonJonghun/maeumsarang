@@ -3,6 +3,7 @@ package com.example.mshintra.config;
 import com.example.mshintra.security.LoginAuthenticationProvider;
 import com.example.mshintra.security.LoginUserDetailsService;
 import jakarta.servlet.DispatcherType;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -13,9 +14,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
+import org.springframework.security.web.session.SimpleRedirectInvalidSessionStrategy;
 
 import javax.sql.DataSource;
 
@@ -46,13 +51,28 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
+        SavedRequestAwareAuthenticationSuccessHandler mobileSuccessHandler = new SavedRequestAwareAuthenticationSuccessHandler();
+        mobileSuccessHandler.setDefaultTargetUrl("/main.do");
+        SavedRequestAwareAuthenticationSuccessHandler pcSuccessHandler = new SavedRequestAwareAuthenticationSuccessHandler();
+        pcSuccessHandler.setDefaultTargetUrl("/pc/main.do");
+
+        SimpleUrlAuthenticationFailureHandler mobileFailureHandler = new SimpleUrlAuthenticationFailureHandler("/login/login.do?error=true");
+        SimpleUrlAuthenticationFailureHandler pcFailureHandler = new SimpleUrlAuthenticationFailureHandler("/login/pc/login.do?error=true");
+        SimpleRedirectInvalidSessionStrategy mobileInvalidSession = new SimpleRedirectInvalidSessionStrategy("/login/login.do?expired=true");
+        SimpleRedirectInvalidSessionStrategy pcInvalidSession = new SimpleRedirectInvalidSessionStrategy("/login/pc/login.do?expired=true");
+        LoginUrlAuthenticationEntryPoint mobileEntryPoint = new LoginUrlAuthenticationEntryPoint("/login/login.do");
+        LoginUrlAuthenticationEntryPoint pcEntryPoint = new LoginUrlAuthenticationEntryPoint("/login/pc/login.do");
+
         http.csrf(csrf -> csrf
                 .ignoringRequestMatchers("/api/**")
         );
 
         http.sessionManagement(session -> session
                 .sessionFixation(sessionFixation -> sessionFixation.migrateSession())
-                .invalidSessionUrl("/login/login.do?expired=true")
+                .invalidSessionStrategy((request, response) -> {
+                    if (isPcRequest(request)) pcInvalidSession.onInvalidSessionDetected(request, response);
+                    else mobileInvalidSession.onInvalidSessionDetected(request, response);
+                })
         );
 
         http.authenticationProvider(loginAuthenticationProvider);
@@ -60,7 +80,9 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
                 .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
                 .requestMatchers(
+                        "/",
                         "/login/login.do",
+                        "/login/pc/login.do",
                         "/login/loginProc.do",
                         "/logout.do",
                         "/error",
@@ -68,8 +90,14 @@ public class SecurityConfig {
                         "/favicon.ico",
                         "/manifest.json",
                         "/service-worker.js",
-                        "/css/**",
-                        "/js/**",
+                        "/common/css/**",
+                        "/pc/css/**",
+                        "/mobile/css/**",
+                        "/common/js/**",
+                        "/pc/js/**",
+                        "/mobile/js/**",
+                        "/fonts/**",
+                        "/webjars/**",
                         "/images/**"
                 ).permitAll()
                 .anyRequest().authenticated()
@@ -81,8 +109,14 @@ public class SecurityConfig {
                 .loginProcessingUrl("/login/loginProc.do")
                 .usernameParameter("loginId")
                 .passwordParameter("loginPw")
-                .defaultSuccessUrl("/main.do", true)
-                .failureUrl("/login/login.do?error=true")
+                .successHandler((request, response, authentication) -> {
+                    if (isPcRequest(request)) pcSuccessHandler.onAuthenticationSuccess(request, response, authentication);
+                    else mobileSuccessHandler.onAuthenticationSuccess(request, response, authentication);
+                })
+                .failureHandler((request, response, exception) -> {
+                    if (isPcRequest(request)) pcFailureHandler.onAuthenticationFailure(request, response, exception);
+                    else mobileFailureHandler.onAuthenticationFailure(request, response, exception);
+                })
                 .permitAll()
         );
 
@@ -99,6 +133,10 @@ public class SecurityConfig {
 
         //예외 처리
         http.exceptionHandling(exception -> exception
+                .authenticationEntryPoint((request, response, authenticationException) -> {
+                    if (isPcRequest(request)) pcEntryPoint.commence(request, response, authenticationException);
+                    else mobileEntryPoint.commence(request, response, authenticationException);
+                })
                 .accessDeniedPage("/error/403.do")
         );
 
@@ -129,5 +167,12 @@ public class SecurityConfig {
         );
 
         return http.build();
+    }
+
+    //PC 로그인 구분
+    private boolean isPcRequest(HttpServletRequest request) {
+        String path = request.getRequestURI().substring(request.getContextPath().length());
+        return path.startsWith("/pc/") || path.startsWith("/login/pc/")
+                || "pc".equals(request.getParameter("loginType"));
     }
 }

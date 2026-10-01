@@ -23,7 +23,7 @@ public class PropertyController {
 
     @GetMapping("/lookList.do")
     public String lookList() {
-        return "jsp/property/lookList";
+        return "mobile/jsp/property/lookList";
     }
 
     @ResponseBody

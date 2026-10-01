@@ -23,7 +23,7 @@ public class RepairController {
 
     @GetMapping("/repairList.do")
     public String repairList() {
-        return "jsp/repair/repairList";
+        return "mobile/jsp/repair/repairList";
     }
 
     @ResponseBody
