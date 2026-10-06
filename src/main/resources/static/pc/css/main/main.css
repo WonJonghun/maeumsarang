@@ -1,0 +1,967 @@
+/* ================== 메인 대시보드 영역 ↓================== */
+.pc-dashboard {
+    --pc-main-scale: .9;
+    --pc-main-font: 15px;
+    --pc-main-secondary-font: 13px;
+    --pc-main-name-weight: 500;
+    max-width: 1600px;
+    min-width: 980px;
+    margin: 0 auto;
+    padding: 0 12px;
+    color: var(--pc-text);
+    font-size: var(--pc-main-font);
+    zoom: var(--pc-main-scale);
+}
+
+.pc-dashboard-clock {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    color: #464c53;
+    font-size: 18px;
+    font-variant-numeric: tabular-nums;
+}
+
+.pc-dashboard-clock-time {
+    color: var(--pc-primary);
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.pc-dashboard-clock-time small {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.pc-dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-rows: auto 450px;
+    gap: 18px;
+}
+
+.pc-main-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    padding: 20px;
+    border: 1px solid #e5e9ed;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 2px 5px rgb(30 33 36 / 3%);
+}
+
+.pc-main-card-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.pc-main-card-heading h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -.5px;
+}
+
+.pc-main-card-heading > .bi {
+    font-size: 18px;
+    color: #89939e;
+}
+
+.pc-main-card h3 {
+    margin: 0 0 8px;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.pc-selected-date, .pc-main-card-hint {
+    color: #68737f;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.pc-main-body {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.pc-main-body::-webkit-scrollbar {
+    width: var(--pc-scrollbar-width);
+    height: 0;
+}
+
+.pc-main-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.pc-main-body::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    background: #d0d6dd;
+}
+
+.pc-main-body::-webkit-scrollbar-thumb:hover {
+    background: #aeb8c2;
+}
+
+.pc-main-body::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+.pc-main-empty {
+    margin: 0;
+    padding: 16px 0;
+    color: #68737f;
+    font-size: 15px;
+    text-align: center;
+}
+
+.pc-main-status {
+    margin: 4px 0;
+    color: #9c5526;
+    font-size: 13px;
+}
+
+.pc-dashboard button:focus-visible {
+    outline: 2px solid var(--pc-focus);
+    outline-offset: -2px;
+}
+
+.pc-main-icon-button, .pc-main-text-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border: 1px solid #e5e9ed;
+    border-radius: 6px;
+    background: #fff;
+    color: #464c53;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.pc-main-icon-button:hover, .pc-main-text-button:hover {
+    background: #f0f5f8;
+    color: var(--pc-primary);
+}
+
+.pc-dashboard-column {
+    display: flex;
+    flex-direction: column;
+    align-self: start;
+    gap: 18px;
+    min-width: 0;
+}
+
+.pc-dashboard-column-left {
+    grid-column: 1 / 4;
+}
+
+.pc-dashboard-column-center {
+    grid-column: 4 / 10;
+}
+
+.pc-dashboard-column-right {
+    grid-column: 10 / 13;
+}
+
+.pc-myinfo-card {
+    height: 260px;
+}
+
+.pc-people-card {
+    height: 500px;
+}
+
+.pc-meal-card {
+    min-height: 180px;
+    padding: 14px 16px;
+}
+
+.pc-meal-card .pc-main-card-heading {
+    margin-bottom: 8px;
+}
+
+.pc-patient-card, .pc-duty-card {
+    height: 280px;
+}
+
+.pc-duty-card {
+    min-height: 280px;
+}
+
+.pc-dashboard-column-center .pc-patient-card {
+    flex-grow: 1;
+    min-height: 280px;
+}
+
+.pc-notice-card {
+    grid-area: 2 / 1 / 3 / 4;
+}
+
+.pc-board-card {
+    grid-area: 2 / 4 / 3 / 7;
+}
+
+.pc-library-card {
+    grid-area: 2 / 7 / 3 / 10;
+}
+
+.pc-bulletin-card {
+    grid-area: 2 / 10 / 3 / 13;
+}
+
+/* ================== 내정보 및 병원 소개 영역 ↓================== */
+.pc-myinfo-card {
+    border-color: #dce7e7;
+    background: radial-gradient(ellipse at 100% 0, #dceee5 0, transparent 65%), linear-gradient(145deg, #f5f9fc, #fff 70%);
+}
+
+.pc-myinfo-card .pc-main-card-heading {
+    margin-bottom: 10px;
+}
+
+.pc-myinfo-user {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.pc-main-profile.profile {
+    width: 60px;
+    height: 60px;
+}
+
+.pc-myinfo-user strong {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.pc-myinfo-user p {
+    margin: 2px 0 0;
+    color: #68737f;
+    font-size: 15px;
+}
+
+.pc-myinfo-user .pc-myinfo-details {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 5px;
+}
+
+.pc-myinfo-user .pc-myinfo-code {
+    padding-left: 8px;
+    border-left: 1px solid #c9d4d9;
+    font-size: inherit;
+}
+
+.pc-commute {
+    display: flex;
+    justify-content: space-around;
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid #edf0f3;
+}
+
+.pc-commute > div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pc-commute span {
+    color: #68737f;
+    font-size: 15px;
+}
+
+.pc-commute strong {
+    color: var(--pc-primary);
+    font-size: 18px;
+    font-variant-numeric: tabular-nums;
+}
+
+.pc-brand-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 300px;
+    overflow: hidden;
+}
+
+.pc-brand-card .pc-dashboard-clock {
+    position: relative;
+    align-self: flex-end;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    max-width: 100%;
+    row-gap: 0;
+    margin-bottom: 14px;
+}
+
+.pc-brand-heading {
+    position: relative;
+    text-align: center;
+}
+
+.pc-slogan-year {
+    display: block;
+    color: #637360;
+    font-size: 13px;
+}
+
+.pc-brand-heading strong {
+    color: var(--pc-primary);
+    font-size: 22px;
+    letter-spacing: -.5px;
+}
+
+.pc-brand-heart {
+    position: relative;
+    width: min(100%, 360px);
+    align-self: center;
+}
+
+.pc-brand-symbol {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transform: scale(1.08);
+    opacity: .28;
+    pointer-events: none;
+}
+
+.pc-brand-copy {
+    position: relative;
+    width: 86%;
+    margin: 0 auto;
+    padding-top: 12px;
+    color: #464c53;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.pc-brand-copy h3 {
+    margin: 0 0 4px;
+    color: var(--pc-primary);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.pc-brand-copy p {
+    margin: 0 0 10px;
+}
+
+.pc-brand-copy em {
+    color: #236b39;
+    font-style: normal;
+    font-weight: 700;
+}
+
+.pc-brand-copy ul {
+    margin: 0;
+    padding-left: 14px;
+}
+
+.pc-brand-copy li + li {
+    margin-top: 3px;
+}
+
+/* ================== 달력 및 일정 영역 ↓================== */
+.pc-main-notifications {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 90px));
+    justify-content: center;
+    gap: 30px;
+    min-height: 76px;
+    padding: 4px 0;
+}
+
+.pc-main-notifications button {
+    --pc-notification-bg: #eef5e7;
+    --pc-notification-hover: #e3eed9;
+    --pc-notification-color: #567a3e;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-width: 0;
+    min-height: 68px;
+    padding: 6px 4px;
+    border: 1px solid rgba(65, 80, 100, .05);
+    border-radius: 18px;
+    background: var(--pc-notification-bg);
+    box-shadow: 0 5px 14px rgba(35, 55, 70, .10), 0 1px 3px rgba(35, 55, 70, .06);
+    color: var(--pc-notification-color);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform .18s, box-shadow .18s, background .18s, color .18s;
+}
+
+.pc-main-notifications button .bi {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    color: inherit;
+    font-size: 28px;
+}
+
+.pc-main-notifications button:nth-child(2) {
+    --pc-notification-bg: #eaf4e8;
+    --pc-notification-hover: #dfeeda;
+    --pc-notification-color: #47773d;
+}
+
+.pc-main-notifications button:nth-child(3) {
+    --pc-notification-bg: #e6f3ed;
+    --pc-notification-hover: #daede4;
+    --pc-notification-color: #37785f;
+}
+
+.pc-main-notifications button:nth-child(4) {
+    --pc-notification-bg: #e5f2f3;
+    --pc-notification-hover: #d9ecee;
+    --pc-notification-color: #36787c;
+}
+
+.pc-main-notifications button:nth-child(5) {
+    --pc-notification-bg: #e5f0f8;
+    --pc-notification-hover: #dbeaf4;
+    --pc-notification-color: #386f88;
+}
+
+.pc-main-notifications button:nth-child(6) {
+    --pc-notification-bg: #e5effa;
+    --pc-notification-hover: #dbe8f6;
+    --pc-notification-color: #38658a;
+}
+
+.pc-main-notifications button:hover {
+    transform: translateY(-3px);
+    background: var(--pc-notification-hover);
+    box-shadow: 0 9px 18px rgba(35, 55, 70, .11), 0 2px 4px rgba(35, 55, 70, .04);
+}
+
+.pc-main-notifications button:focus-visible {
+    outline: 2px solid var(--pc-primary);
+    outline-offset: 2px;
+}
+
+.pc-main-notifications button:active {
+    transform: translateY(-1px);
+}
+
+.pc-calendar-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 20px;
+    min-height: 0;
+}
+
+.pc-calendar {
+    min-width: 0;
+    overflow: visible;
+}
+
+.pc-calendar-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin-bottom: 12px;
+}
+
+.pc-calendar-toolbar strong {
+    flex: 1;
+    text-align: center;
+    font-size: 18px;
+    font-variant-numeric: tabular-nums;
+}
+
+.pc-calendar-week, .pc-calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 3px;
+}
+
+.pc-calendar-week {
+    margin-bottom: 7px;
+    font-size: 13px;
+    color: #68737f;
+    text-align: center;
+}
+
+.pc-calendar-week span:first-child {
+    color: #bd4b42;
+}
+
+.pc-calendar-week span:last-child {
+    color: #32648e;
+}
+
+.pc-calendar-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    min-height: 39px;
+    padding: 2px 0;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: #464c53;
+    font-size: 15px;
+    line-height: 1.3;
+    cursor: pointer;
+}
+
+.pc-calendar-day small {
+    display: block;
+    flex-shrink: 0;
+    min-height: 1.3em;
+    max-width: 100%;
+    overflow: hidden;
+    color: #71808d;
+    font-size: 12px;
+    line-height: 1.3;
+    white-space: nowrap;
+}
+
+.pc-calendar-day.is-sunday, .pc-calendar-day.is-holiday {
+    color: #bd4b42;
+}
+
+.pc-calendar-day.is-saturday {
+    color: #32648e;
+}
+
+.pc-calendar-day.is-today {
+    box-shadow: inset 0 0 0 1px #7fb968;
+}
+
+.pc-calendar-day:hover {
+    background: #f0f5f8;
+}
+
+.pc-calendar-day[aria-pressed="true"] {
+    background: var(--pc-primary);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: none;
+}
+
+.pc-calendar-day[aria-pressed="true"] small {
+    color: #dce8f1;
+}
+
+.pc-calendar-day.is-other-month {
+    color: #aeb6bd;
+}
+
+.pc-calendar-caption {
+    margin: 10px 0 0;
+    font-size: 13px;
+    color: #68737f;
+    text-align: center;
+}
+
+.pc-main-schedules {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    border-left: 1px solid #edf0f3;
+    padding-left: 18px;
+}
+
+.pc-main-schedules h3 {
+    margin: 6px 0 14px;
+}
+
+.pc-main-schedule {
+    display: flex;
+    gap: 10px;
+    padding: 12px 0;
+    border-bottom: 1px solid #edf0f3;
+}
+
+.pc-main-schedule time {
+    flex-shrink: 0;
+    padding-top: 2px;
+    color: var(--pc-primary);
+    font-size: 13px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.pc-main-schedule p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+/* ================== 직원 현황 및 식단 영역 ↓================== */
+.pc-people-columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    flex: 1;
+    gap: 12px;
+    min-height: 0;
+}
+
+.pc-people-section {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+.pc-people-section + .pc-people-section {
+    padding-left: 12px;
+    border-left: 1px solid #edf0f3;
+}
+
+.pc-person-list, .pc-duty-list {
+    list-style: none;
+    margin: 0;
+    padding: 0 15px 0 0;
+}
+
+.pc-main-count {
+    margin-left: 4px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: #eef5f8;
+    color: var(--pc-primary);
+    font-size: 13px;
+}
+
+.pc-person-list li:not(.pc-main-empty), .pc-duty-list li:not(.pc-main-empty) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 4px 8px;
+    padding: 2px 0;
+}
+
+.pc-person-name {
+    flex: 1;
+    min-width: 3em;
+    font-size: var(--pc-main-font);
+    font-weight: var(--pc-main-name-weight);
+    text-align: left;
+    overflow-wrap: anywhere;
+}
+
+.pc-person-description {
+    flex-shrink: 0;
+    min-width: 2em;
+    max-width: 55%;
+    margin-left: auto;
+    color: #68737f;
+    font-size: var(--pc-main-secondary-font);
+    font-weight: 400;
+    text-align: right;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.pc-meal-layout {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+}
+
+.pc-meal-tabs {
+    display: flex;
+    flex-shrink: 0;
+    gap: 12px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid #e5e9ed;
+}
+
+.pc-meal-tabs button {
+    flex: 1;
+    min-height: 32px;
+    margin-bottom: -1px;
+    padding: 0 8px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: #68737f;
+    font: inherit;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.pc-meal-tabs button:hover {
+    background: #f7f9fb;
+    color: var(--pc-primary);
+}
+
+.pc-meal-tabs button[aria-pressed="true"] {
+    border-bottom-color: var(--pc-primary);
+    color: var(--pc-primary);
+    font-weight: 600;
+}
+
+#pcMealMenus {
+    overflow: visible;
+}
+
+.pc-meal-section {
+    min-width: 0;
+}
+
+.pc-meal-section[hidden] {
+    display: none;
+}
+
+.pc-meal-section .pc-main-empty {
+    padding: 0;
+    font-size: var(--pc-main-secondary-font);
+}
+
+.pc-meal-names {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 16px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    color: #464c53;
+    font-size: 14px;
+    line-height: 1.5;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+}
+
+.pc-meal-names li {
+    padding: 2px 0;
+    border-bottom: 1px solid #edf0f3;
+}
+
+.pc-meal-kcal {
+    display: block;
+    margin-top: 4px;
+    color: #68737f;
+    font-size: var(--pc-main-secondary-font);
+    text-align: right;
+}
+
+.pc-duty-columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    flex: 1;
+    gap: 12px;
+    min-height: 0;
+}
+
+.pc-duty-columns > div {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+.pc-duty-columns > div + div {
+    padding-left: 12px;
+    border-left: 1px solid #edf0f3;
+}
+
+/* ================== 환자 현황 그래프 영역 ↓================== */
+.pc-patient-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    flex: 1;
+    align-items: start;
+    gap: 8px;
+    padding-top: 6px;
+}
+
+.pc-patient-metrics > .pc-main-empty {
+    grid-column: 1 / -1;
+}
+
+.pc-patient-metric {
+    min-width: 0;
+    text-align: center;
+}
+
+.pc-patient-metric h3 {
+    margin-bottom: 12px;
+    font-size: 17px;
+}
+
+.pc-patient-ring {
+    display: grid;
+    place-items: center;
+    width: min(104px, 100%);
+    aspect-ratio: 1;
+    margin: 0 auto 10px;
+    border-radius: 50%;
+    background: conic-gradient(var(--metric-color) calc(var(--metric-percent) * 1%), #edf1f4 0);
+}
+
+.pc-patient-ring > span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% - 23px);
+    height: calc(100% - 23px);
+    border-radius: 50%;
+    background: #fff;
+    color: var(--metric-color);
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.pc-patient-number {
+    display: block;
+    font-size: 19px;
+    font-weight: 700;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.pc-patient-number small {
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.pc-patient-detail {
+    display: block;
+    margin-top: 5px;
+    color: #68737f;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+/* ================== 게시판 영역 ↓================== */
+.pc-board-more {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    min-height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: #68737f;
+    cursor: pointer;
+}
+
+.pc-board-more:hover {
+    background: #f0f5f8;
+    color: var(--pc-primary);
+}
+
+.pc-board-more .bi {
+    font-size: 16px;
+}
+
+.pc-main-post {
+    padding: 11px 0;
+    border-bottom: 1px solid #edf0f3;
+}
+
+.pc-main-post:last-child {
+    border-bottom: 0;
+}
+
+.pc-main-post h3 {
+    margin: 0 0 7px;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.5;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pc-main-post.is-unread h3 {
+    color: var(--pc-primary);
+    font-weight: 700;
+}
+
+.pc-main-post.is-unread h3::before {
+    content: "";
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    margin: 0 7px 2px 0;
+    border-radius: 50%;
+    background: #52b335;
+}
+
+.pc-main-post p {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    margin: 0;
+    color: #68737f;
+    font-size: 13px;
+}
+
+.pc-main-post p > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pc-main-post p > time {
+    flex-shrink: 0;
+}
+
+/* ================== 알림판 영역 ↓================== */
+.pc-main-bulletin-item {
+    margin: 0;
+    padding: 12px 0;
+    border-bottom: 1px solid #edf0f3;
+    font-size: var(--pc-main-font);
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.pc-main-bulletin-item:last-child {
+    border-bottom: 0;
+}
+
+.pc-main-bulletin-item.is-important {
+    color: var(--pc-primary);
+    font-weight: 600;
+}
