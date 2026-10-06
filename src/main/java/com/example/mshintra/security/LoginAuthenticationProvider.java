@@ -29,6 +29,8 @@ public class LoginAuthenticationProvider implements AuthenticationProvider {
         LoginRequestDto req = new LoginRequestDto();
         req.setLoginId(loginId);
         req.setLoginPw(loginPw);
+        req.setLoginType(authentication.getDetails() instanceof LoginAuthenticationDetails details
+                ? details.getLoginType() : null);
 
         LoginUserDto user = loginMapper.selectLoginUser(req);
         if (user == null) throw new BadCredentialsException("아이디 또는 비밀번호를 확인해 주세요.");

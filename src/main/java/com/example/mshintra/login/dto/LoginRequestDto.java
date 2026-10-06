@@ -9,4 +9,5 @@ import lombok.*;
 public class LoginRequestDto {
     private String loginId;  // 아이디
     private String loginPw;  // 비밀번호
+    private String loginType; // PC·모바일 구분
 }

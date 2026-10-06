@@ -244,7 +244,7 @@
                     </div>
 
                     <div class="patient-chart">
-                        <p class="patient-chart-label">응급병상</p>
+                        <p class="patient-chart-label">급성기병상</p>
                         <div class="circle-chart" style="--value:<c:out value='${emergencyPercent}'/>; --chart-color:#ff585b;">
                             <div class="circle-chart-inner">
                                 <span class="circle-chart-value"><c:out value="${emergencyCntText}"/>명</span>
@@ -254,7 +254,7 @@
                         <div class="patient-tooltip">
                             <div class="patient-tooltip-inner">
                                 <p><c:out value="${emergencyCntText}"/>명 / 40명</p>
-                                <p>(재원환자 / 응급병상)</p>
+                                <p>(재원환자 / 급성기병상)</p>
                             </div>
                         </div>
                     </div>

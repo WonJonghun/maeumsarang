@@ -3,6 +3,16 @@
 
 <mapper namespace="com.example.mshintra.main.mapper.MainMapper">
 
+    <resultMap id="mainLibrary" type="com.example.mshintra.notice.dto.NoticeDto" autoMapping="true">
+        <result property="viewCount" column="Tn_Count"/>
+        <result property="tvUk" column="cc_UK"/>
+        <result property="icName" column="Tn_UserName"/>
+    </resultMap>
+
+    <select id="selectMainLibraryList" resultMap="mainLibrary" statementType="CALLABLE">
+        { call dbo.Intranet_Main_Gongji('3', '5', #{userId}) }
+    </select>
+
     <select id="selectMainBirthDayList" resultType="com.example.mshintra.main.dto.MainBirthDayDto" statementType="CALLABLE">
         { call dbo.Intranet_Main_BirthDay(#{searchDate}, '', '') }
     </select>
@@ -23,5 +33,18 @@
                Flag
         FROM dbo.GetRecipeList(#{searchDate}, 'A')
         ORDER BY Fm_Flag, Sflag
+    </select>
+
+    <select id="selectMainBulletinList" resultType="com.example.mshintra.main.dto.MainBulletinDto">
+        SET NOCOUNT ON;
+        DECLARE @saFg VARCHAR(20), @buser VARCHAR(20), @jikgub VARCHAR(20);
+
+        SELECT @saFg = Ic_Saflag, @buser = Ic_Buser, @jikgub = Ic_Jikgub
+        FROM dbo.P_InsaCode
+        WHERE Ic_Code = #{userId};
+
+        EXEC dbo.Intranet_Main_Gongji1
+             #{userId}, #{today}, #{startDate}, #{endDate},
+             @saFg, @buser, '0', #{today}, @jikgub;
     </select>
 </mapper>

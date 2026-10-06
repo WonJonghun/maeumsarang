@@ -4,6 +4,7 @@
 <mapper namespace="com.example.mshintra.login.mapper.LoginMapper">
 
     <select id="selectLoginUser" parameterType="com.example.mshintra.login.dto.LoginRequestDto" resultType="com.example.mshintra.login.dto.LoginUserDto">
+        <bind name="pwFlag" value="loginType == 'pc' ? '' : 'Mob'"/>
         SELECT
             Ic_Code      AS icCode,
             RTRIM(Ic_Name) AS icName,
@@ -40,7 +41,7 @@
         LEFT JOIN P_JikChek ON Jc_Code = Id_FamName
 --         LEFT JOIN File_DB.dbo.i_addFile ON Ic_Code = Af_Num
         WHERE Ic_Code = #{loginId}
-          AND (dbo.GetPwChk(#{loginId},#{loginPw},'Mob') = 'OK' OR #{loginPw} = 'rkskekfk12');
+          AND (dbo.GetPwChk(#{loginId},#{loginPw},#{pwFlag}) = 'OK' OR #{loginPw} = 'rkskekfk12');
     </select>
 <!--dbo.GetPwChk(#{loginId},#{loginPw}) = 'OK';-->
 <!--AND (dbo.GetPwChk(#{loginId},#{loginPw}) = 'OK' OR #{loginPw} = 'rkskekfk12');-->

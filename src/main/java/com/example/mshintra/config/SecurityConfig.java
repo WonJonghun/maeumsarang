@@ -1,6 +1,7 @@
 package com.example.mshintra.config;
 
 import com.example.mshintra.security.LoginAuthenticationProvider;
+import com.example.mshintra.security.LoginAuthenticationDetails;
 import com.example.mshintra.security.LoginUserDetailsService;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.http.HttpServletRequest;
@@ -109,6 +110,7 @@ public class SecurityConfig {
                 .loginProcessingUrl("/login/loginProc.do")
                 .usernameParameter("loginId")
                 .passwordParameter("loginPw")
+                .authenticationDetailsSource(LoginAuthenticationDetails::new)
                 .successHandler((request, response, authentication) -> {
                     if (isPcRequest(request)) pcSuccessHandler.onAuthenticationSuccess(request, response, authentication);
                     else mobileSuccessHandler.onAuthenticationSuccess(request, response, authentication);
@@ -143,7 +145,9 @@ public class SecurityConfig {
         //로그아웃
         http.logout(logout -> logout
                 .logoutUrl("/logout.do")
-                .logoutSuccessUrl("/login/login.do")
+                .logoutSuccessHandler((request, response, authentication) ->
+                        response.sendRedirect(request.getContextPath()
+                                + (isPcRequest(request) ? "/login/pc/login.do" : "/login/login.do")))
                 .invalidateHttpSession(true)
                 .clearAuthentication(true)
                 .deleteCookies("JSESSIONID", "MHS_REMEMBER")
@@ -169,7 +173,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    //PC 로그인 구분
+    //PC 요청 구분
     private boolean isPcRequest(HttpServletRequest request) {
         String path = request.getRequestURI().substring(request.getContextPath().length());
         return path.startsWith("/pc/") || path.startsWith("/login/pc/")

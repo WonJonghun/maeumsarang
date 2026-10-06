@@ -5,6 +5,7 @@ import com.example.mshintra.customer.dto.CustomerDto;
 import com.example.mshintra.customer.service.CustomerService;
 import com.example.mshintra.login.dto.LoginUserDto;
 import com.example.mshintra.main.dto.MainBirthDayDto;
+import com.example.mshintra.main.dto.MainBulletinDto;
 import com.example.mshintra.main.dto.MainMealDto;
 import com.example.mshintra.main.service.MainService;
 import com.example.mshintra.notice.dto.NoticeDto;
@@ -137,6 +138,18 @@ public class MainController {
     @GetMapping("/main/mealList.do")
     public List<MainMealDto> selectMainMealList(@RequestParam String searchDate) {
         return mainService.selectMainMealList(searchDate);
+    }
+
+    @ResponseBody
+    @GetMapping("/pc/main/bulletinList.do")
+    public List<MainBulletinDto> selectMainBulletinList(@AuthenticationPrincipal LoginUserDto loginUser) {
+        return mainService.selectMainBulletinList(loginUser.getIcCode());
+    }
+
+    @ResponseBody
+    @GetMapping("/pc/main/libraryList.do")
+    public List<NoticeDto> selectMainLibraryList(@AuthenticationPrincipal LoginUserDto loginUser) {
+        return mainService.selectMainLibraryList(loginUser.getIcCode());
     }
 
     private NoticeDto createNoticeSearchDto(int tnFlag, String searchId) {

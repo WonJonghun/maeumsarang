@@ -277,7 +277,7 @@ function renderPatientStatus(data) {
         </div>
         
         <div class="patient-chart">
-            <p class="patient-chart-label">응급병상</p>
+            <p class="patient-chart-label">급성기병상</p>
             <div class="circle-chart" style="--value:${emergencyPercent}; --chart-color:#ff585b;">
                 <div class="circle-chart-inner">
                     <span class="circle-chart-value">${emergencyCnt}명</span>
@@ -287,7 +287,7 @@ function renderPatientStatus(data) {
             <div class="patient-tooltip">
                 <div class="patient-tooltip-inner">
                     <p>${emergencyCnt}명 / 40명</p>
-                    <p>(재원환자 / 응급병상)</p>
+                    <p>(재원환자 / 급성기병상)</p>
                 </div>
             </div>
         </div>
