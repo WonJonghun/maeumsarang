@@ -48,12 +48,30 @@
 
                 <div class="pc-dashboard-column pc-dashboard-column-center">
                     <section class="pc-main-notifications" aria-label="업무 알림">
-                        <button type="button"><i class="bi bi-pencil-square" aria-hidden="true"></i><span>결재</span></button>
-                        <button type="button"><i class="bi bi-envelope" aria-hidden="true"></i><span>메일</span></button>
-                        <button type="button"><i class="bi bi-file-earmark-text" aria-hidden="true"></i><span>공문</span></button>
-                        <button type="button"><i class="bi bi-mailbox" aria-hidden="true"></i><span>우편</span></button>
-                        <button type="button"><i class="bi bi-box-seam" aria-hidden="true"></i><span>택배</span></button>
-                        <button type="button"><i class="bi bi-people" aria-hidden="true"></i><span>협조</span></button>
+                        <button type="button" aria-label="결재">
+                            <i class="bi bi-pencil-square" aria-hidden="true"></i><span>결재</span>
+                            <span class="pc-notification-badge" data-key="approval" aria-hidden="true" hidden></span>
+                        </button>
+                        <button type="button" aria-label="메일">
+                            <i class="bi bi-envelope" aria-hidden="true"></i><span>메일</span>
+                            <span class="pc-notification-badge" data-key="mail" aria-hidden="true" hidden></span>
+                        </button>
+                        <button type="button" aria-label="공문">
+                            <i class="bi bi-file-earmark-text" aria-hidden="true"></i><span>공문</span>
+                            <span class="pc-notification-badge" data-key="official" aria-hidden="true" hidden></span>
+                        </button>
+                        <button type="button" aria-label="우편">
+                            <i class="bi bi-mailbox" aria-hidden="true"></i><span>우편</span>
+                            <span class="pc-notification-badge" data-key="post" aria-hidden="true" hidden></span>
+                        </button>
+                        <button type="button" aria-label="택배">
+                            <i class="bi bi-box-seam" aria-hidden="true"></i><span>택배</span>
+                            <span class="pc-notification-badge" data-key="parcel" aria-hidden="true" hidden></span>
+                        </button>
+                        <button type="button" aria-label="협조">
+                            <i class="bi bi-people" aria-hidden="true"></i><span>협조</span>
+                            <span class="pc-notification-badge" data-key="coop" aria-hidden="true" hidden></span>
+                        </button>
                     </section>
                     <section class="pc-main-card pc-calendar-card" aria-labelledby="pcCalendarTitle">
                         <div class="pc-main-card-heading"><h2 id="pcCalendarTitle">달력 · 일정</h2><span class="pc-selected-date"></span></div>

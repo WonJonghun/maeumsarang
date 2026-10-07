@@ -1,6 +1,7 @@
 package com.example.mshintra.profile.service;
 
 import com.example.mshintra.common.dto.SearchDto;
+import com.example.mshintra.common.util.DateUtil;
 import com.example.mshintra.profile.dto.CommuteDto;
 import com.example.mshintra.profile.dto.PassChangeDto;
 import com.example.mshintra.profile.dto.ProfileDto;
@@ -36,6 +37,14 @@ public class ProfileService {
     @Transactional(readOnly = true)
     public List<CommuteDto> selectCommuteStat(SearchDto searchDto) {
         return profileMapper.selectCommuteStat(searchDto);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProfileDto> selectPcCheckApproList(String userId) {
+        SearchDto search = new SearchDto();
+        search.setSearchId(userId);
+        search.setSearchDate(DateUtil.getTodayYmd("-"));
+        return profileMapper.selectCheckApproList(search);
     }
 
     @Transactional

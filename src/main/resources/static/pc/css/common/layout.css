@@ -55,6 +55,8 @@
 .pc-page button,
 .pc-page button * {
     font-family: inherit !important;
+    font-size: 15px;
+    font-weight: 700;
 }
 
 .pc-page button:focus-visible,
@@ -147,7 +149,7 @@
     display: none;
 }
 
-.pc-topbar-action {
+.pc-page .pc-topbar-action {
     position: relative;
     display: flex;
     align-items: center;
@@ -166,6 +168,10 @@
 .pc-topbar-action:hover {
     background: #f5f7f9;
     color: var(--pc-primary);
+}
+
+.pc-topbar-action .bi {
+    font-size: inherit;
 }
 
 .pc-topbar-action:active {
@@ -408,6 +414,10 @@
     flex: 0 0 var(--pc-rail-width);
 }
 
+.pc-menu-tools .bi {
+    font-size: inherit;
+}
+
 .pc-menu-tools button:hover {
     background: #414959;
     color: #fff;
@@ -452,17 +462,28 @@
     width: var(--pc-rail-width);
 }
 
-.pc-menu-root {
+/* ================== 대메뉴 밀집 배치 영역 ↓================== */
+.pc-menu-roots.is-compact {
+    --pc-menu-label-size: 11px;
+    --pc-menu-item-height: clamp(44px,
+        calc((var(--pc-viewport-height) - var(--pc-header-height)) / var(--pc-menu-count)), 56px);
+    --pc-menu-icon-size: clamp(18px, calc(var(--pc-menu-item-height) * .38), 20px);
+    --pc-menu-icon-top: clamp(4px, calc((var(--pc-menu-item-height) - 40px) / 2), 8px);
+    --pc-menu-label-top: calc(var(--pc-menu-icon-top) + var(--pc-menu-icon-size) + 4px);
+}
+
+/* ================== 대메뉴 버튼 영역 ↓================== */
+.pc-page .pc-menu-root {
     position: relative;
     display: block;
     width: 100%;
-    height: 64px;
+    height: var(--pc-menu-item-height, 64px);
     padding: 0;
     border: 0;
     border-radius: 0;
     background: transparent;
     color: #c1c7d2;
-    font-size: 12px;
+    font-size: var(--pc-menu-label-size, 12px);
     line-height: 1.35;
     font-weight: 500;
     word-break: keep-all;
@@ -473,26 +494,28 @@
 
 .pc-menu-root .bi {
     position: absolute;
-    top: 10px;
+    top: var(--pc-menu-icon-top, 10px);
     left: 50%;
     transform: translateX(-50%);
-    font-size: 23px;
+    font-size: var(--pc-menu-icon-size, 23px);
     line-height: 1;
 
 }
 
 .pc-menu-root > span {
     position: absolute;
-    top: 37px;
+    top: var(--pc-menu-label-top, 37px);
     right: 6px;
     left: 6px;
     white-space: nowrap;
     text-align: center;
+    font-size: inherit;
+    font-weight: inherit;
 
 }
 
 .pc-menu-root.is-long > span {
-    font-size: 11.5px;
+    font-size: min(var(--pc-menu-label-size, 11.5px), 11.5px);
     letter-spacing: -.3px;
 }
 
@@ -537,8 +560,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    min-height: 64px;
-    padding: 16px 20px;
+    min-height: 53px;
+    padding: 10px 20px;
     border-bottom: 1px solid #454c5b;
 }
 

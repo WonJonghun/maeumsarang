@@ -64,6 +64,8 @@
 
 .pc-main-card-heading h2 {
     margin: 0;
+    padding-bottom: 3px;
+    border-bottom: 3px solid var(--pc-focus);
     font-size: 18px;
     font-weight: 700;
     letter-spacing: -.5px;
@@ -195,16 +197,16 @@
 }
 
 .pc-patient-card, .pc-duty-card {
-    height: 280px;
+    height: 282px;
 }
 
 .pc-duty-card {
-    min-height: 280px;
+    min-height: 282px;
 }
 
 .pc-dashboard-column-center .pc-patient-card {
     flex-grow: 1;
-    min-height: 280px;
+    min-height: 300px;
 }
 
 .pc-notice-card {
@@ -399,9 +401,10 @@
 }
 
 .pc-main-notifications button {
-    --pc-notification-bg: #eef5e7;
-    --pc-notification-hover: #e3eed9;
-    --pc-notification-color: #567a3e;
+    --pc-notification-bg: #dcebc9;
+    --pc-notification-hover: #cce0b4;
+    --pc-notification-color: #486930;
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -432,33 +435,33 @@
 }
 
 .pc-main-notifications button:nth-child(2) {
-    --pc-notification-bg: #eaf4e8;
-    --pc-notification-hover: #dfeeda;
-    --pc-notification-color: #47773d;
+    --pc-notification-bg: #d5e8cf;
+    --pc-notification-hover: #c3dfba;
+    --pc-notification-color: #3c6633;
 }
 
 .pc-main-notifications button:nth-child(3) {
-    --pc-notification-bg: #e6f3ed;
-    --pc-notification-hover: #daede4;
-    --pc-notification-color: #37785f;
+    --pc-notification-bg: #cfe7da;
+    --pc-notification-hover: #badbc9;
+    --pc-notification-color: #2e664f;
 }
 
 .pc-main-notifications button:nth-child(4) {
-    --pc-notification-bg: #e5f2f3;
-    --pc-notification-hover: #d9ecee;
-    --pc-notification-color: #36787c;
+    --pc-notification-bg: #cce4e7;
+    --pc-notification-hover: #b7d7dc;
+    --pc-notification-color: #2d646b;
 }
 
 .pc-main-notifications button:nth-child(5) {
-    --pc-notification-bg: #e5f0f8;
-    --pc-notification-hover: #dbeaf4;
-    --pc-notification-color: #386f88;
+    --pc-notification-bg: #cce0ed;
+    --pc-notification-hover: #b8d4e6;
+    --pc-notification-color: #315f79;
 }
 
 .pc-main-notifications button:nth-child(6) {
-    --pc-notification-bg: #e5effa;
-    --pc-notification-hover: #dbe8f6;
-    --pc-notification-color: #38658a;
+    --pc-notification-bg: #ccdef1;
+    --pc-notification-hover: #b8cfe9;
+    --pc-notification-color: #315a7e;
 }
 
 .pc-main-notifications button:hover {
@@ -476,6 +479,34 @@
     transform: translateY(-1px);
 }
 
+/* ================== 업무 알림 배지 영역 ↓================== */
+.pc-notification-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    height: 28px;
+    padding: 0 7px;
+    border: 2px solid #fff;
+    border-radius: 999px;
+    background: #ef5d12;
+    box-shadow: 0 2px 5px rgba(154, 78, 24, .15);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+}
+
+.pc-notification-badge[hidden] {
+    display: none;
+}
+
+/* ================== 달력 배치 영역 ↓================== */
 .pc-calendar-layout {
     display: grid;
     grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
@@ -545,13 +576,20 @@
 .pc-calendar-day small {
     display: block;
     flex-shrink: 0;
-    min-height: 1.3em;
+    min-height: 19px;
     max-width: 100%;
     overflow: hidden;
     color: #71808d;
     font-size: 12px;
-    line-height: 1.3;
+    font-weight: 400;
+    line-height: 19px;
     white-space: nowrap;
+}
+
+.pc-page .pc-calendar-day.has-symbol-shift small {
+    font-family: "Segoe UI Symbol", "Apple Symbols", "Malgun Gothic", sans-serif !important;
+    font-size: 14px;
+    letter-spacing: .5px;
 }
 
 .pc-calendar-day.is-sunday, .pc-calendar-day.is-holiday {
@@ -616,7 +654,7 @@
     flex-shrink: 0;
     padding-top: 2px;
     color: var(--pc-primary);
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
 }
@@ -652,7 +690,7 @@
 .pc-person-list, .pc-duty-list {
     list-style: none;
     margin: 0;
-    padding: 0 15px 0 0;
+    padding: 0 6px 0 0;
 }
 
 .pc-main-count {
@@ -661,7 +699,7 @@
     border-radius: 4px;
     background: #eef5f8;
     color: var(--pc-primary);
-    font-size: 13px;
+    font-size: 14px;
 }
 
 .pc-person-list li:not(.pc-main-empty), .pc-duty-list li:not(.pc-main-empty) {
@@ -695,6 +733,15 @@
     overflow-wrap: anywhere;
 }
 
+/* ================== 휴가자 원문자 영역 ↓================== */
+#pcMainVacations .pc-main-symbol {
+    font-family: "Segoe UI Symbol", "Apple Symbols", "Malgun Gothic", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: .5px;
+}
+
+/* ================== 식단 배치 영역 ↓================== */
 .pc-meal-layout {
     display: flex;
     flex-direction: column;
@@ -707,7 +754,7 @@
     display: flex;
     flex-shrink: 0;
     gap: 12px;
-    margin-bottom: 6px;
+    margin: 0 10px 6px 10px;
     border-bottom: 1px solid #e5e9ed;
 }
 
@@ -758,7 +805,7 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0 16px;
     list-style: none;
-    margin: 0;
+    margin: 0 20px 0 20px;
     padding: 0;
     color: #464c53;
     font-size: 14px;
@@ -768,7 +815,7 @@
 }
 
 .pc-meal-names li {
-    padding: 2px 0;
+    padding: 4px 0;
     border-bottom: 1px solid #edf0f3;
 }
 
@@ -849,8 +896,10 @@
 
 .pc-patient-number {
     display: block;
+    height: 26px;
     font-size: 19px;
     font-weight: 700;
+    line-height: 26px;
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
 }
@@ -867,6 +916,50 @@
     font-size: 14px;
     line-height: 1.5;
     overflow-wrap: anywhere;
+}
+
+/* ================== 입퇴원 그래프 영역 ↓================== */
+.pc-patient-inout .pc-patient-ring {
+    background: conic-gradient(#fda433 calc(var(--metric-percent) * 1%), #8cc919 0);
+}
+
+.pc-patient-inout.is-empty .pc-patient-ring {
+    background: #edf1f4;
+}
+
+.pc-patient-inout .pc-patient-ring > span {
+    flex-direction: column;
+    gap: 3px;
+    color: #303944;
+}
+
+.pc-patient-inout .pc-patient-ring small {
+    color: #68737f;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.pc-patient-inout-labels {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.pc-patient-inout-labels span::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-right: 4px;
+    border-radius: 50%;
+    background: #8cc919;
+    vertical-align: 1px;
+}
+
+.pc-patient-inout-labels .pc-patient-discharge::before {
+    background: #fda433;
 }
 
 /* ================== 게시판 영역 ↓================== */
@@ -950,7 +1043,7 @@
 /* ================== 알림판 영역 ↓================== */
 .pc-main-bulletin-item {
     margin: 0;
-    padding: 12px 0;
+    padding: 8px 0;
     border-bottom: 1px solid #edf0f3;
     font-size: var(--pc-main-font);
     line-height: 1.6;

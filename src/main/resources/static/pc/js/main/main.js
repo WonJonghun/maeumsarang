@@ -13,6 +13,7 @@ $(function () {
     //초기화
     updatePcMainClock();
     setInterval(updatePcMainClock, 1000);
+    loadPcMainNotifications();
     loadPcMainCalendar(today);
     loadPcMainDay(today);
     loadPcMainBoards();
@@ -92,6 +93,31 @@ $(function () {
     });
 });
 
+//업무 알림 조회
+function loadPcMainNotifications() {
+    cmAjax('/profile/pc/checkApproList.do', 'GET', {}, false).done(function (list) {
+        const row = list[0];
+        const fields = {
+            approval: 'ccCnt1',
+            mail: 'ccCnt99',
+            official: 'ccCnt12',
+            post: 'ccCnt22',
+            parcel: 'ccCnt32',
+            coop: 'ccCnt2'
+        };
+
+        $.each(fields, function (key, field) {
+            const count = row ? Number(row[field]) || 0 : 0;
+            const badge = $('.pc-notification-badge[data-key="' + key + '"]');
+            const button = badge.parent();
+            const label = button.children('span').first().text();
+
+            badge.text(count).prop('hidden', count <= 0);
+            button.attr('aria-label', count > 0 ? label + ' 알림 ' + count + '건' : label);
+        });
+    });
+}
+
 //달력 조회
 function loadPcMainCalendar(ymd) {
     const monthKey = ymd.substring(0, 7);
@@ -155,6 +181,7 @@ function loadPcMainCalendar(ymd) {
             if (cursor.getDay() === 6) cls += ' is-saturday';
             if (holiday) cls += ' is-holiday';
             if (day === cmGetToday('-')) cls += ' is-today';
+            if (/[\u2460-\u24ff\u3251-\u325f\u32b1-\u32bf]/.test(shift)) cls += ' has-symbol-shift';
 
             html += `
                 <button type="button" class="${cls}"
@@ -233,7 +260,8 @@ function loadPcMainDay(ymd) {
             },
             {
                 name: '입 · 퇴원',
-                color: '#c58a39',
+                isInout: true,
+                color: '#fda433',
                 percent: admit + discharge ? Math.round(discharge * 100 / (admit + discharge)) : 0,
                 number: admit + ' / ' + discharge,
                 detail: '월 누계 ' + cmToNumber(data.cnt2) + ' / ' + cmToNumber(data.cnt3)
@@ -248,6 +276,23 @@ function loadPcMainDay(ymd) {
         ];
         const html = metrics.map(function (item) {
             const percent = Math.max(0, Math.min(item.percent, 100));
+
+            if (item.isInout) {
+                return `
+                    <div class="pc-patient-metric pc-patient-inout${admit + discharge ? '' : ' is-empty'}">
+                        <h3>${item.name}</h3>
+                        <div class="pc-patient-ring"
+                             style="--metric-color:${item.color};--metric-percent:${percent}"
+                             aria-label="당일 입원 ${admit}명, 퇴원 ${discharge}명">
+                            <span>${item.number}<small>당일</small></span>
+                        </div>
+                        <div class="pc-patient-number pc-patient-inout-labels">
+                            <span class="pc-patient-admit">입원</span>
+                            <span class="pc-patient-discharge">퇴원</span>
+                        </div>
+                        <small class="pc-patient-detail">${item.detail}</small>
+                    </div>`;
+            }
 
             return `
                 <div class="pc-patient-metric">
@@ -307,8 +352,8 @@ function loadPcMainDay(ymd) {
 
                 return `
                     <li>
-                        <span class="pc-person-name">${cmEscapeHtml(item.ccName)}</span>
-                        <small class="pc-person-description">${cmEscapeHtml(type)}</small>
+                        <span class="pc-person-name">${sort === 4 ? formatPcMainSymbols(item.ccName) : cmEscapeHtml(item.ccName)}</span>
+                        <small class="pc-person-description">${sort === 4 ? formatPcMainSymbols(type) : cmEscapeHtml(type)}</small>
                     </li>`;
             }).join('');
 
@@ -454,7 +499,13 @@ function updatePcMainClock() {
     $('#pcDashboardTime').text(
         String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0')
     );
-    $('#pcDashboardSeconds').text(':' + String(now.getSeconds()).padStart(2, '0'));
+    $('#pcDashboardSeconds').text(' ' + String(now.getSeconds()).padStart(2, '0'));
+}
+
+//원문자 표시
+function formatPcMainSymbols(text) {
+    return cmEscapeHtml(text).replace(/[\u2460-\u24ff\u3251-\u325f\u32b1-\u32bf]+/g,
+        '<span class="pc-main-symbol">$&</span>');
 }
 
 //날짜 표시

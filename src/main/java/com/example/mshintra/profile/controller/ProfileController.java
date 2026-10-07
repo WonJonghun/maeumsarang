@@ -32,6 +32,12 @@ public class ProfileController {
     }
 
     @ResponseBody
+    @GetMapping("/pc/checkApproList.do")
+    public List<ProfileDto> selectPcCheckApproList(@AuthenticationPrincipal LoginUserDto loginUser) {
+        return profileService.selectPcCheckApproList(loginUser.getIcCode());
+    }
+
+    @ResponseBody
     @GetMapping("/commuteStat.do")
     public List<CommuteDto> selectCommuteStat(SearchDto searchDto) {
         return profileService.selectCommuteStat(searchDto);

@@ -259,7 +259,11 @@ function loadPcMenu() {
                 </div>`;
         });
 
-        $('#pcMenuRoots').html(roots);
+        //메뉴 수에 맞춰 간격 조정
+        $('#pcMenuRoots')
+            .html(roots)
+            .toggleClass('is-compact', tree.length >= 13)
+            .css('--pc-menu-count', tree.length);
         $('#pcMenuTree').html(panels);
         $('#pcMenuStatus').prop('hidden', true);
         $('#pcMenuRoots .pc-menu-root').first().trigger('click');

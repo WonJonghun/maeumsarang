@@ -61,8 +61,8 @@
                 </div>
 
                 <label class="pc-login-remember" for="pcRememberMe">
-<%--                    <input type="checkbox" id="pcRememberMe" name="rememberMe" value="true">--%>
-<%--                    <span>자동로그인</span>--%>
+                    <input type="checkbox" id="pcRememberMe" name="rememberMe" value="true">
+                    <span>자동로그인</span>
                 </label>
                 <button type="submit" id="pcLoginSubmit" class="pc-login-submit">로그인</button>
             </form>
