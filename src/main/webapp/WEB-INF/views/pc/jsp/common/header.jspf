@@ -12,6 +12,7 @@
         <c:url var="pcProfileImageUrl" value="/attach/profileView.do">
             <c:param name="afNum" value="${user.icCode}"/>
             <c:param name="afSeq" value="1"/>
+            <c:param name="thumbnail" value="true"/>
         </c:url>
         <button type="button" id="pcProfileToggle" class="pc-profile-trigger" aria-expanded="false"
                 aria-controls="pcProfileMenu" aria-label="내 프로필 메뉴">

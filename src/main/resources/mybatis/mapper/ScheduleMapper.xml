@@ -199,7 +199,7 @@
     </select>
 
     <select id="selectDayDutyList" parameterType="com.example.mshintra.schedule.dto.DayDutyDto" resultType="com.example.mshintra.schedule.dto.DayDutyDto">
-        SELECT hc_Name, Du_Name = dbo.GetSaNm (Du_Code1)
+        SELECT hc_Name, Du_Code1 AS duCode1, Du_Name = dbo.GetSaNm (Du_Code1)
         FROM (
                  SELECT Du_Flag,Du_Code1
                  FROM I_Duty

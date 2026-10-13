@@ -8,7 +8,9 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface LoginMapper {
 
-    LoginUserDto selectLoginUser(LoginRequestDto param);
+    LoginUserDto selectLoginUser(@Param("param") LoginRequestDto param,
+                                @Param("securityDecryptKey") String securityDecryptKey);
 
-    LoginUserDto selectLoginUserById(@Param("loginId") String loginId);
+    LoginUserDto selectLoginUserById(@Param("loginId") String loginId,
+                                    @Param("securityDecryptKey") String securityDecryptKey);
 }

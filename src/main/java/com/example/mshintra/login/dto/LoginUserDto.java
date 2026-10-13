@@ -23,6 +23,10 @@ public class LoginUserDto implements UserDetails {
     private String ccBuser;
     private String icJikgub;
     private String icJikgubNm;
+    private String icJikchek;
+    private String icJikchekNm;
+    private String icHpPhone;
+    private String icPEmail;
     private String afFilename;
     private byte[] afContent;
     private int flag;

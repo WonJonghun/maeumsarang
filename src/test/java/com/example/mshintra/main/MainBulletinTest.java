@@ -14,6 +14,7 @@ import org.springframework.security.web.method.annotation.AuthenticationPrincipa
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -38,7 +39,7 @@ class MainBulletinTest {
         bulletin.setCcTitle("설문 2건이 진행 중 입니다.");
         bulletin.setCcColor(1);
         when(mapper.selectMainBulletinList(anyString(), anyString(), anyString(), anyString()))
-                .thenReturn(List.of(bulletin));
+                .thenReturn(Collections.nCopies(12, bulletin));
 
         LoginUserDto user = new LoginUserDto();
         user.setIcCode("251101");
@@ -50,6 +51,7 @@ class MainBulletinTest {
         mvc.perform(get("/pc/main/bulletinList.do")
                         .param("userId", "other-employee").param("searchDate", "2000-01-01"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(10))
                 .andExpect(jsonPath("$[0].ccTitle").value(bulletin.getCcTitle()))
                 .andExpect(jsonPath("$[0].ccColor").value(1));
 

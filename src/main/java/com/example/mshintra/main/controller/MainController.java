@@ -6,7 +6,9 @@ import com.example.mshintra.customer.service.CustomerService;
 import com.example.mshintra.login.dto.LoginUserDto;
 import com.example.mshintra.main.dto.MainBirthDayDto;
 import com.example.mshintra.main.dto.MainBulletinDto;
+import com.example.mshintra.main.dto.MainEmployeeDto;
 import com.example.mshintra.main.dto.MainMealDto;
+import com.example.mshintra.main.dto.MainOutDutyDto;
 import com.example.mshintra.main.service.MainService;
 import com.example.mshintra.notice.dto.NoticeDto;
 import com.example.mshintra.notice.service.NoticeService;
@@ -17,12 +19,16 @@ import com.example.mshintra.schedule.dto.ScheduleMenuDto;
 import com.example.mshintra.schedule.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +49,20 @@ public class MainController {
     @GetMapping("/pc/main.do")
     public String pcMainPage() {
         return "pc/jsp/main/main";
+    }
+
+    @GetMapping("/pc/main/employeePopup.do")
+    public String mainEmployeePopup(@RequestParam String userId,
+                                    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate baseDt,
+                                    @RequestParam(defaultValue = "false") boolean formatted,
+                                    Model model) {
+        MainEmployeeDto employee = mainService.selectMainEmployee(userId, baseDt.toString(), formatted);
+        if (employee == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "직원 정보를 찾을 수 없습니다.");
+        }
+        model.addAttribute("employee", employee);
+        model.addAttribute("baseDt", baseDt.toString());
+        return "pc/jsp/main/employeePopup";
     }
 
     @GetMapping("/main.do")
@@ -138,6 +158,12 @@ public class MainController {
     @GetMapping("/main/mealList.do")
     public List<MainMealDto> selectMainMealList(@RequestParam String searchDate) {
         return mainService.selectMainMealList(searchDate);
+    }
+
+    @ResponseBody
+    @GetMapping("/pc/main/outDutyList.do")
+    public List<MainOutDutyDto> selectMainOutDutyList(@RequestParam String searchDate) {
+        return mainService.selectMainOutDutyList(searchDate);
     }
 
     @ResponseBody

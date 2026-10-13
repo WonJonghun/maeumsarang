@@ -34,5 +34,11 @@
         WHERE Af_Num=#{afNum}
           AND Af_Seq=#{afSeq}
     </select>
+    <select id="selectProfileFile" resultType="com.example.mshintra.common.dto.AttachFileDto">
+        SELECT TOP 1 Af_FileName AS afFileName
+        FROM File_DB.dbo.i_addFile
+        WHERE Af_Num=#{afNum}
+          AND Af_Seq=#{afSeq}
+    </select>
 </mapper>
 

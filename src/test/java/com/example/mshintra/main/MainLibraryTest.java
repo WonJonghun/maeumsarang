@@ -65,7 +65,7 @@ class MainLibraryTest {
     }
 
     @Test
-    void libraryKeepsFirstFiveRowsInProcedureOrder() {
+    void libraryKeepsFirstTenRowsInProcedureOrder() {
         MainMapper mapper = mock(MainMapper.class);
         List<NoticeDto> rows = new ArrayList<>();
         for (int index = 0; index < 15; index++) {
@@ -78,8 +78,9 @@ class MainLibraryTest {
         when(mapper.selectMainLibraryList("251101")).thenReturn(rows);
 
         var list = new MainService(mapper).selectMainLibraryList("251101");
-        assertEquals(5, list.size());
-        assertEquals(List.of("자료 0", "자료 1", "자료 2", "자료 3", "자료 4"),
+        assertEquals(10, list.size());
+        assertEquals(List.of("자료 0", "자료 1", "자료 2", "자료 3", "자료 4",
+                        "자료 5", "자료 6", "자료 7", "자료 8", "자료 9"),
                 list.stream().map(NoticeDto::getTnTitle).toList());
         assertEquals("2010.01.01", list.getFirst().getTnDateStr());
     }

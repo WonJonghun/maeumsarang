@@ -1,7 +1,9 @@
 $(function () {
     //초기화
     const saved = Number(localStorage.getItem('mhsPcZoom'));
-    updatePcZoom(saved >= 80 && saved <= 150 && saved % 10 === 0 ? saved : 100);
+    updatePcZoom(saved >= 80 && saved <= 150 && saved % 10 === 0 ? Math.min(saved, 140) : 100);
+    updatePcMenuPin(localStorage.getItem('mhsPcMenuPinned') === 'true');
+    setPcMenuOpen(false);
     loadPcMenu();
 
     //화면 확대·축소
@@ -17,12 +19,8 @@ $(function () {
     //메뉴 고정·해제
     $('#pcMenuPin').on('click', function () {
         const pinned = $(this).attr('aria-pressed') !== 'true';
-        $('.pc-page').toggleClass('is-sidebar-pinned', pinned);
-        $(this)
-            .attr('aria-pressed', String(pinned))
-            .attr('aria-label', pinned ? '메뉴 고정 해제' : '메뉴 펼침 상태 고정')
-            .attr('title', pinned ? '메뉴 고정 해제' : '메뉴 고정');
-        $(this).find('i').toggleClass('bi-pin-angle', !pinned).toggleClass('bi-pin-angle-fill', pinned);
+        updatePcMenuPin(pinned);
+        localStorage.setItem('mhsPcMenuPinned', String(pinned));
         setPcMenuOpen(true);
     });
 
@@ -313,7 +311,17 @@ function updatePcZoom(zoom) {
     $('.pc-page').css('--pc-ui-scale', zoom / 100);
     $('#pcZoomValue').attr('data-zoom', zoom).text(zoom + '%');
     $('#pcZoomOut').prop('disabled', zoom === 80);
-    $('#pcZoomIn').prop('disabled', zoom === 150);
+    $('#pcZoomIn').prop('disabled', zoom === 140);
+}
+
+//메뉴 고정 상태 변경
+function updatePcMenuPin(pinned) {
+    $('.pc-page').toggleClass('is-sidebar-pinned', pinned);
+    $('#pcMenuPin')
+        .attr('aria-pressed', String(pinned))
+        .attr('aria-label', pinned ? '메뉴 고정 해제' : '메뉴 펼침 상태 고정')
+        .attr('title', pinned ? '메뉴 고정 해제' : '메뉴 고정');
+    $('#pcMenuPin i').toggleClass('bi-pin-angle', !pinned).toggleClass('bi-pin-angle-fill', pinned);
 }
 
 //메뉴 영역 전환

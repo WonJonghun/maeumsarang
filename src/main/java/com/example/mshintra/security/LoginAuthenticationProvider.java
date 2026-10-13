@@ -2,7 +2,7 @@ package com.example.mshintra.security;
 
 import com.example.mshintra.login.dto.LoginRequestDto;
 import com.example.mshintra.login.dto.LoginUserDto;
-import com.example.mshintra.login.mapper.LoginMapper;
+import com.example.mshintra.login.service.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -18,7 +18,7 @@ import java.util.List;
 @Component
 public class LoginAuthenticationProvider implements AuthenticationProvider {
 
-    private final LoginMapper loginMapper;
+    private final LoginService loginService;
 
     // 로그인 인증
     @Override
@@ -32,7 +32,7 @@ public class LoginAuthenticationProvider implements AuthenticationProvider {
         req.setLoginType(authentication.getDetails() instanceof LoginAuthenticationDetails details
                 ? details.getLoginType() : null);
 
-        LoginUserDto user = loginMapper.selectLoginUser(req);
+        LoginUserDto user = loginService.login(req);
         if (user == null) throw new BadCredentialsException("아이디 또는 비밀번호를 확인해 주세요.");
 
         return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());

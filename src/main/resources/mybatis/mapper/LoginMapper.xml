@@ -3,8 +3,8 @@
 
 <mapper namespace="com.example.mshintra.login.mapper.LoginMapper">
 
-    <select id="selectLoginUser" parameterType="com.example.mshintra.login.dto.LoginRequestDto" resultType="com.example.mshintra.login.dto.LoginUserDto">
-        <bind name="pwFlag" value="loginType == 'pc' ? '' : 'Mob'"/>
+    <select id="selectLoginUser" resultType="com.example.mshintra.login.dto.LoginUserDto">
+        <bind name="pwFlag" value="param.loginType == 'pc' ? '' : 'Mob'"/>
         SELECT
             Ic_Code      AS icCode,
             RTRIM(Ic_Name) AS icName,
@@ -14,6 +14,10 @@
 --             Af_Content	 AS afContent,
             Ic_Jikgub    AS icJikgub,
             dbo.GetJikgubNm(Ic_Jikgub) AS icJikgubNm,
+            Ic_Jikchek   AS icJikchek,
+            dbo.GetJikchekNm(Ic_Jikchek) AS icJikchekNm,
+            dbo.GetPWChange_2(#{securityDecryptKey}, 'InsaCode', Ic_Code, 'PhoneHp') AS icHpPhone,
+            dbo.GetPWChange_2(#{securityDecryptKey}, 'InsaCode', Ic_Code, 'eMail') AS icPEmail,
             CASE
                 WHEN ISNULL(Id_Job, Ic_Buser) BETWEEN 200 AND 299 THEN '1'              -- 간호사/간호조무사
                 WHEN ISNULL(Id_FamName, Ic_Jikchek) IN (25,26,27) THEN '2'              -- 조리사
@@ -40,8 +44,8 @@
         LEFT JOIN P_Jikgub  ON Jg_Code = Id_Amount
         LEFT JOIN P_JikChek ON Jc_Code = Id_FamName
 --         LEFT JOIN File_DB.dbo.i_addFile ON Ic_Code = Af_Num
-        WHERE Ic_Code = #{loginId}
-          AND (dbo.GetPwChk(#{loginId},#{loginPw},#{pwFlag}) = 'OK' OR #{loginPw} = 'rkskekfk12');
+        WHERE Ic_Code = #{param.loginId}
+          AND (dbo.GetPwChk(#{param.loginId},#{param.loginPw},#{pwFlag}) = 'OK' OR #{param.loginPw} = 'rkskekfk12');
     </select>
 <!--dbo.GetPwChk(#{loginId},#{loginPw}) = 'OK';-->
 <!--AND (dbo.GetPwChk(#{loginId},#{loginPw}) = 'OK' OR #{loginPw} = 'rkskekfk12');-->
@@ -56,6 +60,10 @@
 --             Af_Content   AS afContent,
             Ic_Jikgub    AS icJikgub,
             dbo.GetJikgubNm(Ic_Jikgub) AS icJikgubNm,
+            Ic_Jikchek   AS icJikchek,
+            dbo.GetJikchekNm(Ic_Jikchek) AS icJikchekNm,
+            dbo.GetPWChange_2(#{securityDecryptKey}, 'InsaCode', Ic_Code, 'PhoneHp') AS icHpPhone,
+            dbo.GetPWChange_2(#{securityDecryptKey}, 'InsaCode', Ic_Code, 'eMail') AS icPEmail,
             CASE
                 WHEN ISNULL(Id_Job, Ic_Buser) BETWEEN 200 AND 299 THEN '1'
                 WHEN ISNULL(Id_FamName, Ic_Jikchek) IN (25,26,27) THEN '2'

@@ -35,6 +35,54 @@
         ORDER BY Fm_Flag, Sflag
     </select>
 
+    <select id="selectMainOutDutyList" resultType="com.example.mshintra.main.dto.MainOutDutyDto">
+        SELECT cc_Flag = CASE WHEN ISNULL(Do_AM, '0') = '1' THEN '오전' ELSE '오후' END,
+               cc_Code = Do_SaCD,
+               cc_Name = dbo.GetSaNm(Do_SaCD),
+               cc_DeptCD = Ic_PayFlag
+        FROM I_DocOutDuty
+        LEFT JOIN P_InsaCode ON Do_SaCD = Ic_Code
+        WHERE Do_Date = #{searchDate}
+        ORDER BY CASE WHEN ISNULL(Do_AM, '0') = '1' THEN 1 ELSE 2 END, Ic_Jikgub
+    </select>
+
+    <select id="selectMainEmployee" resultType="com.example.mshintra.main.dto.MainEmployeeDto">
+        SELECT Ic_Code AS icCode,
+               RTRIM(Ic_Name) AS icName,
+               ISNULL(Id_Job, Ic_Buser) AS icBuser,
+               RTRIM(Bs_Name) AS ccBuser,
+               dbo.GetJikgubNm(ISNULL(Id_Amount, Ic_Jikgub)) AS icJikgubNm,
+               dbo.GetJikchekNm(ISNULL(Id_FamName, Ic_Jikchek)) AS icJikchekNm,
+               dbo.GetPWChange_2(#{securityDecryptKey}, 'InsaCode', Ic_Code, 'PhoneHp') AS icHpPhone,
+               dbo.GetPWChange_2(#{securityDecryptKey}, 'InsaCode', Ic_Code, 'eMail') AS icPEmail,
+               RTRIM(Ic_Saphone) AS icSaphone,
+               CASE
+                   WHEN ISNULL(Id_Job, Ic_Buser) BETWEEN 200 AND 299 THEN 1
+                   WHEN ISNULL(Id_FamName, Ic_Jikchek) IN (25,26,27) THEN 2
+                   WHEN ISNULL(Id_FamName, Ic_Jikchek) = 1 THEN 7
+                   WHEN ISNULL(Id_FamName, Ic_Jikchek) NOT IN (1,3,4,17,19,25,26,27)
+                       AND ISNULL(Id_Job, Ic_Buser) &lt;&gt; '110'
+                       AND ISNULL(Id_Job, Ic_Buser) NOT BETWEEN 200 AND 299 THEN 9
+                   ELSE 0
+               END AS flag
+        FROM dbo.GetInsacode(#{baseDt}, #{baseDt}, '')
+        LEFT JOIN P_InsaDetail
+            ON Id_Code = Ic_Code
+           AND Id_DtFlag = 4
+           AND Id_Saflag = Ic_Saflag
+           AND #{baseDt} BETWEEN Id_Date1 AND ISNULL(Id_Date2, '2099-12-31')
+        LEFT JOIN P_Buser ON Bs_Code = ISNULL(Id_Job, Ic_Buser)
+        WHERE Ic_Saflag = 1
+        <choose>
+            <when test="formatted">
+            AND RIGHT('000000' + RTRIM(Ic_Code), 6) = #{userId}
+            </when>
+            <otherwise>
+            AND Ic_Code = #{userId}
+            </otherwise>
+        </choose>
+    </select>
+
     <select id="selectMainBulletinList" resultType="com.example.mshintra.main.dto.MainBulletinDto">
         SET NOCOUNT ON;
         DECLARE @saFg VARCHAR(20), @buser VARCHAR(20), @jikgub VARCHAR(20);

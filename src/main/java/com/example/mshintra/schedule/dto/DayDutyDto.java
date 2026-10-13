@@ -11,4 +11,5 @@ public class DayDutyDto extends SearchDto {
 
     private String hcName;  //당직타이틀
     private String duName;  //당직자명
+    private String duCode1; //사번
 }

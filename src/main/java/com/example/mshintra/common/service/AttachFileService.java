@@ -4,13 +4,19 @@ import com.example.mshintra.common.mapper.AttachFileMapper;
 import com.example.mshintra.common.dto.AttachFileDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import net.coobird.thumbnailator.Thumbnails;
+import net.coobird.thumbnailator.util.exif.ExifFilterUtils;
+import net.coobird.thumbnailator.util.exif.ExifUtils;
+import net.coobird.thumbnailator.util.exif.Orientation;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ConcurrentLruCache;
 import org.springframework.web.server.ResponseStatusException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -18,15 +24,18 @@ import org.springframework.web.util.UriUtils;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
+import javax.imageio.stream.ImageInputStream;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -37,6 +46,8 @@ import java.util.concurrent.TimeUnit;
 public class AttachFileService {
 
     private final AttachFileMapper attachFileMapper;
+    private final ConcurrentLruCache<ProfileImageKey, ProfileThumbnail> profileThumbnails =
+            new ConcurrentLruCache<>(256, this::createProfileThumbnail);
 
     @Value("${file.nas.base-dir:}")
     private String nasBaseDir;
@@ -72,12 +83,14 @@ public class AttachFileService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<Resource> profileView(String afNum, int afSeq) throws Exception {
+    public ResponseEntity<Resource> profileView(String afNum, int afSeq, boolean thumbnail) throws Exception {
         if (afNum == null || afNum.isBlank()) {
             return emptyProfileImage();
         }
 
-        AttachFileDto dto = attachFileMapper.selectAttachOne(afNum, afSeq);
+        AttachFileDto dto = thumbnail
+                ? attachFileMapper.selectProfileFile(afNum, afSeq)
+                : attachFileMapper.selectAttachOne(afNum, afSeq);
         if (dto == null) {
             return emptyProfileImage();
         }
@@ -109,12 +122,79 @@ public class AttachFileService {
 
         contentType = refineContentType(contentType, orgName);
 
+        if (thumbnail) {
+            BasicFileAttributes file = Files.readAttributes(path, BasicFileAttributes.class);
+            ProfileThumbnail image = profileThumbnails.get(
+                    new ProfileImageKey(path, file.lastModifiedTime().toMillis(), file.size()));
+            if (image.content != null) {
+                resource = new ByteArrayResource(image.content);
+                contentType = image.contentType;
+            }
+
+            return ResponseEntity.ok()
+                    .contentType(contentType)
+                    .contentLength(image.content == null ? file.size() : image.content.length)
+                    .cacheControl(CacheControl.noCache().cachePrivate())
+                    .lastModified(file.lastModifiedTime().toMillis())
+                    .eTag("\"profile-512-" + file.lastModifiedTime().toMillis() + "-" + file.size() + "\"")
+                    .header("X-Content-Type-Options", "nosniff")
+                    .body(resource);
+        }
+
         return ResponseEntity.ok()
                 .contentType(contentType)
                 .contentLength(Files.size(path))
                 .header("X-Content-Type-Options", "nosniff")
                 .body(resource);
     }
+
+    //PC 프로필 표시용 이미지 생성
+    private ProfileThumbnail createProfileThumbnail(ProfileImageKey key) {
+        try (ImageInputStream input = ImageIO.createImageInputStream(key.path.toFile())) {
+            Iterator<ImageReader> readers = ImageIO.getImageReaders(input);
+            if (!readers.hasNext()) return new ProfileThumbnail(null, null);
+
+            ImageReader reader = readers.next();
+            try {
+                reader.setInput(input);
+                String format = reader.getFormatName();
+                if (format.equalsIgnoreCase("gif")) return new ProfileThumbnail(null, null);
+
+                int width = reader.getWidth(0);
+                int height = reader.getHeight(0);
+                ImageReadParam param = reader.getDefaultReadParam();
+                int sampling = Math.max(1, Math.max(width, height) / 1024);
+                param.setSourceSubsampling(sampling, sampling, 0, 0);
+                BufferedImage image = reader.read(0, param);
+                if (format.equalsIgnoreCase("jpeg")) {
+                    Orientation orientation = ExifUtils.getExifOrientation(reader, 0);
+                    if (orientation != null) {
+                        image = ExifFilterUtils.getFilterForOrientation(orientation).apply(image);
+                    }
+                }
+
+                boolean alpha = image.getColorModel().hasAlpha();
+                ByteArrayOutputStream output = new ByteArrayOutputStream();
+                Thumbnails.of(image)
+                        .scale(Math.min(1d, 512d / Math.max(image.getWidth(), image.getHeight())))
+                        .outputFormat(alpha ? "png" : "jpg")
+                        .outputQuality(0.85)
+                        .toOutputStream(output);
+                byte[] content = output.toByteArray();
+                return content.length < key.size
+                        ? new ProfileThumbnail(content, alpha ? MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG)
+                        : new ProfileThumbnail(null, null);
+            } finally {
+                reader.dispose();
+            }
+        } catch (IOException ex) {
+            return new ProfileThumbnail(null, null);
+        }
+    }
+
+    private record ProfileImageKey(Path path, long modified, long size) {}
+
+    private record ProfileThumbnail(byte[] content, MediaType contentType) {}
 
     private ResponseEntity<Resource> emptyProfileImage() throws IOException {
         ClassPathResource resource = new ClassPathResource("static/images/emptyUser.png");

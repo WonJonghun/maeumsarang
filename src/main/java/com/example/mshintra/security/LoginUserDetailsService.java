@@ -1,7 +1,7 @@
 package com.example.mshintra.security;
 
 import com.example.mshintra.login.dto.LoginUserDto;
-import com.example.mshintra.login.mapper.LoginMapper;
+import com.example.mshintra.login.service.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,11 +12,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class LoginUserDetailsService implements UserDetailsService {
 
-    private final LoginMapper loginMapper;
+    private final LoginService loginService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        LoginUserDto user = loginMapper.selectLoginUserById(username);
+        LoginUserDto user = loginService.selectLoginUserById(username);
 
         if (user == null) {
             throw new UsernameNotFoundException("사용자 정보를 찾을 수 없습니다.");

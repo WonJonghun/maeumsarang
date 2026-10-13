@@ -11,4 +11,6 @@ public interface AttachFileMapper {
     List<AttachFileDto> selectAttachList(@Param("afNum") String afNum);
 
     AttachFileDto selectAttachOne(@Param("afNum") String afNum,@Param("afSeq") int afSeq);
+
+    AttachFileDto selectProfileFile(@Param("afNum") String afNum, @Param("afSeq") int afSeq);
 }

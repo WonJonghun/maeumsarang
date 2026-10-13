@@ -43,9 +43,10 @@ public class AttachFileController {
     @GetMapping("/profileView.do")
     public ResponseEntity<Resource> profileView(
             @RequestParam String afNum,
-            @RequestParam int afSeq
+            @RequestParam int afSeq,
+            @RequestParam(defaultValue = "false") boolean thumbnail
     ) throws Exception {
-        return attachFileService.profileView(afNum, afSeq);
+        return attachFileService.profileView(afNum, afSeq, thumbnail);
     }
 
     //메인 프로필 이미지 호출 blob 버전

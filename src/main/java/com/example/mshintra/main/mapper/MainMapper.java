@@ -2,7 +2,9 @@ package com.example.mshintra.main.mapper;
 
 import com.example.mshintra.main.dto.MainBirthDayDto;
 import com.example.mshintra.main.dto.MainBulletinDto;
+import com.example.mshintra.main.dto.MainEmployeeDto;
 import com.example.mshintra.main.dto.MainMealDto;
+import com.example.mshintra.main.dto.MainOutDutyDto;
 import com.example.mshintra.notice.dto.NoticeDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -15,6 +17,13 @@ public interface MainMapper {
     List<MainBirthDayDto> selectMainBirthDayList(@Param("searchDate") String searchDate);
 
     List<MainMealDto> selectMainMealList(@Param("searchDate") String searchDate);
+
+    List<MainOutDutyDto> selectMainOutDutyList(@Param("searchDate") String searchDate);
+
+    MainEmployeeDto selectMainEmployee(@Param("userId") String userId,
+                                      @Param("baseDt") String baseDt,
+                                      @Param("formatted") boolean formatted,
+                                      @Param("securityDecryptKey") String securityDecryptKey);
 
     List<NoticeDto> selectMainLibraryList(@Param("userId") String userId);
 

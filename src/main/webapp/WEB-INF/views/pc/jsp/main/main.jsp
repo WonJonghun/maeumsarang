@@ -8,6 +8,8 @@
     <%@ include file="/WEB-INF/views/common/jsp/common-inc.jspf" %>
     <link rel="stylesheet" href="<c:url value='/pc/css/common/layout.css'/>">
     <link rel="stylesheet" href="<c:url value='/pc/css/main/main.css'/>">
+    <link rel="stylesheet" href="<c:url value='/common/css/cmPopup.css'/>">
+    <script src="<c:url value='/common/js/cmPopup.js'/>"></script>
 </head>
 <body class="pc-page">
 <a class="pc-skip-link" href="#pcContent">본문 바로가기</a>
@@ -28,11 +30,24 @@
                                 <img id="pcMainProfileImage" src="<c:out value='${pcProfileImageUrl}'/>"
                                      data-fallback-src="<c:url value='/images/emptyUser.png'/>" alt="" class="profile-img">
                             </span>
-                            <div><strong><c:out value="${user.icName}"/></strong><p class="pc-myinfo-details"><span><c:out value="${user.ccBuser}"/></span><span class="pc-myinfo-code"><c:out value="${user.icCode}"/></span></p></div>
+                            <div class="pc-myinfo-identity">
+                                <strong><c:out value="${user.icName}"/></strong>
+                                <p class="pc-myinfo-summary">
+                                    <span><c:out value="${user.ccBuser}"/></span>
+                                    <span class="pc-myinfo-divider" aria-hidden="true"></span>
+                                    <span><c:out value="${user.icJikgubNm}"/></span>
+                                </p>
+                            </div>
                         </div>
+                        <dl class="pc-myinfo-leave" aria-label="휴가 현황">
+                            <div><dt>발생연차</dt><dd><span id="pcLeaveTotal">—</span>일</dd></div>
+                            <div><dt>사용연차</dt><dd><span id="pcLeaveUsed">—</span>일</dd></div>
+                            <div><dt>잔여휴가</dt><dd class="pc-leave-remaining"><span id="pcLeaveLeft">—</span>일</dd></div>
+                        </dl>
+                        <p id="pcLeaveStatus" class="pc-leave-status" role="status" hidden></p>
                         <div class="pc-commute" aria-label="선택일 출퇴근 시간">
-                            <div><span>출근</span><strong id="pcCommuteIn">조회 중</strong></div>
-                            <div><span>퇴근</span><strong id="pcCommuteOut">조회 중</strong></div>
+                            <div><span>출근</span><strong id="pcCommuteIn">—</strong></div>
+                            <div><span>퇴근</span><strong id="pcCommuteOut">—</strong></div>
                         </div>
                     </section>
 
@@ -73,19 +88,18 @@
                             <span class="pc-notification-badge" data-key="coop" aria-hidden="true" hidden></span>
                         </button>
                     </section>
-                    <section class="pc-main-card pc-calendar-card" aria-labelledby="pcCalendarTitle">
-                        <div class="pc-main-card-heading"><h2 id="pcCalendarTitle">달력 · 일정</h2><span class="pc-selected-date"></span></div>
+                    <section class="pc-main-card pc-calendar-card" aria-label="달력 및 일정">
                         <div class="pc-calendar-layout">
-                            <div class="pc-calendar pc-main-body">
+                            <div id="pcMainCalendar" class="pc-calendar pc-main-body">
                                 <div class="pc-calendar-toolbar">
                                     <button type="button" id="pcCalendarPrev" class="pc-main-icon-button" aria-label="이전 달"><i class="bi bi-chevron-left" aria-hidden="true"></i></button>
-                                    <strong id="pcCalendarMonth"></strong>
+                                    <strong id="pcCalendarMonth" class="pc-calendar-month"></strong>
                                     <button type="button" id="pcCalendarNext" class="pc-main-icon-button" aria-label="다음 달"><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
                                     <button type="button" id="pcCalendarToday" class="pc-main-text-button">오늘</button>
                                 </div>
                                 <div class="pc-calendar-week" aria-hidden="true"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div>
                                 <div id="pcCalendarDays" class="pc-calendar-days" aria-label="날짜 선택"></div>
-                                <p id="pcCalendarStatus" class="pc-main-status" role="status"></p>
+                                <p id="pcCalendarStatus" class="pc-main-status pc-calendar-status" role="status"></p>
                                 <p class="pc-calendar-caption">날짜를 선택하면 업무 현황이 함께 바뀝니다.</p>
                             </div>
                             <div class="pc-main-schedules">
@@ -167,6 +181,7 @@
 </div>
 
 <script src="<c:url value='/pc/js/common/layout.js'/>"></script>
+<script src="<c:url value='/pc/js/common/calendar.js'/>"></script>
 <script src="<c:url value='/pc/js/main/main.js'/>"></script>
 </body>
 </html>
