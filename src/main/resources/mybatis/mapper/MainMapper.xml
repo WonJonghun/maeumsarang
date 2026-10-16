@@ -3,14 +3,33 @@
 
 <mapper namespace="com.example.mshintra.main.mapper.MainMapper">
 
+    <select id="selectMainChanges" resultType="com.example.mshintra.main.dto.MainChangeDto">
+        SELECT SaCD AS saCd, UpDt AS upDt
+        FROM dbo.I_NewChanged
+        WHERE SaCD IN
+        <foreach collection="codes" item="code" open="(" separator="," close=")">
+            #{code}
+        </foreach>
+    </select>
+
     <resultMap id="mainLibrary" type="com.example.mshintra.notice.dto.NoticeDto" autoMapping="true">
-        <result property="viewCount" column="Tn_Count"/>
         <result property="tvUk" column="cc_UK"/>
         <result property="icName" column="Tn_UserName"/>
     </resultMap>
 
     <select id="selectMainLibraryList" resultMap="mainLibrary" statementType="CALLABLE">
         { call dbo.Intranet_Main_Gongji('3', '5', #{userId}) }
+    </select>
+
+    <select id="selectMainLibraryViewCounts" resultType="com.example.mshintra.notice.dto.NoticeDto">
+        SELECT posts.tvUk, COUNT(history.Tv_UK) AS viewCount
+        FROM (VALUES
+        <foreach collection="keys" item="key" separator=",">
+            (#{key})
+        </foreach>
+        ) AS posts(tvUk)
+        LEFT JOIN I_TotalNoteView history ON history.Tv_UK = posts.tvUk
+        GROUP BY posts.tvUk
     </select>
 
     <select id="selectMainBirthDayList" resultType="com.example.mshintra.main.dto.MainBirthDayDto" statementType="CALLABLE">

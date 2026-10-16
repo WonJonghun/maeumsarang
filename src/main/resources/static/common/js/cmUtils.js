@@ -1,3 +1,20 @@
+$(function () {
+    //PC 말줄임 글자 전체 내용 표시
+    $(document).on('mouseenter focusin', '.pc-page *', function () {
+        const autoTitle = this.hasAttribute('data-pc-full-text-title');
+        if (!autoTitle && this.closest('[title]')) return;
+
+        const style = getComputedStyle(this);
+        if (style.textOverflow === 'ellipsis' && this.scrollWidth > this.clientWidth) {
+            this.title = this.textContent.trim();
+            this.setAttribute('data-pc-full-text-title', '');
+        } else if (autoTitle) {
+            this.removeAttribute('title');
+            this.removeAttribute('data-pc-full-text-title');
+        }
+    });
+});
+
 function cmShowLdg() {
     $('#cmLoadingLayer').css('display', 'flex');
 }

@@ -6,6 +6,7 @@
 <html lang="ko">
 <head>
     <title>직원정보</title>
+    <%@ include file="/WEB-INF/views/pc/jsp/common/font-inc.jspf" %>
     <%@ include file="/WEB-INF/views/common/jsp/common-inc.jspf" %>
     <link rel="stylesheet" href="<c:url value='/pc/css/common/layout.css'/>">
     <link rel="stylesheet" href="<c:url value='/pc/css/main/main.css'/>">

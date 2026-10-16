@@ -46,7 +46,7 @@ class MainBulletinTest {
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(user, null, List.of()));
 
-        var mvc = MockMvcBuilders.standaloneSetup(new MainController(null, null, null, new MainService(mapper)))
+        var mvc = MockMvcBuilders.standaloneSetup(new MainController(null, null, null, new MainService(mapper), null))
                 .setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver()).build();
         mvc.perform(get("/pc/main/bulletinList.do")
                         .param("userId", "other-employee").param("searchDate", "2000-01-01"))

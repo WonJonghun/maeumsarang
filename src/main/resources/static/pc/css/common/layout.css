@@ -34,8 +34,9 @@
     overflow: hidden;
     color: var(--pc-text);
     background: var(--pc-background);
-    font-family: Pretendard, "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    font-family: "Pretendard PC", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
     font-size: var(--pc-font-medium);
+    font-weight: 500;
     line-height: 1.5;
 }
 
@@ -56,7 +57,7 @@
 .pc-page button * {
     font-family: inherit !important;
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 800;
 }
 
 .pc-page button:focus-visible,
@@ -111,6 +112,95 @@
     gap: 16px;
 }
 
+/* ================== 업무 화면 탭 영역 ↓================== */
+.pc-workspace-page .pc-topbar-left {
+    flex: 1;
+    gap: 16px;
+}
+
+.pc-workspace-page .pc-brand {
+    flex: 0 1 184px;
+    min-width: 64px;
+}
+
+.pc-work-tabs {
+    display: flex;
+    align-items: center;
+    flex: 1 1 180px;
+    min-width: 60px;
+    gap: 4px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #d2dce3 transparent;
+}
+
+.pc-work-tab {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    max-width: 200px;
+    height: 34px;
+    border: 1px solid #dce2e7;
+    border-radius: 5px;
+    background: #fff;
+    color: #68737f;
+}
+
+.pc-work-tab.is-active {
+    border-color: var(--pc-primary);
+    background: var(--pc-primary-bg);
+    color: var(--pc-primary);
+}
+
+.pc-work-tab-select {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+    height: 100%;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+}
+
+.pc-work-tab-select,
+.pc-work-tab-select span,
+.pc-work-tab-select .bi {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.pc-work-tab-select span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pc-work-tab-close {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    margin-right: 3px;
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+}
+
+.pc-work-tab-close .bi {
+    font-size: 11px;
+}
+
+.pc-work-tab-close:hover {
+    background: #dce8f0;
+    color: var(--pc-primary);
+}
+
 .pc-topbar-divider {
     width: 1px;
     height: 24px;
@@ -133,7 +223,7 @@
     min-width: 42px;
     color: var(--pc-text-subtle);
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     font-variant-numeric: tabular-nums;
     text-align: center;
 }
@@ -222,13 +312,13 @@
 .pc-user .user-name {
     color: var(--pc-text);
     font-size: 16px;
-    font-weight: 700;
+    font-weight: 800;
 }
 
 .pc-user .user-team {
     color: var(--pc-text-subtle);
     font-size: 14px;
-    font-weight: 400;
+    font-weight: 500;
 }
 
 .pc-user .topbar-user-text {
@@ -428,16 +518,6 @@
     box-shadow: inset 0 -2px #52b335;
 }
 
-.pc-favorites-panel {
-    padding: 20px 16px;
-    color: #c1c7d2;
-    font-size: 13px;
-}
-
-.pc-favorites-panel p {
-    margin: 0;
-}
-
 .pc-menu-roots {
     flex: 1;
     min-height: 0;
@@ -485,7 +565,7 @@
     color: #c1c7d2;
     font-size: var(--pc-menu-label-size, 12px);
     line-height: 1.35;
-    font-weight: 500;
+    font-weight: 600;
     word-break: keep-all;
     overflow-wrap: anywhere;
     cursor: pointer;
@@ -533,7 +613,7 @@
     background: #454f60;
     color: #fff;
     box-shadow: inset 3px 0 #52b335;
-    font-weight: 700;
+    font-weight: 800;
 }
 
 .pc-menu-panel {
@@ -568,7 +648,7 @@
 .pc-menu-heading h2 {
     margin: 0;
     font-size: var(--pc-font-heading);
-    font-weight: 700;
+    font-weight: 800;
     overflow-wrap: anywhere;
 }
 
@@ -629,8 +709,8 @@
     margin-top: var(--pc-space-1);
 }
 
-.pc-tree-toggle,
-.pc-menu-leaf {
+.pc-page .pc-tree-toggle,
+.pc-page .pc-menu-leaf {
     position: relative;
     display: flex;
     align-items: center;
@@ -644,7 +724,7 @@
     color: #d2d7df;
     font-size: var(--pc-font-medium);
     line-height: 1.5;
-    font-weight: 500;
+    font-weight: 600;
     text-align: left;
     overflow-wrap: anywhere;
     cursor: pointer;
@@ -658,8 +738,10 @@
     transition: transform .15s ease;
 }
 
-.pc-tree-toggle[aria-expanded="true"] {
-    font-weight: 700;
+.pc-page .pc-tree-toggle > span,
+.pc-page .pc-menu-leaf > span {
+    font-size: inherit;
+    font-weight: inherit;
 }
 
 .pc-tree-toggle[aria-expanded="true"] .bi {
@@ -672,10 +754,11 @@
     border-left: 1px solid #454c5b;
 }
 
-.pc-tree-children .pc-menu-leaf,
-.pc-tree-children .pc-tree-toggle {
+.pc-page .pc-tree-children .pc-menu-leaf,
+.pc-page .pc-tree-children .pc-tree-toggle {
     min-height: 44px;
-    font-size: var(--pc-font-small);
+    font-size: 13.5px;
+    font-weight: 600;
 }
 
 .pc-menu-leaf:hover,
@@ -684,8 +767,8 @@
     color: #fff;
 }
 
-.pc-tree-toggle[aria-expanded="true"],
-.pc-menu-leaf.is-active {
+.pc-page .pc-tree-toggle[aria-expanded="true"],
+.pc-page .pc-menu-leaf.is-active {
     background: #454f60;
     color: #fff;
     font-weight: 700;
@@ -701,8 +784,8 @@
     background: var(--pc-focus);
 }
 
-.pc-tree-toggle:active,
-.pc-menu-leaf:active {
+.pc-page .pc-tree-toggle:active,
+.pc-page .pc-menu-leaf:active {
     background: #515d70;
 }
 
@@ -737,10 +820,66 @@
     padding-top: 20px;
 }
 
+/* ================== 업무 탭 본문 영역 ↓================== */
+.pc-workspace-page .pc-content {
+    min-height: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.pc-work-panels,
+.pc-work-panel {
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+}
+
+.pc-work-panel {
+    position: relative;
+}
+
+.pc-page .cm-loading-layer {
+    background: rgba(0, 0, 0, .07);
+}
+
+.pc-work-loading {
+    position: absolute;
+}
+
+.pc-work-panel[aria-busy="true"] > .pc-work-loading {
+    display: flex;
+}
+
+.pc-work-frame {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: var(--pc-background);
+}
+
+.pc-work-placeholder {
+    height: 100%;
+    padding: 20px 32px;
+    overflow: auto;
+}
+
+.pc-page.pc-work-page {
+    --pc-ui-scale: 1;
+    --pc-viewport-height: 100dvh;
+    min-width: 0;
+    height: 100%;
+    zoom: 1;
+}
+
+.pc-work-page .pc-content {
+    height: 100%;
+}
+
 .pc-content-heading {
     margin: 0 0 var(--pc-space-4);
     font-size: 24px;
-    font-weight: 700;
+    font-weight: 800;
 }
 
 .pc-content-description {

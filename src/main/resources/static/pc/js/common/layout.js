@@ -3,8 +3,11 @@ $(function () {
     const saved = Number(localStorage.getItem('mhsPcZoom'));
     updatePcZoom(saved >= 80 && saved <= 150 && saved % 10 === 0 ? Math.min(saved, 140) : 100);
     updatePcMenuPin(localStorage.getItem('mhsPcMenuPinned') === 'true');
+    const favorites = localStorage.getItem('mhsPcMenuFavorites') === 'true';
+    updatePcMenuMode(favorites);
     setPcMenuOpen(false);
     loadPcMenu();
+    if (favorites) loadPcFavorites();
 
     //화면 확대·축소
     $('#pcZoomOut, #pcZoomIn').on('click', function () {
@@ -15,6 +18,7 @@ $(function () {
 
     //메뉴 재조회
     $('#pcMenuRetry').on('click', loadPcMenu);
+    $('#pcFavoritesRetry').on('click', loadPcFavorites);
 
     //메뉴 고정·해제
     $('#pcMenuPin').on('click', function () {
@@ -26,15 +30,10 @@ $(function () {
 
     //메뉴·즐겨찾기 전환
     $('#pcMenuTab, #pcFavoritesTab').on('click', function () {
-        const isMenu = this.id === 'pcMenuTab';
-        $('#pcMenuTab').attr('aria-pressed', String(isMenu));
-        $('#pcFavoritesTab').attr('aria-pressed', String(!isMenu));
-        $('#pcMenuContents').prop('hidden', !isMenu);
-        $('#pcFavoritesPanel').prop('hidden', isMenu);
-        $('#pcMenuTitle').text(isMenu ? $('#pcMenuRoots .is-active span').text() : '즐겨찾기');
-        if (isMenu) {
-            detailPcMenuRoot($('#pcMenuRoots .is-active')[0]);
-        }
+        const favorites = this.id === 'pcFavoritesTab';
+        updatePcMenuMode(favorites);
+        localStorage.setItem('mhsPcMenuFavorites', String(favorites));
+        if (favorites) loadPcFavorites();
         setPcMenuOpen(true);
     });
 
@@ -44,18 +43,14 @@ $(function () {
             setPcMenuOpen(true);
         })
         .on('mouseleave', function () {
-            if ($('#pcMenuTab').attr('aria-pressed') === 'true') {
-                detailPcMenuRoot($('#pcMenuRoots .is-active')[0]);
-            }
+            detailPcMenuRoot($('#pcSidebar .pc-menu-roots:not([hidden]) .is-active')[0]);
             if (!$('.pc-page').hasClass('is-sidebar-pinned') && !$(this).find(':focus-visible').length) {
                 setPcMenuOpen(false);
             }
         })
         .on('focusout', function (e) {
             if (!this.contains(e.relatedTarget)) {
-                if ($('#pcMenuTab').attr('aria-pressed') === 'true') {
-                    detailPcMenuRoot($('#pcMenuRoots .is-active')[0]);
-                }
+                detailPcMenuRoot($('#pcSidebar .pc-menu-roots:not([hidden]) .is-active')[0]);
                 setPcMenuOpen($(this).is(':hover'));
             }
         });
@@ -94,27 +89,23 @@ $(function () {
     });
 
     //대메뉴 미리보기·선택
-    $('#pcMenuRoots').on('mouseenter focusin click', '.pc-menu-root', function (e) {
+    $('#pcMenuRoots, #pcFavoritesRoots').on('mouseenter focusin click', '.pc-menu-root', function (e) {
         if (e.type === 'click') {
-            $('#pcMenuRoots .pc-menu-root').removeClass('is-active').attr('aria-pressed', 'false');
+            $(this).closest('.pc-menu-roots').find('.pc-menu-root').removeClass('is-active').attr('aria-pressed', 'false');
             $(this).addClass('is-active').attr('aria-pressed', 'true');
         }
         detailPcMenuRoot(this);
-        $('#pcMenuTab').attr('aria-pressed', 'true');
-        $('#pcFavoritesTab').attr('aria-pressed', 'false');
-        $('#pcMenuContents').prop('hidden', false);
-        $('#pcFavoritesPanel').prop('hidden', true);
         setPcMenuOpen(true);
     });
 
     //하위 메뉴 클릭 시 대메뉴 선택
-    $('#pcMenuTree').on('click', '.pc-tree-toggle, .pc-menu-leaf', function () {
+    $('#pcMenuTree, #pcFavoritesTree').on('click', '.pc-tree-toggle, .pc-menu-leaf', function () {
         const panel = $(this).closest('.pc-tree-panel').attr('id');
-        $('#pcMenuRoots .pc-menu-root[aria-controls="' + panel + '"]').trigger('click');
+        $('#pcSidebar .pc-menu-root[aria-controls="' + panel + '"]').trigger('click');
     });
 
     //하위 메뉴 펼침·접힘
-    $('#pcMenuTree').on('click', '.pc-tree-toggle', function () {
+    $('#pcMenuTree, #pcFavoritesTree').on('click', '.pc-tree-toggle', function () {
         const expanded = $(this).attr('aria-expanded') === 'true';
         const children = $('#' + $(this).attr('aria-controls')).stop(true, true);
         const ms = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 180;
@@ -142,7 +133,7 @@ $(function () {
     });
 
     //소메뉴 선택
-    $('#pcMenuTree').on('click', '.pc-menu-leaf', function () {
+    $('#pcMenuTree, #pcFavoritesTree').on('click', '.pc-menu-leaf', function () {
         detailPcMenu(this);
     });
 
@@ -150,8 +141,8 @@ $(function () {
     $('#pcSidebar').on('keydown', '.pc-menu-root, .pc-tree-toggle, .pc-menu-leaf', function (e) {
         const button = $(this);
         const buttons = button.hasClass('pc-menu-root')
-            ? $('#pcMenuRoots .pc-menu-root')
-            : $('#pcMenuTree .pc-tree-toggle, #pcMenuTree .pc-menu-leaf').filter(':visible');
+            ? $('#pcSidebar .pc-menu-roots:not([hidden]) .pc-menu-root')
+            : $('#pcMenuTree, #pcFavoritesTree').find('.pc-tree-toggle, .pc-menu-leaf').filter(':visible');
         const index = buttons.index(this);
 
         if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
@@ -204,67 +195,9 @@ function loadPcMenu() {
             $('#pcMenuStatus').text('사용할 수 있는 메뉴가 없습니다.');
             return;
         }
-
-        const icons = [
-            [/^사내업무$/, 'bi-briefcase-fill'],
-            [/^공통정보$/, 'bi-info-square-fill'],
-            [/^개인정보$/, 'bi-person-circle'],
-            [/^회계관리$/, 'bi-calculator-fill'],
-            [/^예산관리$/, 'bi-pie-chart-fill'],
-            [/^인사급여$/, 'bi-person-badge-fill'],
-            [/^구매관리$/, 'bi-cart-fill'],
-            [/^급식관리$/, 'bi-cup-hot-fill'],
-            [/^자산관리$/, 'bi-box-seam-fill'],
-            [/^매점관리$/, 'bi-shop'],
-            [/^업무관리규정$/, 'bi-journal-text'],
-            [/^도서관리$/, 'bi-book-fill'],
-            [/^후원회관리$/, 'bi-heart-fill'],
-            [/^EMR관리$/, 'bi-file-earmark-medical-fill'],
-            [/^경영분석$/, 'bi-bar-chart-fill'],
-            [/^편집$/, 'bi-pencil-square'],
-            [/결재/, 'bi-pen-fill'],
-            [/메일|쪽지/, 'bi-envelope-fill'],
-            [/일정|당직/, 'bi-calendar-week-fill'],
-            [/시설|비품|자산|자원/, 'bi-tools'],
-            [/인사|직원|연락처/, 'bi-person-badge-fill'],
-            [/게시|공지|자료/, 'bi-clipboard-fill'],
-            [/설정|관리자|시스템/, 'bi-gear-fill'],
-            [/업무|행정/, 'bi-briefcase-fill']
-        ];
-        let roots = '';
-        let panels = '';
-
-        tree.forEach(function (root, index) {
-            const name = root.ccMenuName;
-            const icon = icons.find(function (item) {
-                return item[0].test(name);
-            });
-            const cls = name.length > 5 ? ' is-extra-long' : name.length > 4 ? ' is-long' : '';
-
-            roots += `
-                <li>
-                    <button type="button" class="pc-menu-root${cls}"
-                            aria-pressed="false" aria-controls="pcMenuPanel${index}">
-                        <i class="bi ${icon ? icon[1] : 'bi-grid-fill'}" aria-hidden="true"></i>
-                        <span>${cmEscapeHtml(name)}</span>
-                    </button>
-                </li>`;
-            panels += `
-                <div id="pcMenuPanel${index}" class="pc-tree-panel" hidden>
-                    <ul class="pc-tree-list">
-                        ${buildPcMenuItems(root.children.length ? root.children : [root], String(index))}
-                    </ul>
-                </div>`;
-        });
-
-        //메뉴 수에 맞춰 간격 조정
-        $('#pcMenuRoots')
-            .html(roots)
-            .toggleClass('is-compact', tree.length >= 13)
-            .css('--pc-menu-count', tree.length);
-        $('#pcMenuTree').html(panels);
+        renderPcMenu(tree);
         $('#pcMenuStatus').prop('hidden', true);
-        $('#pcMenuRoots .pc-menu-root').first().trigger('click');
+        syncPcWorkMenu();
         setPcMenuOpen($('#pcSidebar').is(':hover'));
     }).fail(function () {
         $('#pcMenuStatus').text('메뉴를 불러오지 못했습니다. 다시 시도해 주세요.');
@@ -274,16 +207,109 @@ function loadPcMenu() {
     });
 }
 
+//즐겨찾기 조회
+function loadPcFavorites() {
+    $('#pcFavoritesTree').attr('aria-busy', 'true');
+    $('#pcFavoritesStatus').prop('hidden', true);
+    $('#pcFavoritesRetry').prop('hidden', true);
+
+    cmAjax($('#pcSidebar').attr('data-menu-url'), 'GET', {keyword: 'Quick'}, false).done(function (tree) {
+        renderPcMenu(tree, true);
+        $('#pcFavoritesStatus').prop('hidden', tree.length > 0).text('등록된 즐겨찾기가 없습니다.');
+        syncPcWorkMenu();
+    }).fail(function () {
+        $('#pcFavoritesStatus').text('즐겨찾기를 불러오지 못했습니다. 다시 시도해 주세요.').prop('hidden', false);
+        $('#pcFavoritesRetry').prop('hidden', false);
+    }).always(function () {
+        $('#pcFavoritesTree').attr('aria-busy', 'false');
+    });
+}
+
+//대메뉴·하위 메뉴 표시
+function renderPcMenu(tree, favorites = false) {
+    const prefix = favorites ? 'pcFavorites' : 'pcMenu';
+    const icons = [
+        [/^사내업무$/, 'bi-briefcase-fill'],
+        [/^공통정보$/, 'bi-info-square-fill'],
+        [/^개인정보$/, 'bi-person-circle'],
+        [/^회계관리$/, 'bi-calculator-fill'],
+        [/^예산관리$/, 'bi-pie-chart-fill'],
+        [/^인사급여$/, 'bi-person-badge-fill'],
+        [/^구매관리$/, 'bi-cart-fill'],
+        [/^급식관리$/, 'bi-cup-hot-fill'],
+        [/^자산관리$/, 'bi-box-seam-fill'],
+        [/^매점관리$/, 'bi-shop'],
+        [/^업무관리규정$/, 'bi-journal-text'],
+        [/^도서관리$/, 'bi-book-fill'],
+        [/^후원회관리$/, 'bi-heart-fill'],
+        [/^EMR관리$/, 'bi-file-earmark-medical-fill'],
+        [/^경영분석$/, 'bi-bar-chart-fill'],
+        [/^편집$/, 'bi-pencil-square'],
+        [/결재/, 'bi-pen-fill'],
+        [/메일|쪽지/, 'bi-envelope-fill'],
+        [/일정|당직/, 'bi-calendar-week-fill'],
+        [/시설|비품|자산|자원/, 'bi-tools'],
+        [/인사|직원|연락처/, 'bi-person-badge-fill'],
+        [/게시|공지|자료/, 'bi-clipboard-fill'],
+        [/설정|관리자|시스템/, 'bi-gear-fill'],
+        [/업무|행정/, 'bi-briefcase-fill']
+    ];
+    let roots = '';
+    let panels = '';
+
+    tree.forEach(function (root, index) {
+        const name = root.ccMenuName;
+        const icon = icons.find(function (item) {
+            return item[0].test(name);
+        });
+        const cls = name.length > 5 ? ' is-extra-long' : name.length > 4 ? ' is-long' : '';
+
+        roots += `
+            <li>
+                <button type="button" class="pc-menu-root${cls}"
+                        aria-pressed="false" aria-controls="${prefix}Panel${index}">
+                    <i class="bi ${icon ? icon[1] : 'bi-grid-fill'}" aria-hidden="true"></i>
+                    <span>${cmEscapeHtml(name)}</span>
+                </button>
+            </li>`;
+        panels += `
+            <div id="${prefix}Panel${index}" class="pc-tree-panel" hidden>
+                <ul class="pc-tree-list">
+                    ${buildPcMenuItems(root.children.length ? root.children : [root], (favorites ? 'favorites_' : '') + index)}
+                </ul>
+            </div>`;
+    });
+
+    //메뉴 수에 맞춰 간격 조정
+    $('#' + prefix + 'Roots')
+        .html(roots)
+        .toggleClass('is-compact', tree.length >= 13)
+        .css('--pc-menu-count', tree.length);
+    $('#' + prefix + 'Tree').html(panels);
+    const first = $('#' + prefix + 'Roots .pc-menu-root').first()
+        .addClass('is-active').attr('aria-pressed', 'true');
+    if (!$('#' + prefix + 'Roots').prop('hidden')) detailPcMenuRoot(first[0]);
+}
+
 //대메뉴 표시
 function detailPcMenuRoot(button) {
+    if (!button) return;
     $('#pcMenuTitle').text($(button).find('span').text());
-    $('#pcMenuTree .pc-tree-panel').prop('hidden', true);
-    $('#' + $(button).attr('aria-controls')).prop('hidden', false);
+    const panel = $('#' + $(button).attr('aria-controls'));
+    panel.siblings('.pc-tree-panel').prop('hidden', true);
+    panel.prop('hidden', false);
 }
 
 //메뉴 선택
 function detailPcMenu(button) {
-    $('#pcMenuTree .pc-menu-leaf').removeClass('is-active').removeAttr('aria-current');
+    if ($(button).attr('data-win-code') === 'w_gongji_list') {
+        openPcWorkTab('board', '전자게시판', '/pc/notice/board.do', {
+            ccWinCode: $(button).attr('data-win-code'),
+            ccBaseKey: $(button).attr('data-base-key')
+        });
+        return;
+    }
+    $('#pcMenuTree .pc-menu-leaf, #pcFavoritesTree .pc-menu-leaf').removeClass('is-active').removeAttr('aria-current');
     $(button).addClass('is-active').attr('aria-current', 'page');
     const ms = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 180;
     $(button).closest('.pc-tree-panel')
@@ -299,10 +325,7 @@ function detailPcMenu(button) {
         });
 
     const name = $(button).find('span').text();
-    $('#pcContent').html(`
-        <h1 class="pc-content-heading">${cmEscapeHtml(name)}</h1>
-        <p class="pc-content-description">준비 중인 화면입니다.</p>`);
-    document.title = name + ' | 마음사랑병원 인트라넷';
+    openPcWorkTab('menu-' + $(button).attr('data-code'), name);
     $('#pcContent').trigger('focus');
 }
 
@@ -322,6 +345,17 @@ function updatePcMenuPin(pinned) {
         .attr('aria-label', pinned ? '메뉴 고정 해제' : '메뉴 펼침 상태 고정')
         .attr('title', pinned ? '메뉴 고정 해제' : '메뉴 고정');
     $('#pcMenuPin i').toggleClass('bi-pin-angle', !pinned).toggleClass('bi-pin-angle-fill', pinned);
+}
+
+//메뉴·즐겨찾기 모드 변경
+function updatePcMenuMode(favorites) {
+    $('#pcMenuTab').attr('aria-pressed', String(!favorites));
+    $('#pcFavoritesTab').attr('aria-pressed', String(favorites));
+    $('#pcFavoritesTab i').toggleClass('bi-star', !favorites).toggleClass('bi-star-fill', favorites);
+    $('#pcMenuRoots, #pcMenuContents').prop('hidden', favorites);
+    $('#pcFavoritesRoots, #pcFavoritesPanel').prop('hidden', !favorites);
+    if (favorites) $('#pcMenuTitle').text('즐겨찾기');
+    else detailPcMenuRoot($('#pcMenuRoots .is-active')[0]);
 }
 
 //메뉴 영역 전환
@@ -353,7 +387,8 @@ function buildPcMenuItems(items, parent) {
         }
         return `
             <li>
-                <button type="button" class="pc-menu-leaf" data-code="${cmEscapeHtml(item.ccCode)}">
+                <button type="button" class="pc-menu-leaf" data-code="${cmEscapeHtml(item.ccCode)}"
+                        data-win-code="${cmEscapeHtml(item.ccWinCode)}" data-base-key="${cmEscapeHtml(item.ccBaseKey)}">
                     <span>${cmEscapeHtml(item.ccMenuName)}</span>
                 </button>
             </li>`;

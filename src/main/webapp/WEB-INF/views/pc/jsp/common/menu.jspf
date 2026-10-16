@@ -15,6 +15,7 @@
         </div>
     <nav class="pc-menu-rail" aria-label="대메뉴">
         <ul id="pcMenuRoots" class="pc-menu-roots"></ul>
+        <ul id="pcFavoritesRoots" class="pc-menu-roots" aria-label="즐겨찾기 대메뉴" hidden></ul>
     </nav>
     <section id="pcMenuPanelContainer" class="pc-menu-panel" aria-labelledby="pcMenuTitle" aria-hidden="true" inert>
         <div class="pc-menu-heading">
@@ -25,8 +26,10 @@
             <p id="pcMenuStatus" class="pc-menu-status" role="status">메뉴를 불러오는 중입니다.</p>
             <button type="button" id="pcMenuRetry" class="pc-menu-retry" hidden>다시 불러오기</button>
         </div>
-        <div id="pcFavoritesPanel" class="pc-favorites-panel" hidden>
-            <p>등록된 즐겨찾기가 없습니다.</p>
+        <div id="pcFavoritesPanel" class="pc-menu-contents" hidden>
+            <nav id="pcFavoritesTree" class="pc-menu-tree" aria-labelledby="pcMenuTitle" aria-busy="false"></nav>
+            <p id="pcFavoritesStatus" class="pc-menu-status" role="status">등록된 즐겨찾기가 없습니다.</p>
+            <button type="button" id="pcFavoritesRetry" class="pc-menu-retry" hidden>다시 불러오기</button>
         </div>
     </section>
 </aside>

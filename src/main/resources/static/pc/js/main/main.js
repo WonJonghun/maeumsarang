@@ -1,9 +1,11 @@
 $(function () {
     //식단 기본 선택
+    const state = JSON.parse(window.frameElement?.getAttribute('data-state') ?? 'null');
     const today = cmGetToday('-');
+    const selected = state?.selectedDate ?? today;
     const now = new Date();
     const minute = now.getHours() * 60 + now.getMinutes();
-    const meal = minute <= 540 ? 1 : minute <= 810 ? 2 : 3;
+    const meal = state?.meal ?? (minute <= 540 ? 1 : minute <= 810 ? 2 : 3);
 
     $('#pcMealTabs button')
         .attr('aria-pressed', 'false')
@@ -15,8 +17,8 @@ $(function () {
     setInterval(updatePcMainClock, 1000);
     loadPcMainNotifications();
     loadPcMainVacation(today);
-    loadPcMainCalendar(today);
-    loadPcMainDay(today);
+    loadPcMainDay(selected);
+    loadPcMainCalendar(state?.calendarMonth ? state.calendarMonth + '-01' : selected);
     loadPcMainBoards();
     loadPcMainBulletin();
 
@@ -24,13 +26,22 @@ $(function () {
     const scrolls = $('#pcDashboard .pc-main-body').not('#pcMainCalendar, #pcMealMenus');
     scrolls.each(function () {
         $(this).parent().addClass('pc-main-scroll').append(`
-            <span class="pc-main-scroll-hint" aria-hidden="true" hidden>
-                <i class="bi bi-chevron-down"></i>
-            </span>`);
+            <button type="button" class="pc-main-scroll-hint" title="목록 맨 아래로 이동"
+                    aria-label="목록 맨 아래로 이동" aria-controls="${cmEscapeHtml(this.id)}" hidden>
+                <i class="bi bi-chevron-down" aria-hidden="true"></i>
+            </button>`);
         updatePcMainScroll(this);
     });
     scrolls.on('scroll animationend', function () {
         updatePcMainScroll(this);
+    });
+    $('#pcDashboard').on('click', '.pc-main-scroll-hint', function () {
+        const scroll = $(this).siblings('.pc-main-body')[0];
+        scroll.scrollTo({top: scroll.scrollHeight, behavior: 'smooth'});
+    }).on('wheel', '.pc-main-scroll-hint', function (event) {
+        event.preventDefault();
+        const scroll = $(this).siblings('.pc-main-body')[0];
+        scroll.scrollBy({top: event.originalEvent.deltaY, left: event.originalEvent.deltaX});
     });
     const scrollObserver = new ResizeObserver(function (entries) {
         entries.forEach(entry => updatePcMainScroll(entry.target));
@@ -46,10 +57,10 @@ $(function () {
             childList: true,
             subtree: true,
             attributes: true,
+        });
+        document.fonts.ready.then(function () {
             attributeFilter: ['hidden']
         });
-    });
-    document.fonts.ready.then(function () {
         scrolls.each(function () {
             updatePcMainScroll(this);
         });
@@ -142,6 +153,98 @@ $(function () {
     $('#cmPopup').on('close', hidePhoto);
     $('.pc-person-list, .pc-duty-list, .pc-content').on('scroll', hidePhoto);
     $(window).on('resize', hidePhoto);
+    $(document).on('pcWorkTab:hide cmPopup:closed', hidePhoto);
+
+    //자동 갱신 요청은 로그인 사용 시간에서 제외
+    let automatic = false;
+    let pendingRefresh = null;
+    let changes;
+    let leaving = false;
+    $(document).on('ajaxSend', function (event, xhr, settings) {
+        if (automatic) {
+            xhr.setRequestHeader('X-PC-Main-Refresh', 'true');
+            settings.pcMainRefresh = true;
+        }
+    }).on('ajaxError', function (event, xhr, settings) {
+        if (settings.pcMainRefresh && xhr.status === 401) {
+            leaving = true;
+            changes.close();
+            window.top.location.replace('/pc/main.do');
+        }
+    }).on('ajaxStop', function () {
+        if (leaving) return;
+        if (pendingRefresh !== null) {
+            $(document).trigger('pcWorkTab:refresh', [pendingRefresh]);
+        } else if (changes.readyState === EventSource.CLOSED) {
+            connectChanges();
+        }
+    });
+
+    //로고 클릭·변경 알림 수신 시 데이터 갱신
+    $(document).on('pcWorkTab:refresh', function (event, background = false) {
+        if ($.active) {
+            pendingRefresh = pendingRefresh === false ? false : background;
+            return;
+        }
+        pendingRefresh = null;
+        hidePhoto();
+        automatic = background;
+        try {
+            loadPcMainNotifications();
+            loadPcMainVacation(cmGetToday('-'), true);
+            loadPcMainDay($('#pcDashboard').attr('data-selected-date'), true, background);
+            loadPcMainCalendar($('#pcCalendarMonth').attr('data-month') + '-01');
+            loadPcMainBoards(true);
+            loadPcMainBulletin(true);
+        } finally {
+            automatic = false;
+        }
+    });
+
+    //서버 변경 알림 연결·해제
+    const connectChanges = function () {
+        $('#pcDashboard').attr('data-change-state', 'connecting');
+        changes = new EventSource('/pc/main/changes.do?version='
+            + encodeURIComponent($('#pcDashboard').attr('data-change-version')));
+        changes.addEventListener('open', function () {
+            $('#pcDashboard').attr('data-change-state', 'connected');
+        });
+        changes.addEventListener('error', function () {
+            $('#pcDashboard').attr('data-change-state', 'disconnected');
+        });
+        changes.addEventListener('changed', function (event) {
+            if (event.lastEventId) $('#pcDashboard').attr('data-change-version', event.lastEventId);
+            $(document).trigger('pcWorkTab:refresh', [true]);
+        });
+        changes.addEventListener('session-expired', function () {
+            leaving = true;
+            changes.close();
+            window.top.location.replace('/pc/main.do');
+        });
+    };
+    connectChanges();
+    $(window).on('pagehide', function () {
+        leaving = true;
+        changes.close();
+    }).on('pageshow', function (event) {
+        if (event.originalEvent.persisted) {
+            leaving = false;
+            connectChanges();
+        }
+    });
+
+    //업무 탭 상태 저장·복원
+    $(document).on('pcWorkTab:save', function () {
+        window.parent.savePcWorkTabState(window.frameElement.getAttribute('data-tab-key'), {
+            selectedDate: $('#pcDashboard').attr('data-selected-date'),
+            calendarMonth: $('#pcCalendarMonth').attr('data-month'),
+            meal: Number($('#pcMealTabs [aria-pressed="true"]').attr('data-meal')),
+            scroll: $('#pcContent').scrollTop()
+        });
+    });
+    $(window).on('load', function () {
+        $('#pcContent').scrollTop(state?.scroll ?? 0);
+    });
 
     //직원 정보·달력 팝업
     $('#pcDashboard').on('click keydown', '.pc-person-name[data-user-id]:not([data-user-id=""])', function (event) {
@@ -191,9 +294,33 @@ $(function () {
         $(photo).trigger('error');
     }
 
+    //게시글 상세
+    $('#pcDashboard').on('click', '.pc-main-post-title', function () {
+        hidePhoto();
+        const tvUk = $(this).attr('data-tv-uk');
+        const flag = Number(tvUk.charAt(0));
+        const title = flag === 1 ? '직원공지사항' : $(this).closest('.pc-main-card').find('h2').text();
+        cmOpenPopup('/pc/notice/detailPopup.do', 900, 760, {
+            tnFlag: flag,
+            tvUk: tvUk
+        }, title, false, 'cm-popup-board');
+    });
+
+    //상세 조회 성공 시 읽음 표시
+    $(document).on('cmPopup:loaded', function (event, frame) {
+        const detail = $(frame.contentDocument).find('.pc-board-detail');
+        if (!detail.length) return;
+        $('#pcDashboard .pc-main-post-title').filter(function () {
+            return $(this).attr('data-tv-uk') === detail.attr('data-tv-uk');
+        }).closest('.pc-main-post').removeClass('is-unread');
+    });
+
     //게시판 전체보기
     $('.pc-board-more').on('click', function () {
-        customAlert('알림', '준비 중입니다.', 'CONFIRM');
+        openPcWorkTab('board', '전자게시판', '/pc/notice/board.do', {
+            ccWinCode: 'w_gongji_list',
+            ccBaseKey: $(this).attr('data-base-key')
+        });
     });
 
     //식단 탭 선택
@@ -233,15 +360,19 @@ function loadPcMainNotifications() {
 }
 
 //내 휴가 현황 조회
-function loadPcMainVacation(ymd) {
-    $('#pcLeaveTotal, #pcLeaveUsed, #pcLeaveLeft').text('—');
-    $('#pcLeaveLeft').parent().removeClass('is-positive is-negative');
+function loadPcMainVacation(ymd, refresh) {
+    if (!refresh) {
+        $('#pcLeaveTotal, #pcLeaveUsed, #pcLeaveLeft').text('—');
+        $('#pcLeaveLeft').parent().removeClass('is-positive is-negative');
+    }
     $('#pcLeaveStatus').text('').prop('hidden', true);
     cmAjax('/vacation/status.do', 'GET', {
         ccCode: $('#pcDashboard').attr('data-user-id'),
         searchDate: ymd
-    }, true).done(function (row) {
+    }, !refresh).done(function (row) {
         if (!row) {
+            $('#pcLeaveTotal, #pcLeaveUsed, #pcLeaveLeft').text('—');
+            $('#pcLeaveLeft').parent().removeClass('is-positive is-negative');
             $('#pcLeaveStatus').text('휴가 정보가 없습니다.').prop('hidden', false);
             return;
         }
@@ -271,13 +402,15 @@ function loadPcMainCalendar(ymd) {
 }
 
 //선택일 업무 현황 조회
-function loadPcMainDay(ymd) {
+function loadPcMainDay(ymd, refresh, automatic) {
     $('#pcDashboard').attr('data-selected-date', ymd);
     $('.pc-selected-date').text(formatPcCalendarDate(ymd).substring(5));
-    loadPcMainCommute(ymd);
-    $('#pcMainSchedules, #pcMainPatients, #pcMealMenus').html('<p class="pc-main-empty">조회 중입니다.</p>');
-    $('#pcMainVacations, #pcMainBirthdays, #pcMainDuty, #pcMainOutDuty').html('<li class="pc-main-empty">조회 중입니다.</li>');
-    $('#pcVacationCount, #pcBirthdayCount').text('—');
+    loadPcMainCommute(ymd, refresh);
+    if (!refresh) {
+        $('#pcMainSchedules, #pcMainPatients, #pcMealMenus').html('<p class="pc-main-empty">조회 중입니다.</p>');
+        $('#pcMainVacations, #pcMainBirthdays, #pcMainDuty, #pcMainOutDuty').html('<li class="pc-main-empty">조회 중입니다.</li>');
+        $('#pcVacationCount, #pcBirthdayCount').text('—');
+    }
 
     cmAjax('/schedule/todayScheduleList.do', 'GET', {
         searchDate: ymd,
@@ -463,6 +596,8 @@ function loadPcMainDay(ymd) {
         $('#pcMainVacations, #pcMainBirthdays').html('<li class="pc-main-empty">정보를 불러오지 못했습니다.</li>');
     });
 
+    if (automatic) return;
+
     cmAjax('/main/mealList.do', 'GET', {searchDate: ymd}, false).done(function (list) {
         if ($('#pcDashboard').attr('data-selected-date') !== ymd) return;
 
@@ -516,7 +651,12 @@ function loadPcMainBoards(refresh) {
             const html = list.map(function (item) {
                 return `
                     <article class="pc-main-post${item.ccView === 'N' ? ' is-unread' : ''}">
-                        <h3 title="${cmEscapeHtml(item.tnTitle)}"><span class="pc-main-link-text">${cmEscapeHtml(item.tnTitle)}</span></h3>
+                        <h3>
+                            <button type="button" class="pc-main-post-title" data-tv-uk="${cmEscapeHtml(item.tvUk)}"
+                                    title="${cmEscapeHtml(item.tnTitle)}">
+                                <span class="pc-main-link-text">${cmEscapeHtml(item.tnTitle)}</span>
+                            </button>
+                        </h3>
                         <p>
                             <span>${cmEscapeHtml(item.tnUk)} · 조회 ${cmEscapeHtml(item.viewCount)}</span>
                             <time>${cmEscapeHtml(item.tnDateStr)}</time>
@@ -566,9 +706,9 @@ function loadPcMainBulletin(refresh) {
 }
 
 //선택일 출퇴근 조회
-function loadPcMainCommute(ymd) {
+function loadPcMainCommute(ymd, refresh) {
     $('.pc-commute').attr('aria-label', formatPcCalendarDate(ymd) + ' 출퇴근 시간');
-    $('#pcCommuteIn, #pcCommuteOut').text('—');
+    if (!refresh) $('#pcCommuteIn, #pcCommuteOut').text('—');
     cmAjax('/profile/commuteStat.do', 'GET', {
         searchId: $('#pcDashboard').attr('data-user-id'),
         searchDate: ymd

@@ -41,7 +41,7 @@ class MainOutDutyTest {
         when(mapper.selectMainOutDutyList("2026-10-07")).thenReturn(rows);
         when(mapper.selectMainOutDutyList("2026-10-08")).thenReturn(List.of());
 
-        var mvc = MockMvcBuilders.standaloneSetup(new MainController(null, null, null, new MainService(mapper)))
+        var mvc = MockMvcBuilders.standaloneSetup(new MainController(null, null, null, new MainService(mapper), null))
                 .build();
         var response = mvc.perform(get("/pc/main/outDutyList.do").param("searchDate", "2026-10-07"))
                 .andExpect(status().isOk())

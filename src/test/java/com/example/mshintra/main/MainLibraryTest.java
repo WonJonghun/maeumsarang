@@ -22,9 +22,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -43,17 +46,22 @@ class MainLibraryTest {
         MainMapper mapper = mock(MainMapper.class);
         NoticeDto item = new NoticeDto();
         item.setTnTitle("자료실 안내");
+        item.setTvUk("3202609101100");
         item.setTnDate("2026-09-10 00:00:00.0");
-        item.setViewCount("7");
+        item.setViewCount("999");
         item.setCcView("N");
         when(mapper.selectMainLibraryList("251101")).thenReturn(List.of(item));
+        NoticeDto count = new NoticeDto();
+        count.setTvUk(item.getTvUk());
+        count.setViewCount("7");
+        when(mapper.selectMainLibraryViewCounts(List.of(item.getTvUk()))).thenReturn(List.of(count));
 
         LoginUserDto user = new LoginUserDto();
         user.setIcCode("251101");
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(user, null, List.of()));
 
-        var mvc = MockMvcBuilders.standaloneSetup(new MainController(null, null, null, new MainService(mapper)))
+        var mvc = MockMvcBuilders.standaloneSetup(new MainController(null, null, null, new MainService(mapper), null))
                 .setCustomArgumentResolvers(new AuthenticationPrincipalArgumentResolver()).build();
         mvc.perform(get("/pc/main/libraryList.do").param("userId", "other-employee"))
                 .andExpect(status().isOk())
@@ -62,6 +70,7 @@ class MainLibraryTest {
                 .andExpect(jsonPath("$[0].viewCount").value("7"))
                 .andExpect(jsonPath("$[0].ccView").value("N"));
         verify(mapper).selectMainLibraryList("251101");
+        verify(mapper).selectMainLibraryViewCounts(List.of("3202609101100"));
     }
 
     @Test
@@ -71,6 +80,7 @@ class MainLibraryTest {
         for (int index = 0; index < 15; index++) {
             NoticeDto item = new NoticeDto();
             item.setTnTitle("자료 " + index);
+            item.setTvUk("3202610061" + index);
             item.setTnDate(index == 0 ? "2010-01-01" : "2026-10-06");
             item.setTnTop(index == 0 ? "Y" : "N");
             rows.add(item);
@@ -83,6 +93,40 @@ class MainLibraryTest {
                         "자료 5", "자료 6", "자료 7", "자료 8", "자료 9"),
                 list.stream().map(NoticeDto::getTnTitle).toList());
         assertEquals("2010.01.01", list.getFirst().getTnDateStr());
+        verify(mapper).selectMainLibraryViewCounts(rows.subList(0, 10).stream().map(NoticeDto::getTvUk).toList());
+    }
+
+    @Test
+    void libraryMatchesCountsByKeyAndShowsZeroForUnreadPosts() {
+        MainMapper mapper = mock(MainMapper.class);
+        List<NoticeDto> rows = List.of("3202610061100", "4202610061100", "5202610061100").stream().map(key -> {
+            NoticeDto item = new NoticeDto();
+            item.setTvUk(key);
+            item.setTnDate("2026-10-06");
+            item.setViewCount("999");
+            return item;
+        }).toList();
+        NoticeDto first = new NoticeDto();
+        first.setTvUk(rows.getFirst().getTvUk());
+        first.setViewCount("7");
+        NoticeDto second = new NoticeDto();
+        second.setTvUk(rows.get(1).getTvUk());
+        second.setViewCount("12");
+        when(mapper.selectMainLibraryList("251101")).thenReturn(rows);
+        when(mapper.selectMainLibraryViewCounts(rows.stream().map(NoticeDto::getTvUk).toList()))
+                .thenReturn(List.of(second, first));
+
+        var list = new MainService(mapper).selectMainLibraryList("251101");
+        assertEquals(List.of("7", "12", "0"), list.stream().map(NoticeDto::getViewCount).toList());
+    }
+
+    @Test
+    void emptyLibrarySkipsCountQuery() {
+        MainMapper mapper = mock(MainMapper.class);
+        when(mapper.selectMainLibraryList("251101")).thenReturn(List.of());
+
+        assertTrue(new MainService(mapper).selectMainLibraryList("251101").isEmpty());
+        verify(mapper, never()).selectMainLibraryViewCounts(anyList());
     }
 
     @Test
@@ -102,8 +146,15 @@ class MainLibraryTest {
 
         var columns = statement.getResultMaps().getFirst().getResultMappings().stream()
                 .collect(Collectors.toMap(ResultMapping::getProperty, ResultMapping::getColumn));
-        assertEquals("Tn_Count", columns.get("viewCount"));
+        assertFalse(columns.containsKey("viewCount"));
         assertEquals("cc_UK", columns.get("tvUk"));
         assertEquals("Tn_UserName", columns.get("icName"));
+        var counts = config.getMappedStatement(MainMapper.class.getName() + ".selectMainLibraryViewCounts")
+                .getBoundSql(Map.of("keys", List.of("3202610061100", "4202610061100")));
+        assertTrue(counts.getSql().contains("LEFT JOIN I_TotalNoteView"));
+        assertTrue(counts.getSql().contains("COUNT(history.Tv_UK) AS viewCount"));
+        assertTrue(counts.getSql().contains("GROUP BY posts.tvUk"));
+        assertEquals(2, counts.getParameterMappings().size());
+        assertFalse(counts.getSql().contains("3202610061100"));
     }
 }

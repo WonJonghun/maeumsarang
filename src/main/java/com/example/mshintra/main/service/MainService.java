@@ -2,6 +2,7 @@ package com.example.mshintra.main.service;
 
 import com.example.mshintra.common.util.DateUtil;
 import com.example.mshintra.main.dto.MainBirthDayDto;
+import com.example.mshintra.main.dto.MainChangeDto;
 import com.example.mshintra.main.dto.MainBulletinDto;
 import com.example.mshintra.main.dto.MainEmployeeDto;
 import com.example.mshintra.main.dto.MainMealDto;
@@ -15,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -24,6 +27,11 @@ public class MainService {
 
     @Value("${security.decrypt.key}")
     private String securityDecryptKey;
+
+    @Transactional(readOnly = true)
+    public List<MainChangeDto> selectMainChanges(List<String> codes) {
+        return mainMapper.selectMainChanges(codes);
+    }
 
     @Transactional(readOnly = true)
     public List<MainBirthDayDto> selectMainBirthDayList(String searchDate) {
@@ -48,8 +56,13 @@ public class MainService {
     @Transactional(readOnly = true)
     public List<NoticeDto> selectMainLibraryList(String userId) {
         List<NoticeDto> list = mainMapper.selectMainLibraryList(userId).stream().limit(10).toList();
+        if (list.isEmpty()) return list;
+        Map<String, String> counts = mainMapper.selectMainLibraryViewCounts(
+                        list.stream().map(NoticeDto::getTvUk).toList()).stream()
+                .collect(Collectors.toMap(NoticeDto::getTvUk, NoticeDto::getViewCount));
         for (NoticeDto item : list) {
             item.setTnDateStr(item.getTnDate().substring(0, 10).replace('-', '.'));
+            item.setViewCount(counts.getOrDefault(item.getTvUk(), "0"));
         }
         return list;
     }

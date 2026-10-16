@@ -24,8 +24,9 @@
     padding: 32px;
     background: #eef2ec;
     color: var(--pc-login-text);
-    font-family: Pretendard, "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    font-family: "Pretendard PC", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
     font-size: var(--pc-login-font-body);
+    font-weight: 500;
     line-height: 1.5;
 }
 
@@ -78,14 +79,14 @@
     margin: 0 0 var(--pc-login-space);
     color: var(--pc-login-primary);
     font-size: var(--pc-login-font-small);
-    font-weight: 700;
+    font-weight: 800;
 }
 
 .pc-login-form-wrap h1 {
     margin: 0;
     font-size: 32px;
     line-height: 1.4;
-    font-weight: 700;
+    font-weight: 800;
     letter-spacing: -1px;
 }
 
@@ -105,7 +106,7 @@
     display: block;
     /*margin-bottom: var(--pc-login-space);*/
     font-size: 15px;
-    font-weight: 700;
+    font-weight: 800;
 }
 
 .pc-login-input-wrap {
@@ -150,7 +151,7 @@
     color: #687589;
     font-family: inherit;
     font-size: var(--pc-login-font-small);
-    font-weight: 400;
+    font-weight: 500;
 }
 
 #pcLoginForm .pc-login-input-wrap input:focus {
@@ -222,7 +223,7 @@
     background: var(--pc-login-primary);
     color: var(--white);
     font-size: var(--pc-login-font-body);
-    font-weight: 700;
+    font-weight: 800;
     cursor: pointer;
 }
 
@@ -287,7 +288,7 @@
     margin: 0 0 18px;
     color: var(--pc-login-green-text);
     font-size: 11px;
-    font-weight: 700;
+    font-weight: 800;
     letter-spacing: 1.6px;
 }
 
@@ -296,7 +297,7 @@
     border-left: 1px solid #cbdcc6;
     color: var(--pc-login-visual-muted);
     font-size: 12px;
-    font-weight: 400;
+    font-weight: 500;
     letter-spacing: 0;
 }
 
@@ -304,7 +305,7 @@
     margin: 0 0 12px;
     font-size: 33px;
     line-height: 1.4;
-    font-weight: 700;
+    font-weight: 800;
     color: black;
 }
 
@@ -316,7 +317,7 @@
     font-size: 28px;
     line-height: 1.55;
     letter-spacing: -1px;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .pc-login-mission-copy > span {
@@ -326,7 +327,7 @@
 .pc-login-mission-copy strong {
     color: var(--pc-login-red-text);
     font-size: 42px;
-    font-weight: 700;
+    font-weight: 800;
     letter-spacing: -2px;
 }
 
@@ -377,7 +378,7 @@
     gap: 12px;
     margin: 0 0 8px;
     font-size: 24px;
-    font-weight: 700;
+    font-weight: 800;
 }
 
 .pc-login-visual h3 > span {
@@ -385,7 +386,7 @@
     border-left: 1px solid #cbdcc6;
     padding-left: 12px;
     font-size: 20px;
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: 1px;
 }
 
@@ -439,7 +440,7 @@
     border-right: 1px solid #d7e5d0;
     color: var(--pc-login-primary);
     font-size: 17px;
-    font-weight: 600;
+    font-weight: 700;
     font-variant-numeric: tabular-nums;
 }
 
@@ -454,7 +455,7 @@
 .pc-login-vision strong {
     color: var(--pc-login-primary);
     font-size: 18px;
-    font-weight: 700;
+    font-weight: 800;
 }
 
 .pc-login-values {
@@ -484,7 +485,7 @@
 
 .pc-login-values dt {
     font-size: 17px;
-    font-weight: 700;
+    font-weight: 800;
 }
 
 .pc-login-values dt > span {
@@ -493,7 +494,7 @@
     margin-top: 4px;
     color: var(--pc-login-green-text);
     font-size: 15px;
-    font-weight: 400;
+    font-weight: 500;
     line-height: 1.4;
 }
 

@@ -2,6 +2,9 @@ package com.example.mshintra.config;
 
 import com.example.mshintra.security.LoginAuthenticationProvider;
 import com.example.mshintra.security.LoginAuthenticationDetails;
+import com.example.mshintra.security.ConcurrentRememberMeServices;
+import com.example.mshintra.security.RememberMeRestoreFilter;
+import com.example.mshintra.security.PcMainActivityFilter;
 import com.example.mshintra.security.LoginUserDetailsService;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +23,7 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.security.web.session.SimpleRedirectInvalidSessionStrategy;
 
@@ -47,6 +51,17 @@ public class SecurityConfig {
         JdbcTokenRepositoryImpl repository = new JdbcTokenRepositoryImpl();
         repository.setDataSource(dataSource);
         return repository;
+    }
+
+    @Bean
+    public ConcurrentRememberMeServices rememberMeServices() {
+        ConcurrentRememberMeServices services = new ConcurrentRememberMeServices(
+                rememberMeKey, loginUserDetailsService, persistentTokenRepository());
+        services.setParameter("rememberMe");
+        services.setCookieName("MHS_REMEMBER");
+        services.setTokenValiditySeconds(60 * 60 * 24 * 365);
+        services.setUseSecureCookie(true);
+        return services;
     }
 
     @Bean
@@ -112,6 +127,7 @@ public class SecurityConfig {
                 .passwordParameter("loginPw")
                 .authenticationDetailsSource(LoginAuthenticationDetails::new)
                 .successHandler((request, response, authentication) -> {
+                    request.getSession().removeAttribute(PcMainActivityFilter.ACTIVITY_KEY);
                     if (isPcRequest(request)) pcSuccessHandler.onAuthenticationSuccess(request, response, authentication);
                     else mobileSuccessHandler.onAuthenticationSuccess(request, response, authentication);
                 })
@@ -124,14 +140,11 @@ public class SecurityConfig {
 
         //로그인 상태 유지
         http.rememberMe(remember -> remember
-                .rememberMeParameter("rememberMe")
-                .rememberMeCookieName("MHS_REMEMBER")
-                .tokenRepository(persistentTokenRepository())
-                .userDetailsService(loginUserDetailsService)
-                .tokenValiditySeconds(60 * 60 * 24 * 365)
-                .useSecureCookie(true)
+                .rememberMeServices(rememberMeServices())
                 .key(rememberMeKey)
         );
+        http.addFilterBefore(new RememberMeRestoreFilter(rememberMeServices()), RememberMeAuthenticationFilter.class);
+        http.addFilterBefore(new PcMainActivityFilter(), RememberMeAuthenticationFilter.class);
 
         //예외 처리
         http.exceptionHandling(exception -> exception

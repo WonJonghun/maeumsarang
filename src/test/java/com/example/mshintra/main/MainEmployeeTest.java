@@ -30,7 +30,7 @@ class MainEmployeeTest {
         when(mapper.selectMainEmployee("001678", "2026-10-12", true, "test-key"))
                 .thenReturn(employee);
 
-        var mvc = MockMvcBuilders.standaloneSetup(new MainController(null, null, null, service)).build();
+        var mvc = MockMvcBuilders.standaloneSetup(new MainController(null, null, null, service, null)).build();
         mvc.perform(get("/pc/main/employeePopup.do")
                         .param("userId", "001678").param("baseDt", "2026-10-12").param("formatted", "true"))
                 .andExpect(status().isOk())

@@ -7,6 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>직원 로그인 | 마음사랑병원 인트라넷</title>
+    <%@ include file="/WEB-INF/views/pc/jsp/common/font-inc.jspf" %>
     <link rel="stylesheet" href="<c:url value='/common/css/pretendard.css'/>">
     <link rel="stylesheet" href="<c:url value='/webjars/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css'/>">
     <link rel="stylesheet" href="<c:url value='/common/css/common.css'/>">

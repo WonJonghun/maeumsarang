@@ -1,0 +1,5 @@
+<link rel="preload" href="<c:url value='/fonts/pretendard/pc/Pretendard-Medium-d0348133.woff2'/>" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="<c:url value='/fonts/pretendard/pc/Pretendard-SemiBold-c863f76a.woff2'/>" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="<c:url value='/fonts/pretendard/pc/Pretendard-Bold-4609c335.woff2'/>" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="<c:url value='/fonts/pretendard/pc/Pretendard-ExtraBold-dd7c1e15.woff2'/>" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="<c:url value='/pc/css/common/font.css'/>">

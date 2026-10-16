@@ -5,21 +5,19 @@
 <html lang="ko">
 <head>
     <title>마음사랑병원 인트라넷</title>
+    <%@ include file="/WEB-INF/views/pc/jsp/common/font-inc.jspf" %>
     <%@ include file="/WEB-INF/views/common/jsp/common-inc.jspf" %>
     <link rel="stylesheet" href="<c:url value='/pc/css/common/layout.css'/>">
     <link rel="stylesheet" href="<c:url value='/pc/css/main/main.css'/>">
     <link rel="stylesheet" href="<c:url value='/common/css/cmPopup.css'/>">
     <script src="<c:url value='/common/js/cmPopup.js'/>"></script>
 </head>
-<body class="pc-page">
+<body class="pc-page pc-work-page">
 <a class="pc-skip-link" href="#pcContent">본문 바로가기</a>
-<%@ include file="../common/header.jspf" %>
-
-<div class="pc-shell">
-    <%@ include file="../common/menu.jspf" %>
     <main id="pcContent" class="pc-content" tabindex="-1" aria-label="업무 콘텐츠">
         <div id="pcDashboard" class="pc-dashboard" data-user-id="<c:out value='${user.icCode}'/>"
-             data-team-code="<c:out value='${user.icBuser}'/>" data-work-flag="<c:out value='${user.flag}'/>">
+             data-team-code="<c:out value='${user.icBuser}'/>" data-work-flag="<c:out value='${user.flag}'/>"
+             data-change-version="<c:out value='${changeVersion}'/>">
             <div class="pc-dashboard-grid">
                 <div class="pc-dashboard-column pc-dashboard-column-left">
 
@@ -27,6 +25,11 @@
                         <div class="pc-main-card-heading"><h2 id="pcMyInfoTitle">내정보</h2><i class="bi bi-person" aria-hidden="true"></i></div>
                         <div class="pc-myinfo-user">
                             <span class="profile pc-profile pc-main-profile">
+                                <c:url var="pcProfileImageUrl" value="/attach/profileView.do">
+                                    <c:param name="afNum" value="${user.icCode}"/>
+                                    <c:param name="afSeq" value="1"/>
+                                    <c:param name="thumbnail" value="true"/>
+                                </c:url>
                                 <img id="pcMainProfileImage" src="<c:out value='${pcProfileImageUrl}'/>"
                                      data-fallback-src="<c:url value='/images/emptyUser.png'/>" alt="" class="profile-img">
                             </span>
@@ -157,17 +160,17 @@
                 </div>
 
                 <section class="pc-main-card pc-notice-card" aria-labelledby="pcNoticesTitle">
-                    <div class="pc-main-card-heading"><h2 id="pcNoticesTitle">공지사항</h2><button type="button" class="pc-board-more" aria-label="공지사항 전체보기"><i class="bi bi-chevron-right" aria-hidden="true"></i></button></div>
+                    <div class="pc-main-card-heading"><h2 id="pcNoticesTitle">공지사항</h2><button type="button" class="pc-board-more" data-base-key="1" aria-label="공지사항 전체보기"><i class="bi bi-chevron-right" aria-hidden="true"></i></button></div>
                     <div id="pcMainNotices" class="pc-main-body"><p class="pc-main-empty">게시글을 불러오는 중입니다.</p></div>
                 </section>
 
                 <section class="pc-main-card pc-board-card" aria-labelledby="pcBoardsTitle">
-                    <div class="pc-main-card-heading"><h2 id="pcBoardsTitle">자유게시판</h2><button type="button" class="pc-board-more" aria-label="자유게시판 전체보기"><i class="bi bi-chevron-right" aria-hidden="true"></i></button></div>
+                    <div class="pc-main-card-heading"><h2 id="pcBoardsTitle">자유게시판</h2><button type="button" class="pc-board-more" data-base-key="2" aria-label="자유게시판 전체보기"><i class="bi bi-chevron-right" aria-hidden="true"></i></button></div>
                     <div id="pcMainBoards" class="pc-main-body"><p class="pc-main-empty">게시글을 불러오는 중입니다.</p></div>
                 </section>
 
                 <section class="pc-main-card pc-library-card" aria-labelledby="pcLibraryTitle">
-                    <div class="pc-main-card-heading"><h2 id="pcLibraryTitle">자료실</h2><button type="button" class="pc-board-more" aria-label="자료실 전체보기"><i class="bi bi-chevron-right" aria-hidden="true"></i></button></div>
+                    <div class="pc-main-card-heading"><h2 id="pcLibraryTitle">자료실</h2><button type="button" class="pc-board-more" data-base-key="3" aria-label="자료실 전체보기"><i class="bi bi-chevron-right" aria-hidden="true"></i></button></div>
                     <div id="pcMainLibrary" class="pc-main-body"><p class="pc-main-empty">게시글을 불러오는 중입니다.</p></div>
                 </section>
 
@@ -178,9 +181,8 @@
             </div>
         </div>
     </main>
-</div>
 
-<script src="<c:url value='/pc/js/common/layout.js'/>"></script>
+<script src="<c:url value='/pc/js/common/tabs.js'/>"></script>
 <script src="<c:url value='/pc/js/common/calendar.js'/>"></script>
 <script src="<c:url value='/pc/js/main/main.js'/>"></script>
 </body>

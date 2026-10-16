@@ -35,9 +35,11 @@ public class MenuService {
         if (icCode == null || icCode.isBlank()) return Collections.emptyList();
         String kw = (keyword == null ? "" : keyword.trim());
         if (kw.isEmpty() || "undefined".equalsIgnoreCase(kw) || "null".equalsIgnoreCase(kw)) kw = "";
+        boolean quick = "Quick".equalsIgnoreCase(kw);
         List<MenuDto> list = null;
 
-        if (session == null) {
+        //즐겨찾기는 매번 DB 조회
+        if (session == null || quick) {
             list = menuMapper.selectMenuList(icCode, kw);
         } else {
             Object o = session.getAttribute(SESSION_MENU_CACHE);
@@ -53,6 +55,12 @@ public class MenuService {
         }
 
         if (list == null || list.isEmpty()) return Collections.emptyList();
+
+        if (quick) {
+            Set<String> codes = new HashSet<>();
+            for (MenuDto menu : list) codes.add(menu.getCcCode());
+            return selectFavoriteMenus(selectMenuTree(icCode, "", session), codes);
+        }
 
         List<MenuDto> copy = new ArrayList<>(list.size());
         for (MenuDto m : list) {
@@ -87,5 +95,25 @@ public class MenuService {
         }
 
         return roots;
+    }
+
+    //기존 메뉴 분류에서 즐겨찾기와 상위 메뉴 추출
+    private List<MenuDto> selectFavoriteMenus(List<MenuDto> menus, Set<String> codes) {
+        List<MenuDto> favorites = new ArrayList<>();
+        for (MenuDto menu : menus) {
+            List<MenuDto> children = selectFavoriteMenus(menu.getChildren(), codes);
+            if (!codes.contains(menu.getCcCode()) && children.isEmpty()) continue;
+            favorites.add(new MenuDto(
+                    menu.getCcCode(),
+                    menu.getCcMenuName(),
+                    menu.getCcLevel(),
+                    menu.getCcWinName(),
+                    menu.getCcWinCode(),
+                    menu.getCcMenu2(),
+                    menu.getCcBaseKey(),
+                    children
+            ));
+        }
+        return favorites;
     }
 }

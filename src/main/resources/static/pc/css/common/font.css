@@ -1,0 +1,83 @@
+/* ================== PC 웹폰트 영역 ↓================== */
+@font-face {
+    font-family: 'Pretendard PC';
+    font-weight: 100;
+    font-style: normal;
+    font-display: block;
+    src: url('../../../fonts/pretendard/pc/Pretendard-Thin-15397552.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Pretendard PC';
+    font-weight: 200;
+    font-style: normal;
+    font-display: block;
+    src: url('../../../fonts/pretendard/pc/Pretendard-ExtraLight-df43dc91.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Pretendard PC';
+    font-weight: 300;
+    font-style: normal;
+    font-display: block;
+    src: url('../../../fonts/pretendard/pc/Pretendard-Light-b7426635.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Pretendard PC';
+    font-weight: 400;
+    font-style: normal;
+    font-display: block;
+    src: url('../../../fonts/pretendard/pc/Pretendard-Regular-fad853f7.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Pretendard PC';
+    font-weight: 500;
+    font-style: normal;
+    font-display: block;
+    src: url('../../../fonts/pretendard/pc/Pretendard-Medium-d0348133.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Pretendard PC';
+    font-weight: 600;
+    font-style: normal;
+    font-display: block;
+    src: url('../../../fonts/pretendard/pc/Pretendard-SemiBold-c863f76a.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Pretendard PC';
+    font-weight: 700;
+    font-style: normal;
+    font-display: block;
+    src: url('../../../fonts/pretendard/pc/Pretendard-Bold-4609c335.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Pretendard PC';
+    font-weight: 800;
+    font-style: normal;
+    font-display: block;
+    src: url('../../../fonts/pretendard/pc/Pretendard-ExtraBold-dd7c1e15.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Pretendard PC';
+    font-weight: 900;
+    font-style: normal;
+    font-display: block;
+    src: url('../../../fonts/pretendard/pc/Pretendard-Black-c5fd0c35.woff2') format('woff2');
+}
+
+/* ================== PC 입력 글꼴 영역 ↓================== */
+:is(.pc-page, .pc-login-page) :is(input, select, textarea),
+:is(.pc-page, .pc-login-page) :is(input, textarea)::placeholder {
+    font-family: inherit !important;
+}
+
+/* ================== PC 팝업 제목 영역 ↓================== */
+.pc-page .cm-popup-heading strong {
+    font-weight: 800;
+}

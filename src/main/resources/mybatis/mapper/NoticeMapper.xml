@@ -3,6 +3,89 @@
 
 <mapper namespace="com.example.mshintra.notice.mapper.NoticeMapper">
 
+    <sql id="pcNoticeColumns">
+        note.Tn_Date,
+        REPLACE(CONVERT(char(10), note.Tn_Date, 120), '-', '.') AS tnDateStr,
+        note.Tn_Flag, note.Tn_Aflag, note.Tn_Seq, note.Tn_Time,
+        note.Tn_Title, note.Tn_UK, note.Tn_UserID, insa.Ic_Name,
+        dbo.GetBuserNm(insa.Ic_Buser) AS buserNm,
+        note.Tn_Seflag, note.Tn_TOP, note.Tn_ImgNum,
+        CONCAT(note.Tn_Flag, CONVERT(CHAR(8), note.Tn_Date, 112), note.Tn_AFlag, note.Tn_Seq) AS tvUk,
+        (SELECT COUNT(*) FROM I_TotalNoteView
+         WHERE Tv_UK = CONCAT(note.Tn_Flag, CONVERT(CHAR(8), note.Tn_Date, 112), note.Tn_AFlag, note.Tn_Seq)) AS viewCount,
+        CASE WHEN EXISTS (
+            SELECT 1 FROM I_TotalNoteView
+            WHERE Tv_SaCd = #{searchId}
+              AND Tv_UK = CONCAT(note.Tn_Flag, CONVERT(CHAR(8), note.Tn_Date, 112), note.Tn_AFlag, note.Tn_Seq)
+        ) OR note.Tn_Date <![CDATA[<]]> CASE
+            WHEN insa.Ic_Indate <![CDATA[<]]> '2013-03-01' THEN '2013-03-01'
+            ELSE insa.Ic_Indate
+        END THEN 'Y' ELSE 'N' END AS ccView
+    </sql>
+
+    <sql id="pcNoticeFrom">
+        FROM I_TotalNote note
+        LEFT JOIN P_InsaCode insa ON note.Tn_UserID = insa.Ic_Code
+    </sql>
+
+    <sql id="pcNoticeFilter">
+        WHERE
+        <choose>
+            <when test="libraryAll">
+                note.Tn_Flag BETWEEN 3 AND 5
+            </when>
+            <otherwise>
+                note.Tn_Flag = #{tnFlag}
+            </otherwise>
+        </choose>
+          AND note.Tn_DelFlag NOT IN (0)
+          AND note.Tn_Date <![CDATA[>=]]> #{searchFromDate}
+          AND note.Tn_Date <![CDATA[<]]> DATEADD(DAY, 1, CONVERT(date, #{searchToDate}))
+        <if test="tnSeflag != null and tnSeflag != ''">
+            AND note.Tn_Seflag = #{tnSeflag}
+        </if>
+        <if test="searchKeyword != null and searchKeyword != ''">
+            <choose>
+                <when test="searchType == 'titleContent'">
+                    AND (UPPER(note.Tn_Title) LIKE '%' + UPPER(#{searchKeyword}) + '%'
+                         OR UPPER(CONVERT(nvarchar(max), note.Tn_Remark)) LIKE '%' + UPPER(#{searchKeyword}) + '%')
+                </when>
+                <when test="searchType == 'content'">
+                    AND UPPER(CONVERT(nvarchar(max), note.Tn_Remark)) LIKE '%' + UPPER(#{searchKeyword}) + '%'
+                </when>
+                <when test="searchType == 'writer'">
+                    AND (UPPER(insa.Ic_Name) LIKE '%' + UPPER(#{searchKeyword}) + '%'
+                         OR UPPER(note.Tn_UK) LIKE '%' + UPPER(#{searchKeyword}) + '%')
+                </when>
+                <otherwise>
+                    AND UPPER(note.Tn_Title) LIKE '%' + UPPER(#{searchKeyword}) + '%'
+                </otherwise>
+            </choose>
+        </if>
+    </sql>
+
+    <select id="selectPcNoticeList" resultType="com.example.mshintra.notice.dto.NoticeDto">
+        SELECT <include refid="pcNoticeColumns"/>
+        <include refid="pcNoticeFrom"/>
+        <include refid="pcNoticeFilter"/>
+        ORDER BY note.Tn_Date DESC, note.Tn_Time DESC, note.Tn_Seq DESC, note.Tn_Aflag DESC
+        OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <select id="selectPcNoticeCount" resultType="int">
+        SELECT COUNT(*)
+        <include refid="pcNoticeFrom"/>
+        <include refid="pcNoticeFilter"/>
+    </select>
+
+    <select id="selectPcNoticeDetail" resultType="com.example.mshintra.notice.dto.NoticeDto">
+        SELECT <include refid="pcNoticeColumns"/>, note.Tn_Remark
+        <include refid="pcNoticeFrom"/>
+        WHERE note.Tn_Flag = #{tnFlag}
+          AND note.Tn_DelFlag NOT IN (0)
+          AND CONCAT(note.Tn_Flag, CONVERT(CHAR(8), note.Tn_Date, 112), note.Tn_AFlag, note.Tn_Seq) = #{tvUk}
+    </select>
+
     <select id="selectNoticeList" resultType="com.example.mshintra.notice.dto.NoticeDto">
         SELECT
             note.Tn_Date,

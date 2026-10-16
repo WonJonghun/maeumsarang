@@ -10,6 +10,7 @@ import com.example.mshintra.main.dto.MainEmployeeDto;
 import com.example.mshintra.main.dto.MainMealDto;
 import com.example.mshintra.main.dto.MainOutDutyDto;
 import com.example.mshintra.main.service.MainService;
+import com.example.mshintra.main.service.MainChangeService;
 import com.example.mshintra.notice.dto.NoticeDto;
 import com.example.mshintra.notice.service.NoticeService;
 import com.example.mshintra.schedule.dto.CalendarDto;
@@ -40,6 +41,7 @@ public class MainController {
     private final NoticeService noticeService;
     private final CustomerService customerService;
     private final MainService mainService;
+    private final MainChangeService mainChangeService;
 
     @GetMapping("/")
     public String index() {
@@ -47,8 +49,10 @@ public class MainController {
     }
 
     @GetMapping("/pc/main.do")
-    public String pcMainPage() {
-        return "pc/jsp/main/main";
+    public String pcMainPage(@RequestParam(defaultValue = "false") boolean pcFrame,
+                             @AuthenticationPrincipal LoginUserDto user, Model model) {
+        if (pcFrame) model.addAttribute("changeVersion", mainChangeService.selectVersion(user.getIcCode()));
+        return pcFrame ? "pc/jsp/main/main" : "pc/jsp/common/workspace";
     }
 
     @GetMapping("/pc/main/employeePopup.do")
