@@ -90,6 +90,9 @@
                             <i class="bi bi-people" aria-hidden="true"></i><span>협조</span>
                             <span class="pc-notification-badge" data-key="coop" aria-hidden="true" hidden></span>
                         </button>
+                        <button type="button" aria-label="채팅">
+                            <i class="bi bi-chat-dots" aria-hidden="true"></i><span>채팅</span>
+                        </button>
                     </section>
                     <section class="pc-main-card pc-calendar-card" aria-label="달력 및 일정">
                         <div class="pc-calendar-layout">

@@ -56,6 +56,11 @@
             <button type="button" id="pcOrganizationButton" class="pc-topbar-action" aria-label="연락처">
                 <i class="bi bi-diagram-3" aria-hidden="true"></i>
             </button>
+            <a id="pcCertificateButton" class="pc-topbar-action"
+               href="<c:url value='/pc/certificates/install-intranet-certificate.cmd'/>"
+               download="install-intranet-certificate.cmd" aria-label="인증서 설치 (다운로드 후 실행)">
+                <i class="bi bi-shield-check" aria-hidden="true"></i>
+            </a>
         </div>
         <span class="pc-topbar-divider" aria-hidden="true"></span>
         <div class="pc-zoom-controls" role="group" aria-label="화면 배율">

@@ -24,7 +24,7 @@
             <h1 id="pcLoginTitle">직원 로그인</h1>
 <%--            <p class="pc-login-description">직원 계정으로 로그인해 주세요.</p>--%>
 
-            <form id="pcLoginForm" action="<c:url value='/login/loginProc.do'/>" method="post" novalidate>
+            <form id="pcLoginForm" action="<c:url value='/login/loginProc.do'/>" method="post" autocomplete="off" novalidate>
                 <input type="hidden" name="<c:out value='${_csrf.parameterName}'/>" value="<c:out value='${_csrf.token}'/>">
                 <input type="hidden" name="loginType" value="pc">
 
@@ -32,7 +32,7 @@
                     <label for="pcLoginId">사번</label>
                     <div class="pc-login-input-wrap">
                         <i class="bi bi-person" aria-hidden="true"></i>
-                        <input type="text" id="pcLoginId" name="loginId" autocomplete="username" inputmode="numeric"
+                        <input type="text" id="pcLoginId" name="loginId" autocomplete="off" inputmode="numeric"
                                placeholder="사번을 입력해 주세요" aria-describedby="pcLoginError" required>
                     </div>
                 </div>
@@ -41,7 +41,8 @@
                     <label for="pcLoginPw">비밀번호</label>
                     <div class="pc-login-input-wrap">
                         <i class="bi bi-lock" aria-hidden="true"></i>
-                        <input type="password" id="pcLoginPw" name="loginPw" autocomplete="current-password"
+                        <input type="text" id="pcLoginPw" name="loginPw" autocomplete="off"
+                               autocapitalize="off" spellcheck="false" style="-webkit-text-security: disc;"
                                placeholder="비밀번호를 입력해 주세요" aria-describedby="pcLoginError" required>
 <%--                        <button type="button" id="pcPasswordToggle" class="pc-login-password-toggle"--%>
 <%--                                aria-label="비밀번호 표시" aria-controls="pcLoginPw" aria-pressed="false">--%>

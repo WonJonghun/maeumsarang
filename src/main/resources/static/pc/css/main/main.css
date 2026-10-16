@@ -553,7 +553,7 @@
 /* ================== 달력 및 일정 영역 ↓================== */
 .pc-main-notifications {
     display: grid;
-    grid-template-columns: repeat(6, minmax(0, 84px));
+    grid-template-columns: repeat(7, minmax(0, 84px));
     justify-content: center;
     gap: 28px;
     min-height: 70px;
@@ -622,6 +622,12 @@
     --pc-notification-bg: #ccdef1;
     --pc-notification-hover: #b8cfe9;
     --pc-notification-color: #315a7e;
+}
+
+.pc-main-notifications button:nth-child(7) {
+    --pc-notification-bg: #d6dcf2;
+    --pc-notification-hover: #c3cbee;
+    --pc-notification-color: #4c5889;
 }
 
 .pc-main-notifications button:hover {

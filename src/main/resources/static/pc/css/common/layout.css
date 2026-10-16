@@ -252,6 +252,7 @@
     background: transparent;
     color: var(--pc-text-subtle);
     font-size: 22px;
+    text-decoration: none;
     cursor: pointer;
 }
 

@@ -1,4 +1,9 @@
 $(function () {
+    //비밀번호 가림 미지원 시 기본 입력으로 전환
+    if (getComputedStyle(document.getElementById('pcLoginPw')).getPropertyValue('-webkit-text-security') !== 'disc') {
+        $('#pcLoginPw').attr('type', 'password');
+    }
+
     //로그인 제출
     $('#pcLoginForm').on('submit', function (e) {
         const id = $('#pcLoginId').val().trim();
